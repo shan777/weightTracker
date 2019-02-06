@@ -21,7 +21,7 @@ $(document).ready(initializeApp);
  */
 var arrayOfEntryObjects = [];
 var counter = 0;
-var targetWeight = '122 lbs';
+var targetWeight = 122;
 
 /***************************************************************************************************
 * initializeApp 
