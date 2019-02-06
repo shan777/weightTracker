@@ -39,9 +39,10 @@ function initializeApp(){
 
       console.log('initializedApp');
       document.querySelector("#today").valueAsDate = new Date(); //displays today's date as default
-      renderGradeAverage( 0 );
-      // getData();
+      // renderGradeAverage( 0 );
+      // getDataFromServer();
       addClickHandlersToElements();
+      handleFocusInForForm();
 }
 
 /***************************************************************************************************
@@ -53,9 +54,9 @@ function initializeApp(){
 function addClickHandlersToElements(){
       console.log('click handlers added');
       $("#addButton").click(handleAddClicked); //add button
-      $("#newAddButton").click(handleModalAddClicked); //add button from modal
+      // $("#newAddButton").click(handleModalAddClicked); //add button from modal
       $("#cancelButton").click(handleCancelClick); //cancel button
-      $(".btn-info").click(getData); //get data from server button
+      // $(".btn-info").click(getData); //get data from server button
 }
 
 /***************************************************************************************************
