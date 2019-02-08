@@ -76,6 +76,7 @@ function handleAddClicked(event){
 
       if (!userEntryObj.date) { //if date field is left blank, date value is set to today's date
             userEntryObj.date = new Date;
+            console.log('date ever left blank?? i dont think so but lets check');
       }
 
       if (!userEntryObj.weight) { //if weight field is empty
