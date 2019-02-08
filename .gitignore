@@ -1,0 +1,5 @@
+.DS_Store
+.idea
+README.md
+config/mysql_connect.php
+config/api_url.js
