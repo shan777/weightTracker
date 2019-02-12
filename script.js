@@ -91,51 +91,51 @@ function handleAddClicked(event){
             showModal('error');
             userEntryObj.weight = $('#newStudentWeight').val();
             handleModalAddClicked(userEntryObj);
-            clearAddStudentFormInputs(); 
+            clearAddEntryInputs(); 
       } else {
-            addStudent(userEntryObj);
-            clearAddStudentFormInputs();
+            addEntry(userEntryObj);
+            clearAddEntryInputs();
       }     
-      sendDataToDB(userEntryObj); 
+      sendDataToDB(userEntryObj); /** is this needed??????????????????? */
 }
 
 
 
-function handleModalAddClicked(stuObj){
-      console.log(stuObj);
-      addStudent(stuObj);
-      clearAddStudentFormInputs();
-      sendDataToDB(userEntryObj); 
+function handleModalAddClicked(entryObj){
+      console.log(entryObj);
+      addEntry(entryObj);
+      clearAddEntryInputs();
+      sendDataToDB(entryObj); 
 }
 
 /***************************************************************************************************
  * handleCancelClicked - Event Handler when user clicks the cancel button, should clear out student form
  * @param: {undefined} none
  * @returns: {undefined} none
- * @calls: clearAddStudentFormInputs
+ * @calls: clearAddEntryInputs
  */
 function handleCancelClick(){
-      clearAddStudentFormInputs();
+      clearAddEntryInputs();
 }
 
 /***************************************************************************************************
- * addStudent - creates a student objects based on input fields in the form and adds the object to global student array
+ * addEntry - creates a student objects based on input fields in the form and adds the object to global student array
  * @param {undefined} none
  * @return undefined
- * @calls clearAddStudentFormInputs, updateStudentList
+ * @calls clearAddEntryInputs, updateEntryList
  */
-function addStudent(userEntryObj){
-      console.log('addStudent function called');
+function addEntry(userEntryObj){
+      console.log('addEntry function called');
       arrayOfEntryObjects.push(userEntryObj); 
       counter++;
-      updateStudentList( userEntryObj );
-      // clearAddStudentFormInputs();
+      updateEntryList( userEntryObj );
+      // clearAddEntryInputs();
 }
 
 /***************************************************************************************************
  * clearAddStudentForm - clears out the form values based on inputIds variable
  */
-function clearAddStudentFormInputs(){
+function clearAddEntryInputs(){
       $('#note').val('');
       $('#today').val('');
       $('#weight').val('');
@@ -158,17 +158,17 @@ function renderStudentOnDom( userEntryObj ){
       var deleteButton = $('<button>').addClass('btn btn-danger').text('Delete');
       $(newTr).append(deleteButton);
       $(deleteButton).click(function() {
-            removeStudent( userEntryObj );
+            removeEntry ( userEntryObj );
       });
  }
 
 /***************************************************************************************************
- * updateStudentList - centralized function to update the average and call student list update
+ * updateEntryList - centralized function to update the average and call student list update
  * @param students {array} the array of student objects
  * @returns {undefined} none
  * @calls renderStudentOnDom, calculateGradeAverage, renderGradeAverage
  */
-function updateStudentList( userEntryObj ){
+function updateEntryList( userEntryObj ){
       console.log('updating student lists');
       renderStudentOnDom( userEntryObj );
       renderGradeAverage(calculateGradeAverage());  
@@ -178,7 +178,7 @@ function updateStudentList( userEntryObj ){
  * calculateGradeAverage - loop through the global student array and calculate average grade and return that value
  * @param: {array} students  the array of student objects
  * @returns {number}
- */
+
 function calculateGradeAverage(){
       var sum = 0, average = 0;
       for (var i=0; i<arrayOfEntryObjects.length; i++) {
@@ -189,23 +189,25 @@ function calculateGradeAverage(){
       if (arrayOfEntryObjects.length === 0)
             return 0;
       return average;
-}
+} */
 
 /***************************************************************************************************
  * renderGradeAverage - updates the on-page grade average
  * @param: {number} average    the grade average
  * @returns {undefined} none
- */
+
 function renderGradeAverage( average ){
       // var avg = Math.round(average);
       $('.avgGrade').html(targetWeight);
 }
+ */
 
-function removeStudent ( userEntryObj ) {
+
+function removeEntry ( userEntryObj ) {
       var indexNumToDelete = arrayOfEntryObjects.indexOf(userEntryObj);
       arrayOfEntryObjects.splice(indexNumToDelete, 1); 
       $(event.currentTarget).parent().remove()
-      renderGradeAverage(calculateGradeAverage());  
+      // renderGradeAverage(calculateGradeAverage());  
       deleteDataFromDB ( userEntryObj );
 }
 
@@ -214,23 +216,36 @@ function getData() {
             dataType: 'json',
             method: 'post',
             url: 'http://localhost:8888/data.php',
-            data: { //data to be sent with the request
-                  // api_key: 'wjaABAN7N4'
-                  action: 'readAll'
+            url: api_url.get_items_url,
+            data: {
+                  browserId: localStorage.getItem('uniqueBrowserId'),
             },
-            success: displayLFZ,
+            success: function (serverResponse) {
+                  var result = {};
+                  result = serverResponse;
+                  if (result.success) {
+                        for (var i = 0; i < result.data.length; i++) {
+                              itemArray.push(result.data[i]);
+                              updateItemList();
+                        };
+                  };
+            },
             error: displayError,
       }
       $.ajax(ajaxConfig);
 }
 
+
+
 function displayLFZ( result ) {
       console.log('displayLFZ function called');
       for (var i=0; i<result.data.length; i++) {
-            addStudent(result.data[i]); //each contains the userEntryObj
+            addEntry(result.data[i]); //each contains the userEntryObj
       }
       console.log('displayLFZ line 212: ', result);
 }
+
+
 
 function sendDataToDB ( userEntryObj ) {
       var ajaxConfg = {
@@ -251,6 +266,8 @@ function sendDataToDB ( userEntryObj ) {
       $.ajax(ajaxConfg);
 }
 
+
+
 function displaySuccess( serverResponse ) {
       var lastObjFromTheArray = arrayOfEntryObjects[arrayOfEntryObjects.length-1];
       if(serverResponse.success) {
@@ -259,9 +276,15 @@ function displaySuccess( serverResponse ) {
       }
 }
 
+
+
+
 function displayError() {
       console.log('errrrrrrrrrrrrrrrrrrrror');
 }
+
+
+
 
 function deleteDataFromDB ( userEntryObj ) {
       var ajaxConfg = {
@@ -280,10 +303,15 @@ function deleteDataFromDB ( userEntryObj ) {
       $.ajax(ajaxConfg);
 }
 
+
+
+
 function showModal( type ){
       var modalToShow = '#' + type + 'Modal';
       $(modalToShow).modal('show');
 }
+
+
 
 function hideModal(){
       var modalToHide = '#errorModal';
