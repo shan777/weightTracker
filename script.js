@@ -215,7 +215,7 @@ function getData() {
       var ajaxConfig = {
             dataType: 'json',
             method: 'post',
-            url: 'http://localhost:8888/data.php',
+            // url: 'http://localhost:8888/data.php',
             url: api_url.get_items_url,
             data: {
                   browserId: localStorage.getItem('uniqueBrowserId'),
@@ -251,7 +251,8 @@ function sendDataToDB ( userEntryObj ) {
       var ajaxConfg = {
             dataType: 'json',
             method: 'post',
-            url: 'http://localhost:8888/data.php',
+            // url: 'http://localhost:8888/data.php',
+            url: api_url.add_item_url,
             data: {
                   // api_key: 'wjaABAN7N4',
                   note: userEntryObj.note,
@@ -260,8 +261,15 @@ function sendDataToDB ( userEntryObj ) {
                   // course_name: "Hllooooooooooooooooooo",
                   action: 'insert'
             },
-            success: displaySuccess,
-            error: displayError,
+            success: function (serverResponse) {
+                  var result = serverResponse;
+                  if (result.success) {
+                        lastObjInitemArray.id = result.data[result.data.length - 1].id;
+                  }
+            },
+            error: function (serverResponse) {
+                  $(".add-item-error").removeClass('hidden')
+            }
       }
       $.ajax(ajaxConfg);
 }
