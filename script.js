@@ -232,8 +232,7 @@ function removeEntry ( userEntryObj ) {
 
 function editEntry (userEntryObj) {
       var indexNumToDelete = arrayOfEntryObjects.indexOf(userEntryObj);
-      updateEntryList( userEntryObj ); //????????????????????
-
+      showModal ('edit');
 }
 
 
@@ -350,7 +349,7 @@ function showModal( type ){
 
 
 
-function hideModal(){
-      var modalToHide = '#errorModal';
+function hideModal( type ){
+      var modalToHide = '#' + type + 'Modal';
       $(modalToHide).modal('hide');
 }
