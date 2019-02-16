@@ -70,7 +70,8 @@ function handleAddClicked(event){
       userEntryObj.date = $('#today').val();
       userEntryObj.weight= $('#weight').val();
 
-      console.log('type:'+typeof(userEntryObj.date));
+      $('#edit-weight-alert').addClass("hidden");
+      $('#edit-note-alert').addClass("hidden");
 
       if (!userEntryObj.note) { //if note is left blank, note value is set to "N/A"
             userEntryObj.note = "N/A";
@@ -80,17 +81,17 @@ function handleAddClicked(event){
             var fullDate = new Date();
             var yr = fullDate.getFullYear();
             var mo = fullDate.getMonth() + 1;
+            if(mo<10)
+                  mo = "0"+mo;
             var dt = fullDate.getDate();
             userEntryObj.date = (yr+"-"+mo+"-"+dt).toString();
-            console.log('date left blank: '+userEntryObj.date);
-
       }
 
       if (!userEntryObj.weight) { //if weight field is empty
-            showModal('empty');
+            $('#edit-weight-alert').removeClass("hidden");
             handleAddClicked();
-      } else if ((userEntryObj.note).length <=2) {
-            showModal('error');
+      } else if ((userEntryObj.note).length < 2) {
+            $('#edit-note-alert').removeClass("hidden");
       } else if (isNaN(Number(userEntryObj.weight)) || Number(userEntryObj.weight)<=0) { //if input for the weight is not a number or a negative number
             // $("#myModal").modal();
             $('#newStudentNote').val(userEntryObj.note);
@@ -104,6 +105,10 @@ function handleAddClicked(event){
             clearAddEntryInputs();
       }     
       sendDataToDB(userEntryObj); /** is this needed??????????????????? */
+
+      // $('#edit-weight-alert').addClass("hidden");
+      // $('#edit-note-alert').addClass("hidden");
+
 }
 
 
@@ -163,9 +168,14 @@ function renderStudentOnDom( userEntryObj ){
       $(newTr).append('<td>' + (targetWeight / userEntryObj.weight * 100).toFixed(1) + '%');
 
       var deleteButton = $('<button>').addClass('btn btn-danger').text('Delete');
+      var editButton = $('<button>').addClass('btn btn-info').text('Edit');
       $(newTr).append(deleteButton);
+      $(newTr).append(editButton);
       $(deleteButton).click(function() {
             removeEntry ( userEntryObj );
+      });
+      $(editButton).click(function() {
+            editEntry ( userEntryObj );
       });
  }
 
@@ -217,6 +227,18 @@ function removeEntry ( userEntryObj ) {
       // renderGradeAverage(calculateGradeAverage());  
       deleteDataFromDB ( userEntryObj );
 }
+
+
+
+function editEntry (userEntryObj) {
+      var indexNumToDelete = arrayOfEntryObjects.indexOf(userEntryObj);
+      updateEntryList( userEntryObj ); //????????????????????
+
+}
+
+
+
+
 
 function getData() {
       var ajaxConfig = {
