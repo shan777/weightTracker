@@ -42,7 +42,7 @@ function initializeApp(){
       // renderGradeAverage( 0 );
       // getDataFromServer();
       addClickHandlersToElements();
-      handleFocusInForForm();
+      // handleFocusInForForm();
 }
 
 /***************************************************************************************************
@@ -70,13 +70,20 @@ function handleAddClicked(event){
       userEntryObj.date = $('#today').val();
       userEntryObj.weight= $('#weight').val();
 
+      console.log('type:'+typeof(userEntryObj.date));
+
       if (!userEntryObj.note) { //if note is left blank, note value is set to "N/A"
             userEntryObj.note = "N/A";
       }
 
       if (!userEntryObj.date) { //if date field is left blank, date value is set to today's date
-            userEntryObj.date = new Date;
-            console.log('date ever left blank?? i dont think so but lets check');
+            var fullDate = new Date();
+            var yr = fullDate.getFullYear();
+            var mo = fullDate.getMonth() + 1;
+            var dt = fullDate.getDate();
+            userEntryObj.date = (yr+"-"+mo+"-"+dt).toString();
+            console.log('date left blank: '+userEntryObj.date);
+
       }
 
       if (!userEntryObj.weight) { //if weight field is empty
@@ -171,7 +178,7 @@ function renderStudentOnDom( userEntryObj ){
 function updateEntryList( userEntryObj ){
       console.log('updating student lists');
       renderStudentOnDom( userEntryObj );
-      renderGradeAverage(calculateGradeAverage());  
+      // renderGradeAverage(calculateGradeAverage());  
 }
 
 /***************************************************************************************************
