@@ -21,7 +21,7 @@ $(document).ready(initializeApp);
  */
 var arrayOfEntryObjects = [];
 var counter = 0;
-var targetWeight = 122;
+var targetWeight = 125;
 
 /***************************************************************************************************
 * initializeApp 
@@ -87,18 +87,19 @@ function handleAddClicked(event){
             userEntryObj.date = (yr+"-"+mo+"-"+dt).toString();
       }
 
-      if (!userEntryObj.weight) { //if weight field is empty
+      if (!userEntryObj.weight) { //if weight field is empty, display alert message
             $('#edit-weight-alert').removeClass("hidden");
             handleAddClicked();
-      } else if ((userEntryObj.note).length < 2) {
+      } else if ((userEntryObj.note).length < 2) { //if note field is less than 2 characters long, display alert message
             $('#edit-note-alert').removeClass("hidden");
-      } else if (isNaN(Number(userEntryObj.weight)) || Number(userEntryObj.weight)<=0) { //if input for the weight is not a number or a negative number
-            // $("#myModal").modal();
-            $('#newStudentNote').val(userEntryObj.note);
-            $('#newCourse').val(userEntryObj.date);
-            showModal('error');
-            userEntryObj.weight = $('#newStudentWeight').val();
-            handleModalAddClicked(userEntryObj);
+      } else if (isNaN(Number(userEntryObj.weight)) || Number(userEntryObj.weight)<2) { //if input for the weight is not a number or less than 2
+            $('#edit-weight-alert').removeClass("hidden");
+
+            // $('#newStudentNote').val(userEntryObj.note);
+            // $('#newCourse').val(userEntryObj.date);
+            // showModal('error');
+            // userEntryObj.weight = $('#newStudentWeight').val();
+            handleAddClicked(userEntryObj);
             clearAddEntryInputs(); 
       } else {
             addEntry(userEntryObj);
@@ -165,7 +166,8 @@ function renderStudentOnDom( userEntryObj ){
       $(newTr).append('<td>' + userEntryObj.date ); 
       $(newTr).append('<td>' + userEntryObj.weight + ' lbs' ); 
       $(newTr).append('<td>' + userEntryObj.note );
-      $(newTr).append('<td>' + (targetWeight / userEntryObj.weight * 100).toFixed(1) + '%');
+      // $(newTr).append('<td>' + (targetWeight / userEntryObj.weight * 100).toFixed(1) + '%');
+      $(newTr).append('<td>' + (userEntryObj.weight - targetWeight + ' more to go'));
 
       var deleteButton = $('<button>').addClass('btn btn-danger').text('Delete');
       var editButton = $('<button>').addClass('btn btn-info').text('Edit');
@@ -276,6 +278,7 @@ function displayLFZ( result ) {
 
 
 function sendDataToDB ( userEntryObj ) {
+      console.log('sendDataToDB function called');
       var ajaxConfg = {
             dataType: 'json',
             method: 'post',
