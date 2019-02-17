@@ -21,7 +21,7 @@ $(document).ready(initializeApp);
  */
 var arrayOfEntryObjects = [];
 var counter = 0;
-var targetWeight = 122;
+var targetWeight = 125;
 
 /***************************************************************************************************
 * initializeApp 
@@ -42,7 +42,7 @@ function initializeApp(){
       // renderGradeAverage( 0 );
       // getDataFromServer();
       addClickHandlersToElements();
-      handleFocusInForForm();
+      // handleFocusInForForm();
 }
 
 /***************************************************************************************************
@@ -70,33 +70,46 @@ function handleAddClicked(event){
       userEntryObj.date = $('#today').val();
       userEntryObj.weight= $('#weight').val();
 
+      $('#edit-weight-alert').addClass("hidden");
+      $('#edit-note-alert').addClass("hidden");
+
       if (!userEntryObj.note) { //if note is left blank, note value is set to "N/A"
             userEntryObj.note = "N/A";
       }
 
       if (!userEntryObj.date) { //if date field is left blank, date value is set to today's date
-            userEntryObj.date = new Date;
-            console.log('date ever left blank?? i dont think so but lets check');
+            var fullDate = new Date();
+            var yr = fullDate.getFullYear();
+            var mo = fullDate.getMonth() + 1;
+            if(mo<10)
+                  mo = "0"+mo;
+            var dt = fullDate.getDate();
+            userEntryObj.date = (yr+"-"+mo+"-"+dt).toString();
       }
 
-      if (!userEntryObj.weight) { //if weight field is empty
-            showModal('empty');
+      if (!userEntryObj.weight) { //if weight field is empty, display alert message
+            $('#edit-weight-alert').removeClass("hidden");
             handleAddClicked();
-      } else if ((userEntryObj.note).length <=2) {
-            showModal('error');
-      } else if (isNaN(Number(userEntryObj.weight)) || Number(userEntryObj.weight)<=0) { //if input for the weight is not a number or a negative number
-            // $("#myModal").modal();
-            $('#newStudentNote').val(userEntryObj.note);
-            $('#newCourse').val(userEntryObj.date);
-            showModal('error');
-            userEntryObj.weight = $('#newStudentWeight').val();
-            handleModalAddClicked(userEntryObj);
+      } else if ((userEntryObj.note).length < 2) { //if note field is less than 2 characters long, display alert message
+            $('#edit-note-alert').removeClass("hidden");
+      } else if (isNaN(Number(userEntryObj.weight)) || Number(userEntryObj.weight)<2) { //if input for the weight is not a number or less than 2
+            $('#edit-weight-alert').removeClass("hidden");
+
+            // $('#newStudentNote').val(userEntryObj.note);
+            // $('#newCourse').val(userEntryObj.date);
+            // showModal('error');
+            // userEntryObj.weight = $('#newStudentWeight').val();
+            handleAddClicked(userEntryObj);
             clearAddEntryInputs(); 
       } else {
             addEntry(userEntryObj);
             clearAddEntryInputs();
       }     
       sendDataToDB(userEntryObj); /** is this needed??????????????????? */
+
+      // $('#edit-weight-alert').addClass("hidden");
+      // $('#edit-note-alert').addClass("hidden");
+
 }
 
 
@@ -153,12 +166,18 @@ function renderStudentOnDom( userEntryObj ){
       $(newTr).append('<td>' + userEntryObj.date ); 
       $(newTr).append('<td>' + userEntryObj.weight + ' lbs' ); 
       $(newTr).append('<td>' + userEntryObj.note );
-      $(newTr).append('<td>' + (targetWeight / userEntryObj.weight * 100).toFixed(1) + '%');
+      // $(newTr).append('<td>' + (targetWeight / userEntryObj.weight * 100).toFixed(1) + '%');
+      $(newTr).append('<td>' + (userEntryObj.weight - targetWeight + ' more to go'));
 
       var deleteButton = $('<button>').addClass('btn btn-danger').text('Delete');
+      var editButton = $('<button>').addClass('btn btn-info').text('Edit');
       $(newTr).append(deleteButton);
+      $(newTr).append(editButton);
       $(deleteButton).click(function() {
             removeEntry ( userEntryObj );
+      });
+      $(editButton).click(function() {
+            editEntry ( userEntryObj );
       });
  }
 
@@ -171,7 +190,7 @@ function renderStudentOnDom( userEntryObj ){
 function updateEntryList( userEntryObj ){
       console.log('updating student lists');
       renderStudentOnDom( userEntryObj );
-      renderGradeAverage(calculateGradeAverage());  
+      // renderGradeAverage(calculateGradeAverage());  
 }
 
 /***************************************************************************************************
@@ -211,11 +230,22 @@ function removeEntry ( userEntryObj ) {
       deleteDataFromDB ( userEntryObj );
 }
 
+
+
+function editEntry (userEntryObj) {
+      var indexNumToDelete = arrayOfEntryObjects.indexOf(userEntryObj);
+      showModal ('edit');
+}
+
+
+
+
+
 function getData() {
       var ajaxConfig = {
             dataType: 'json',
             method: 'post',
-            url: 'http://localhost:8888/data.php',
+            // url: 'http://localhost:8888/data.php',
             url: api_url.get_items_url,
             data: {
                   browserId: localStorage.getItem('uniqueBrowserId'),
@@ -248,10 +278,12 @@ function displayLFZ( result ) {
 
 
 function sendDataToDB ( userEntryObj ) {
+      console.log('sendDataToDB function called');
       var ajaxConfg = {
             dataType: 'json',
             method: 'post',
-            url: 'http://localhost:8888/data.php',
+            // url: 'http://localhost:8888/data.php',
+            url: api_url.add_item_url,
             data: {
                   // api_key: 'wjaABAN7N4',
                   note: userEntryObj.note,
@@ -260,8 +292,15 @@ function sendDataToDB ( userEntryObj ) {
                   // course_name: "Hllooooooooooooooooooo",
                   action: 'insert'
             },
-            success: displaySuccess,
-            error: displayError,
+            success: function (serverResponse) {
+                  var result = serverResponse;
+                  if (result.success) {
+                        lastObjInitemArray.id = result.data[result.data.length - 1].id;
+                  }
+            },
+            error: function (serverResponse) {
+                  $(".add-item-error").removeClass('hidden')
+            }
       }
       $.ajax(ajaxConfg);
 }
@@ -313,7 +352,7 @@ function showModal( type ){
 
 
 
-function hideModal(){
-      var modalToHide = '#errorModal';
+function hideModal( type ){
+      var modalToHide = '#' + type + 'Modal';
       $(modalToHide).modal('hide');
 }
