@@ -36,7 +36,7 @@
     .label {
         text-shadow: none;
     }
-    .goalText {
+    .goal-text {
         background-color: greenyellow;
         font-weight: bold;
         border-radius: 5px;;
@@ -44,17 +44,22 @@
         padding: 7px;
         /* margin-left: 16px; */
     }
+    .input-goal-weight {
+        width: 155px;
+        display: inline;
+    }
+    
     .blinking {
         animation: blinkingText 3s infinite;
         /* animation-delay: 5s; */
         font-weight: bolder;
     }
     @keyframes blinkingText {
-        0% { color: rgb(69, 91, 231);}
-        40% { color: rgb(22, 50, 191);}
-        50% { color: rgb(69, 91, 231);}
-        99% { color: rgb(40, 15, 202);}
-        100% { color: rgb(81, 102, 240);}
+        0% { color: rgb(252, 8, 8);}
+        25% { color: rgb(248, 132, 23);}
+        50% { color: rgb(7, 51, 21);}
+        75% { color:  rgb(171, 15, 255);}
+        100% { color: rgb(23, 15, 255);}
     }
     .scaleBig {
         position: absolute;
@@ -76,67 +81,92 @@
 <body>
     <img class="scaleBig visible-md visible-lg hidden-xs hidden-sm" src="scale.png" title="scale_image">
     <img class="scaleSmall hidden-xs visible-sm hidden-md hidden-lg" src="scale.png" title="scale_image">
+
+    <div class="modal fade" id="goalWeightInputModal" role="dialog" style="margin: 0 auto; padding-top: 13%;">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header" style="padding: 15px 10px;">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4>Please enter your Target Weight.</span></h4>
+                </div>
+                <div style="text-align: center; font-style: italic; padding: 25px 0 15px 0; color: rgb(53, 59, 65);">* You can always edit your target weight anytime by clicking the weight.</div>
+                <div class="modal-body" style="padding: 10px 60px; width: 400px; margin: auto;">
+                    <div class="input-group form-group">
+                        <span class="input-group-addon">
+                            <span class="glyphicon glyphicon-scale"></span>
+                        </span>
+                        <input type="number" class="form-control" name="goalWeightInput" id="setGoalWeight" placeholder="Goal Weight in lbs.">
+                    </div>
+                    <div class="alert alert-danger hidden" id="modal-goal-weight-alert" role="alert" style="padding: 5px 15px">
+                        <span class="glyphicon glyphicon-exclamation-sign"></span>
+                        Please set a goal so you can work towards your target.
+                    </div>
+                </div>
+                <div  style="text-align: center; margin-bottom: 2%;">
+                    <button type="button" class="btn btn-success" id="goalWeightEnterButton" onclick="">Enter</button>
+                </div>
+            </div>
+        </div>
+    </div>
     
     <div class="modal fade" id="editModal" role="dialog">
-            <div class="modal-dialog">
-                <div class="modal-content">
-                    <div class="modal-header" style="padding:20px 30px;">
-                        <button type="button" class="close" data-dismiss="modal">&times;</button>
-                        <h4>Edit this entry</span></h4>
-                    </div>
-                    <div class="modal-body" style="padding:40px 50px;">
-                        <div class="input-group form-group">
-                            <span class="input-group-addon">
-                                <span class="glyphicon glyphicon-calendar"></span>
-                            </span>
-                            <input type="date" class="form-control" name="newInputDate" id="updatedDate">
-                        </div>
-                        <div class="input-group form-group">
-                            <span class="input-group-addon">
-                                <span class="glyphicon glyphicon-scale"></span>
-                            </span>
-                            <input type="number" class="form-control" name="newInputWeight" id="updatedWeight" placeholder="Weight">
-                                <span class="input-group-addon">lbs</span>
-                        </div>
-                        <div class="alert alert-danger hidden" id="edit-weight-alert" role="alert" style="padding: 5px 15px">
-                            <span class="glyphicon glyphicon-exclamation-sign"></span>
-                            Valid Weight is required.
-                        </div>
-        
-                        <div class="input-group form-group">
-                            <span class="input-group-addon">
-                                <span class="glyphicon glyphicon-comment"></span>
-                            </span>
-                            <textarea rows="2" type="text" class="form-control" name="newInputNote" id="updatedNote" placeholder="Add a note"></textarea>
-                        </div>
-                        <!--  <div class="alert alert-warning hidden" id="edit-name-alert" role="alert" style="padding: 5px 15px">  -->
-                        <div class="alert alert-danger hidden" id="edit-note-alert" role="alert" style="padding: 5px 15px">
-                                <span class="glyphicon glyphicon-exclamation-sign"></span>
-                                Please enter valid note.
-                        </div>
-            
-                        <button type="button" class="btn btn-success" id="updateButton" onclick="">Update</button>
-                   <!--     <button type="button" class="btn btn-default" id="cancelButton" onclick="">Cancel</button>
-                        <button type="button" class="btn-info">Get data From Server</button> -->
-                    </div>
-                   </div>
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header" style="padding:20px 30px;">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4>Edit this entry</span></h4>
                 </div>
-            </div>        
+                <div class="modal-body" style="padding:40px 50px;">
+                    <div class="input-group form-group">
+                        <span class="input-group-addon">
+                            <span class="glyphicon glyphicon-calendar"></span>
+                        </span>
+                        <input type="date" class="form-control" name="newInputDate" id="updatedDate">
+                    </div>
+                    <div class="input-group form-group">
+                        <span class="input-group-addon">
+                            <span class="glyphicon glyphicon-scale"></span>
+                        </span>
+                        <input type="number" class="form-control" name="newInputWeight" id="updatedWeight" placeholder="Weight">
+                            <span class="input-group-addon">lbs</span>
+                    </div>
+                    <div class="alert alert-danger hidden" id="modal-weight-alert" role="alert" style="padding: 5px 15px">
+                        <span class="glyphicon glyphicon-exclamation-sign"></span>
+                        Valid Weight is required.
+                    </div>
+    
+                    <div class="input-group form-group">
+                        <span class="input-group-addon">
+                            <span class="glyphicon glyphicon-comment"></span>
+                        </span>
+                        <textarea rows="2" type="text" class="form-control" name="newInputNote" id="updatedNote" placeholder="Add a note"></textarea>
+                    </div>
+                    <div class="alert alert-danger hidden" id="modal-note-alert" role="alert" style="padding: 5px 15px">
+                            <span class="glyphicon glyphicon-exclamation-sign"></span>
+                            Please enter valid note.
+                    </div>
+        
+                    <button type="button" class="btn btn-success" id="updateButton" onclick="">Update</button>
+                <!--     <button type="button" class="btn btn-default" id="cancelButton" onclick="">Cancel</button>
+                    <button type="button" class="btn-info">Get data From Server</button> -->
+                </div>
+                </div>
+            </div>
         </div>        
+    </div>        
     <!-- end of edit Modal -->
+    
 
     <div class="container-fluid">
         <div class="form-group col-lg-12 col-md-12 col-sm-12 col-xs-12 row">
             <!-- below is visible on all sizes EXCEPT mobile and tablet sizes -->
-            <h2 class="page-header">My Weight Tracking Journal</h2>
+            <h2 class="page-header">My Weight Tracker</h2>
         </div>
         
 
 
         <div class="row-no-gutters col-lg12 col-md-12 col-sm-12 col-xs-12">
-        <h4 class="pull-left goalText ">Goal? Desired Weight: <span class="avgGrade blinking"></span> lbs</h4>            
-        <button> <i class="fa fa-edit" style="font-size:16px;color:navy"></i></button>
-
+            <h4 class="pull-left goal-text">Goal Weight: <span class="goal-weight-display blinking"></span> <span class="lbs-text"> lbs </span></h4>            
         </div>
 
 
