@@ -69,7 +69,7 @@ function addClickHandlersToElements(){
 /***************************************************************************************************
 * handleGoalWeight - once goal weight is entered from modal, display onto DOM
 * @params none 
-* @returns  {undefined}
+* @returns none
 */
 function handleGoalWeight() {
       var targetWeight = $('#setGoalWeight').val();
