@@ -21,7 +21,7 @@ $(document).ready(initializeApp);
  */
 var arrayOfEntryObjects = [];
 var counter = 0;
-var targetWeight = 125; // for now
+var targetWeight = 'Not set yet'; // for now
 
 /***************************************************************************************************
 * initializeApp 
@@ -30,6 +30,8 @@ var targetWeight = 125; // for now
 * initializes the application, including adding click handlers and pulling in any data from the server, in later versions
 */
 function initializeApp(){
+      $('.lbs-text').addClass('hidden');
+
       //assigns unique user browser id so displays only the user's own data on user's browser
       var uniqueBrowserId = localStorage.getItem('uniqueBrowserId');
       if (!uniqueBrowserId) { //if it doesn't already, assign a new id
@@ -39,8 +41,9 @@ function initializeApp(){
 
       console.log('initializedApp');
       showModal('goalWeightInput');
-      document.querySelector("#today").valueAsDate = new Date(); //displays today's date as default
       renderGoalWeight(targetWeight);
+
+      document.querySelector("#today").valueAsDate = new Date(); //displays today's date as default
       // getDataFromServer();
       addClickHandlersToElements();
       // handleFocusInForForm();
@@ -70,11 +73,67 @@ function addClickHandlersToElements(){
 */
 function handleGoalWeight() {
       var targetWeight = $('#setGoalWeight').val();
-      renderGoalWeight(targetWeight);
-      hideModal('goalWeightInput');
-
+      if(!targetWeight) { //if target weight field is empty and the user click 'Enter'
+            showModal('goalWeightInput');
+            $('#modal-goal-weight-alert').removeClass('hidden');
+            $('#setGoalWeight').focus(function(){
+                  $('#modal-goal-weight-alert').addClass('hidden');
+            });
+      }else {            
+            renderGoalWeight(targetWeight);
+            hideModal('goalWeightInput');
+      }
 }
 
+
+/***************************************************************************************************
+ * renderGoalWeight - render goal weight on DOM
+ * @param: {number} targetWeight
+ * @returns {undefined} none
+ */
+function renderGoalWeight( targetWeight ){
+      if(targetWeight == 'Not set yet') {
+            $('.goal-weight-display').html(targetWeight);
+      }else {
+            $('.goal-weight-display').html(targetWeight + ' lbs');
+      }
+}
+ 
+
+
+/***************************************************************************************************
+ * editGoalWeight - updates the goal weight and display updated goal weight on DOM
+ * @param: none
+ * @returns none
+ */
+function editGoalWeight(){
+      var newGoalWeight = $('<input>', {
+            type: 'number',
+            class: 'form-control input-goal-weight',
+            name: 'updatedGoalWeight',
+            id: 'updated-goal-weight',
+            placeholder: 'Enter new target',
+            text: $('#updated-goal-weight').val(),
+      });
+
+      var saveBtn = $('<button>', {
+            id: 'saveButton',
+            text: 'Save'
+      });
+
+      $('.goal-weight-edit-btn').addClass('hidden');
+      $('.goal-text').append(newGoalWeight, saveBtn);
+
+      if($('#saveButton').click(function() {
+            var updatedWeight = $('#updated-goal-weight').val(); 
+            renderGoalWeight(updatedWeight);
+            targetWeight = updatedWeight;
+            newGoalWeight.addClass('hidden');
+            saveBtn.addClass('hidden');
+            $('.goal-weight-edit-btn').removeClass('hidden');
+      }));
+
+}
 
 
 /***************************************************************************************************
@@ -273,50 +332,6 @@ function calculateGradeAverage(){
 
 
 
-/***************************************************************************************************
- * renderGoalWeight - render goal weight on DOM
- * @param: {number} targetWeight
- * @returns {undefined} none
- */
-function renderGoalWeight( targetWeight ){
-      $('.goal-weight-display').html(targetWeight);
-}
- 
-
-
-/***************************************************************************************************
- * editGoalWeight - updates the goal weight and display updated goal weight on DOM
- * @param: none
- * @returns none
- */
-function editGoalWeight(){
-      var newGoalWeight = $('<input>', {
-            type: 'number',
-            class: 'form-control input-goal-weight',
-            name: 'updatedGoalWeight',
-            id: 'updated-goal-weight',
-            placeholder: 'Enter new target',
-            text: $('#updated-goal-weight').val(),
-      });
-
-      var saveBtn = $('<button>', {
-            id: 'saveButton',
-            text: 'Save'
-      });
-
-      $('.goal-weight-edit-btn').addClass('hidden');
-      $('.goal-text').append(newGoalWeight, saveBtn);
-
-      if($('#saveButton').click(function() {
-            var updatedWeight = $('#updated-goal-weight').val(); 
-            renderGoalWeight(updatedWeight);
-            targetWeight = updatedWeight;
-            newGoalWeight.addClass('hidden');
-            saveBtn.addClass('hidden');
-            $('.goal-weight-edit-btn').removeClass('hidden');
-      }));
-
-}
 
 
 

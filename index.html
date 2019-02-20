@@ -82,14 +82,15 @@
     <img class="scaleBig visible-md visible-lg hidden-xs hidden-sm" src="scale.png" title="scale_image">
     <img class="scaleSmall hidden-xs visible-sm hidden-md hidden-lg" src="scale.png" title="scale_image">
 
-    <div class="modal fade" id="goalWeightInputModal" role="dialog">
+    <div class="modal fade" id="goalWeightInputModal" role="dialog" style="margin: 0 auto; padding-top: 13%;">
         <div class="modal-dialog">
             <div class="modal-content">
-                <div class="modal-header" style="padding:5px 10px;">
+                <div class="modal-header" style="padding: 15px 10px;">
                     <button type="button" class="close" data-dismiss="modal">&times;</button>
-                    <h4>Please enter your goal weight.</span></h4>
+                    <h4>Please enter your Target Weight.</span></h4>
                 </div>
-                <div class="modal-body" style="padding:40px 50px; width: 500px;">
+                <div style="text-align: center; font-style: italic; padding: 25px 0 15px 0; color: rgb(53, 59, 65);">* You can always edit your target weight anytime by clicking the weight.</div>
+                <div class="modal-body" style="padding: 10px 60px; width: 400px; margin: auto;">
                     <div class="input-group form-group">
                         <span class="input-group-addon">
                             <span class="glyphicon glyphicon-scale"></span>
@@ -98,10 +99,12 @@
                     </div>
                     <div class="alert alert-danger hidden" id="modal-goal-weight-alert" role="alert" style="padding: 5px 15px">
                         <span class="glyphicon glyphicon-exclamation-sign"></span>
-                        Goal weight cannot be empty???
+                        Please set a goal so you can work towards your target.
                     </div>
                 </div>
-                <button type="button" class="btn btn-success" id="goalWeightEnterButton" onclick="">Enter</button>
+                <div  style="text-align: center; margin-bottom: 2%;">
+                    <button type="button" class="btn btn-success" id="goalWeightEnterButton" onclick="">Enter</button>
+                </div>
             </div>
         </div>
     </div>
@@ -138,7 +141,6 @@
                         </span>
                         <textarea rows="2" type="text" class="form-control" name="newInputNote" id="updatedNote" placeholder="Add a note"></textarea>
                     </div>
-                    <!--  <div class="alert alert-warning hidden" id="edit-name-alert" role="alert" style="padding: 5px 15px">  -->
                     <div class="alert alert-danger hidden" id="modal-note-alert" role="alert" style="padding: 5px 15px">
                             <span class="glyphicon glyphicon-exclamation-sign"></span>
                             Please enter valid note.
@@ -164,7 +166,7 @@
 
 
         <div class="row-no-gutters col-lg12 col-md-12 col-sm-12 col-xs-12">
-            <h4 class="pull-left goal-text">Goal Weight: <span class="goal-weight-display blinking"></span> lbs </h4>            
+            <h4 class="pull-left goal-text">Goal Weight: <span class="goal-weight-display blinking"></span> <span class="lbs-text"> lbs </span></h4>            
         </div>
 
 
