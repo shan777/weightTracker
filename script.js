@@ -258,19 +258,16 @@ function calculateGradeAverage(){
  * @returns {undefined} none
  */
 function renderGoalWeight( targetWeight ){
-      console.log('target weight inside renderGoalWeight is :'+targetWeight);
       $('.goal-Weight-display').html(targetWeight);
 }
  
 
 /***************************************************************************************************
- * editGoalWeight - updates the on-page grade average
- * @param: {number} average    the grade average
- * @returns {undefined} none
+ * editGoalWeight - updates the goal weight and display updated goal weight on DOM
+ * @param: none
+ * @returns none
  */
 function editGoalWeight(){
-      console.log('edit goal weight function called');
-
       var newGoalWeight = $('<input>', {
             type: 'number',
             class: 'form-control input-goal-weight',
@@ -294,7 +291,6 @@ function editGoalWeight(){
             newGoalWeight.addClass('hidden');
             saveBtn.addClass('hidden');
             $('.goal-weight-edit-btn').removeClass('hidden');
-
       }));
 
 }
