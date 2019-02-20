@@ -21,7 +21,7 @@ $(document).ready(initializeApp);
  */
 var arrayOfEntryObjects = [];
 var counter = 0;
-var targetWeight = 125;
+var targetWeight = 125; // for now
 
 /***************************************************************************************************
 * initializeApp 
@@ -39,7 +39,7 @@ function initializeApp(){
 
       console.log('initializedApp');
       document.querySelector("#today").valueAsDate = new Date(); //displays today's date as default
-      // renderGradeAverage( 0 );
+      renderGoalWeight(targetWeight);
       // getDataFromServer();
       addClickHandlersToElements();
       // handleFocusInForForm();
@@ -57,6 +57,8 @@ function addClickHandlersToElements(){
       // $("#newAddButton").click(handleModalAddClicked); //add button from modal
       $("#cancelButton").click(handleCancelClick); //cancel button
       // $(".btn-info").click(getData); //get data from server button
+      $('#goal-weight').click(editGoalWeight);
+      
 }
 
 /***************************************************************************************************
@@ -68,10 +70,11 @@ function handleAddClicked(event){
       var userEntryObj = {};
       userEntryObj.note = $('#note').val();
       userEntryObj.date = $('#today').val();
-      userEntryObj.weight= $('#weight').val();
+      userEntryObj.weight = $('#weight').val(); //weight is a string
 
-      $('#edit-weight-alert').addClass("hidden");
-      $('#edit-note-alert').addClass("hidden");
+      // $('#edit-weight-alert').addClass("hidden");
+      // $('#edit-note-alert').addClass("hidden");
+      // $('#edit-weight-alert').removeClass("hidden");
 
       if (!userEntryObj.note) { //if note is left blank, note value is set to "N/A"
             userEntryObj.note = "N/A";
@@ -82,10 +85,13 @@ function handleAddClicked(event){
             var yr = fullDate.getFullYear();
             var mo = fullDate.getMonth() + 1;
             if(mo<10)
-                  mo = "0"+mo;
+                  mo = "0" + mo;
             var dt = fullDate.getDate();
             userEntryObj.date = (yr+"-"+mo+"-"+dt).toString();
       }
+
+
+
 
       if (!userEntryObj.weight) { //if weight field is empty, display alert message
             $('#edit-weight-alert').removeClass("hidden");
@@ -105,10 +111,39 @@ function handleAddClicked(event){
             addEntry(userEntryObj);
             clearAddEntryInputs();
       }     
-      sendDataToDB(userEntryObj); /** is this needed??????????????????? */
 
-      // $('#edit-weight-alert').addClass("hidden");
-      // $('#edit-note-alert').addClass("hidden");
+
+
+
+      // if (!userEntryObj.weight) { //if weight field is empty, display alert message and get new input
+      //       console.log('empty weight field');
+      //       $('#edit-weight-alert').removeClass("hidden");
+      //       // userEntryObj.weight = $('#weight').val();
+      //       // $('#weight').focus(function(){
+      //       //       $('#edit-weight-alert').addClass("hidden");
+      //       // });
+      // } 
+
+//       if ((userEntryObj.note).length < 2) { //if note field is less than 2 characters long, display alert message
+//             $('#edit-note-alert').removeClass("hidden");
+//       } 
+//       if (isNaN(Number(userEntryObj.weight)) || Number(userEntryObj.weight)<2) { //if input for the weight is not a number or less than 2
+//             $('#edit-weight-alert').removeClass("hidden");
+// // if(userEntryObj.weight)
+//             // $('#newStudentNote').val(userEntryObj.note);
+//             // $('#newCourse').val(userEntryObj.date);
+//             // showModal('error');
+//             // userEntryObj.weight = $('#newStudentWeight').val();
+//             // handleAddClicked(userEntryObj);
+//             clearAddEntryInputs(); 
+//       } else {
+//             addEntry(userEntryObj);
+//             clearAddEntryInputs();
+//       }     
+//       sendDataToDB(userEntryObj); /** is this needed??????????????????? */
+
+      $('#edit-weight-alert').addClass("hidden");
+      $('#edit-note-alert').addClass("hidden");
 
 }
 
@@ -155,29 +190,36 @@ function clearAddEntryInputs(){
 }
 
 /***************************************************************************************************
- * renderStudentOnDom - take in a student object, create html elements from the values and then append the elements
+ * renderEntryOnDom - take in a student object, create html elements from the values and then append the elements
  * into the .student_list tbody
  * @param {object} userEntryObj a single student object with course, name, and weight inside
  */
-function renderStudentOnDom( userEntryObj ){
+function renderEntryOnDom( userEntryObj ){
       console.log('rendering students onto DOM');
       var newTr = $('<tr>');
+      var weightItem = $('<td>', {
+            class: 'weightOutput', //do i need to have this class??????
+            text: userEntryObj.weight + ' lbs'
+      });
+
       $('.student-list tbody').append( newTr );
-      $(newTr).append('<td>' + userEntryObj.date ); 
-      $(newTr).append('<td>' + userEntryObj.weight + ' lbs' ); 
-      $(newTr).append('<td>' + userEntryObj.note );
+      newTr.append('<td>' + userEntryObj.date ); 
+      // $(newTr).append('<td>' + userEntryObj.weight + ' lbs' ); 
+      newTr.append(weightItem);
+      newTr.append('<td>' + userEntryObj.note );
       // $(newTr).append('<td>' + (targetWeight / userEntryObj.weight * 100).toFixed(1) + '%');
-      $(newTr).append('<td>' + (userEntryObj.weight - targetWeight + ' more to go'));
+      var moreToLose = userEntryObj.weight - targetWeight;
+      newTr.append('<td>' + (moreToLose.toFixed(1) + ' more to go'));
 
       var deleteButton = $('<button>').addClass('btn btn-danger').text('Delete');
       var editButton = $('<button>').addClass('btn btn-info').text('Edit');
-      $(newTr).append(deleteButton);
-      $(newTr).append(editButton);
+      newTr.append(deleteButton, editButton);
+
       $(deleteButton).click(function() {
-            removeEntry ( userEntryObj );
+            removeEntry (userEntryObj);
       });
       $(editButton).click(function() {
-            editEntry ( userEntryObj );
+            editEntry (userEntryObj);
       });
  }
 
@@ -185,11 +227,11 @@ function renderStudentOnDom( userEntryObj ){
  * updateEntryList - centralized function to update the average and call student list update
  * @param students {array} the array of student objects
  * @returns {undefined} none
- * @calls renderStudentOnDom, calculateGradeAverage, renderGradeAverage
+ * @calls renderEntryOnDom, calculateGradeAverage, renderGradeAverage
  */
 function updateEntryList( userEntryObj ){
       console.log('updating student lists');
-      renderStudentOnDom( userEntryObj );
+      renderEntryOnDom( userEntryObj );
       // renderGradeAverage(calculateGradeAverage());  
 }
 
@@ -211,15 +253,51 @@ function calculateGradeAverage(){
 } */
 
 /***************************************************************************************************
- * renderGradeAverage - updates the on-page grade average
+ * renderGoalWeight - render goal weight on DOM
+ * @param: {number} targetWeight
+ * @returns {undefined} none
+ */
+function renderGoalWeight( targetWeight ){
+      console.log('target weight inside renderGoalWeight is :'+targetWeight);
+      $('.goal-Weight-display').html(targetWeight);
+}
+ 
+
+/***************************************************************************************************
+ * editGoalWeight - updates the on-page grade average
  * @param: {number} average    the grade average
  * @returns {undefined} none
-
-function renderGradeAverage( average ){
-      // var avg = Math.round(average);
-      $('.avgGrade').html(targetWeight);
-}
  */
+function editGoalWeight(){
+      console.log('edit goal weight function called');
+
+      var newGoalWeight = $('<input>', {
+            type: 'number',
+            class: 'form-control input-goal-weight',
+            name: 'updatedGoalWeight',
+            id: 'updated-goal-weight',
+            placeholder: 'Enter new target',
+            text: $('#updated-goal-weight').val(),
+      });
+
+      var saveBtn = $('<button>', {
+            id: 'saveButton',
+            text: 'Save'
+      });
+
+      $('.goal-weight-edit-btn').addClass('hidden');
+      $('.goal-text').append(newGoalWeight, saveBtn);
+
+      if($('#saveButton').click(function() {
+            var updatedWeight = $('#updated-goal-weight').val(); 
+            renderGoalWeight(updatedWeight);
+            newGoalWeight.addClass('hidden');
+            saveBtn.addClass('hidden');
+            $('.goal-weight-edit-btn').removeClass('hidden');
+
+      }));
+
+}
 
 
 function removeEntry ( userEntryObj ) {
