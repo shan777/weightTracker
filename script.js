@@ -38,6 +38,7 @@ function initializeApp(){
       }
 
       console.log('initializedApp');
+      showModal('goalWeightInput');
       document.querySelector("#today").valueAsDate = new Date(); //displays today's date as default
       renderGoalWeight(targetWeight);
       // getDataFromServer();
@@ -46,20 +47,35 @@ function initializeApp(){
 }
 
 /***************************************************************************************************
-* addClickHandlersToElements
+* addClickHandlersToElements - adds click handlers to the elements
 * @params {undefined} 
-* @returns  {undefined}
-* adds click handlers to the elements    
+* @returns  {undefined} 
 */
 function addClickHandlersToElements(){
       console.log('click handlers added');
+      $("#goalWeightEnterButton").click(handleGoalWeight);
       $("#addButton").click(handleAddClicked); //add button
       // $("#newAddButton").click(handleModalAddClicked); //add button from modal
       $("#cancelButton").click(handleCancelClick); //cancel button
       // $(".btn-info").click(getData); //get data from server button
-      $('#goal-weight').click(editGoalWeight);
+      $('.goal-weight-display').click(editGoalWeight);
       
 }
+
+
+/***************************************************************************************************
+* handleGoalWeight - once goal weight is entered from modal, display onto DOM
+* @params none 
+* @returns  {undefined}
+*/
+function handleGoalWeight() {
+      var targetWeight = $('#setGoalWeight').val();
+      renderGoalWeight(targetWeight);
+      hideModal('goalWeightInput');
+
+}
+
+
 
 /***************************************************************************************************
  * handleAddClicked - Event Handler when user clicks the add button
@@ -156,6 +172,7 @@ function handleModalAddClicked(entryObj){
       sendDataToDB(entryObj); 
 }
 
+
 /***************************************************************************************************
  * handleCancelClicked - Event Handler when user clicks the cancel button, should clear out student form
  * @param: {undefined} none
@@ -165,6 +182,7 @@ function handleModalAddClicked(entryObj){
 function handleCancelClick(){
       clearAddEntryInputs();
 }
+
 
 /***************************************************************************************************
  * addEntry - creates a student objects based on input fields in the form and adds the object to global student array
@@ -235,6 +253,7 @@ function updateEntryList( userEntryObj ){
       // renderGradeAverage(calculateGradeAverage());  
 }
 
+
 /***************************************************************************************************
  * calculateGradeAverage - loop through the global student array and calculate average grade and return that value
  * @param: {array} students  the array of student objects
@@ -252,15 +271,18 @@ function calculateGradeAverage(){
       return average;
 } */
 
+
+
 /***************************************************************************************************
  * renderGoalWeight - render goal weight on DOM
  * @param: {number} targetWeight
  * @returns {undefined} none
  */
 function renderGoalWeight( targetWeight ){
-      $('.goal-Weight-display').html(targetWeight);
+      $('.goal-weight-display').html(targetWeight);
 }
  
+
 
 /***************************************************************************************************
  * editGoalWeight - updates the goal weight and display updated goal weight on DOM
@@ -288,12 +310,14 @@ function editGoalWeight(){
       if($('#saveButton').click(function() {
             var updatedWeight = $('#updated-goal-weight').val(); 
             renderGoalWeight(updatedWeight);
+            targetWeight = updatedWeight;
             newGoalWeight.addClass('hidden');
             saveBtn.addClass('hidden');
             $('.goal-weight-edit-btn').removeClass('hidden');
       }));
 
 }
+
 
 
 function removeEntry ( userEntryObj ) {
@@ -310,7 +334,6 @@ function editEntry (userEntryObj) {
       var indexNumToDelete = arrayOfEntryObjects.indexOf(userEntryObj);
       showModal ('edit');
 }
-
 
 
 
