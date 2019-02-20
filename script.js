@@ -62,7 +62,6 @@ function addClickHandlersToElements(){
       $("#cancelButton").click(handleCancelClick); //cancel button
       // $(".btn-info").click(getData); //get data from server button
       $('.goal-weight-display').click(editGoalWeight);
-      
 }
 
 
@@ -72,16 +71,17 @@ function addClickHandlersToElements(){
 * @returns none
 */
 function handleGoalWeight() {
-      var targetWeight = $('#setGoalWeight').val();
-      if(!targetWeight) { //if target weight field is empty and the user click 'Enter'
+      var goalWeight = $('#setGoalWeight').val();
+      if(!goalWeight) { //if target weight field is empty and the user click 'Enter'
             showModal('goalWeightInput');
             $('#modal-goal-weight-alert').removeClass('hidden');
             $('#setGoalWeight').focus(function(){
                   $('#modal-goal-weight-alert').addClass('hidden');
             });
       }else {            
-            renderGoalWeight(targetWeight);
+            renderGoalWeight(goalWeight);
             hideModal('goalWeightInput');
+            targetWeight = goalWeight;
       }
 }
 
@@ -272,6 +272,7 @@ function clearAddEntryInputs(){
  * @param {object} userEntryObj a single student object with course, name, and weight inside
  */
 function renderEntryOnDom( userEntryObj ){
+      console.log('target weight is: '+targetWeight);
       console.log('rendering students onto DOM');
       var newTr = $('<tr>');
       var weightItem = $('<td>', {
@@ -281,13 +282,15 @@ function renderEntryOnDom( userEntryObj ){
 
       $('.student-list tbody').append( newTr );
       newTr.append('<td>' + userEntryObj.date ); 
-      // $(newTr).append('<td>' + userEntryObj.weight + ' lbs' ); 
       newTr.append(weightItem);
       newTr.append('<td>' + userEntryObj.note );
       // $(newTr).append('<td>' + (targetWeight / userEntryObj.weight * 100).toFixed(1) + '%');
       var moreToLose = userEntryObj.weight - targetWeight;
-      newTr.append('<td>' + (moreToLose.toFixed(1) + ' more to go'));
-
+      if(moreToLose<=0) {
+            newTr.append('<td>You have reached the goal!');
+      }else {
+            newTr.append('<td>' + (moreToLose.toFixed(1) + ' lbs. more to go'));
+      }
       var deleteButton = $('<button>').addClass('btn btn-danger').text('Delete');
       var editButton = $('<button>').addClass('btn btn-info').text('Edit');
       newTr.append(deleteButton, editButton);
