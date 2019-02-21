@@ -74,11 +74,17 @@ function handleGoalWeight() {
       var goalWeight = $('#setGoalWeight').val();
       if(!goalWeight) { //if target weight field is empty and the user click 'Enter'
             showModal('goalWeightInput');
-            $('#modal-goal-weight-alert').removeClass('hidden');
+            $('#modal-empty-goal-weight-alert').removeClass('hidden');
             $('#setGoalWeight').focus(function(){
-                  $('#modal-goal-weight-alert').addClass('hidden');
+                  $('#modal-empty-goal-weight-alert').addClass('hidden');
             });
-      }else {            
+      }else if(goalWeight < 1){
+            showModal('goalWeightInput');
+            $('#modal-invalid-goal-weight-alert').removeClass('hidden');
+            $('#setGoalWeight').focus(function(){
+                  $('#modal-invalid-goal-weight-alert').addClass('hidden');
+            });
+      }else{            
             renderGoalWeight(goalWeight);
             hideModal('goalWeightInput');
             targetWeight = goalWeight;
