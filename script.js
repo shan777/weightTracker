@@ -21,13 +21,13 @@ $(document).ready(initializeApp);
  */
 var arrayOfEntryObjects = [];
 var counter = 0;
-var targetWeight = 'Not set yet'; 
+var targetWeight = 'N/A'; 
 
 /***************************************************************************************************
-* initializeApp 
-* @params {undefined} none
-* @returns: {undefined} none
-* initializes the application, including adding click handlers and pulling in any data from the server, in later versions
+* initializeApp - initializes the application, including adding click handlers and pulling in any data from the server
+* @params  none
+* @returns  none
+* 
 */
 function initializeApp(){
      
@@ -40,13 +40,15 @@ function initializeApp(){
             uniqueBrowserId = localStorage.setItem('uniqueBrowserId', randomGeneratedId);
       }
 
-      if(targetWeight === 'Not set yet'){
+      //show modal to input goal weight for very first time the user uses this app only
+      if(targetWeight === 'N/A'){
             showModal('goalWeightInput');
             renderGoalWeight(targetWeight);
       }else{
             targetWeight = localStorage.getItem('targetWeight');
             renderGoalWeight(targetWeight);
       }
+      console.log('target weight is: '+targetWeight);
 
       //displays today's date (local time) as default
       var date = new Date();
@@ -61,6 +63,8 @@ function initializeApp(){
       addClickHandlersToElements();
       // handleFocusInForForm();
 }
+
+
 
 /***************************************************************************************************
 * addClickHandlersToElements - adds click handlers to the elements
@@ -78,6 +82,7 @@ function addClickHandlersToElements(){
 }
 
 
+
 /***************************************************************************************************
 * handleGoalWeight - once goal weight is entered from modal, display onto DOM
 * @params none 
@@ -91,7 +96,7 @@ function handleGoalWeight() {
             $('#setGoalWeight').focus(function(){
                   $('#modal-empty-goal-weight-alert').addClass('hidden');
             });
-      }else if(goalWeight < 1){ //if goal is 0 or negative
+      }else if(goalWeight < 2){ //if goal is less than 2 lbs. (including a negative number)
             showModal('goalWeightInput');
             $('#modal-invalid-goal-weight-alert').removeClass('hidden');
             $('#setGoalWeight').focus(function(){
@@ -113,7 +118,7 @@ function handleGoalWeight() {
  * @returns {undefined} none
  */
 function renderGoalWeight( targetWeight ){
-      if(targetWeight == 'Not set yet') {
+      if(targetWeight == 'N/A') {
             $('.goal-weight-display').html(targetWeight);
       }else {
             $('.goal-weight-display').html(targetWeight + ' lbs');
