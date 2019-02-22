@@ -68,8 +68,8 @@ function initializeApp(){
 
 /***************************************************************************************************
 * addClickHandlersToElements - adds click handlers to the elements
-* @params {undefined} 
-* @returns  {undefined} 
+* @params none 
+* @returns none 
 */
 function addClickHandlersToElements(){
       console.log('click handlers added');
@@ -79,6 +79,19 @@ function addClickHandlersToElements(){
       $("#cancelButton").click(handleCancelClick); //cancel button
       // $(".btn-info").click(getData); //get data from server button
       $('.goal-weight-display').click(editGoalWeight);
+}
+
+
+
+/***************************************************************************************************
+* checkEnterKeyPressed - checks if Enter key is pressed in modal for goal weight input, if pressed, call handleGoalWeight function
+* @params event 
+* @returns  none 
+*/
+function checkEnterKeyPressed(e){
+      if(e.which == 13) {
+            handleGoalWeight();
+      }
 }
 
 
