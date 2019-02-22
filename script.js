@@ -68,8 +68,8 @@ function initializeApp(){
 
 /***************************************************************************************************
 * addClickHandlersToElements - adds click handlers to the elements
-* @params {undefined} 
-* @returns  {undefined} 
+* @params none 
+* @returns none 
 */
 function addClickHandlersToElements(){
       console.log('click handlers added');
@@ -79,6 +79,19 @@ function addClickHandlersToElements(){
       $("#cancelButton").click(handleCancelClick); //cancel button
       // $(".btn-info").click(getData); //get data from server button
       $('.goal-weight-display').click(editGoalWeight);
+}
+
+
+
+/***************************************************************************************************
+* checkEnterKeyPressed - checks if Enter key is pressed in modal for goal weight input, if pressed, call handleGoalWeight function
+* @params event 
+* @returns  none 
+*/
+function checkEnterKeyPressed(e){
+      if(e.which == 13) {
+            handleGoalWeight();
+      }
 }
 
 
@@ -320,8 +333,18 @@ function renderEntryOnDom( userEntryObj ){
       }else {
             newTr.append('<td>' + (moreToLose.toFixed(1) + ' lbs. more to go'));
       }
-      var deleteButton = $('<button>').addClass('btn btn-danger').text('Delete');
-      var editButton = $('<button>').addClass('btn btn-info').text('Edit');
+      var deleteButton = $('<button>', {
+            class: 'btn btn-danger',
+            id: 'delete-entry',
+            text: 'Delete'
+      });
+
+      var editButton = $('<button>', {
+            class: 'btn btn-info',
+            id: 'edit-entry',
+            text: 'Edit'
+      });
+
       newTr.append(deleteButton, editButton);
 
       $(deleteButton).click(function() {
@@ -368,11 +391,12 @@ function calculateGradeAverage(){
 
 
 function removeEntry ( userEntryObj ) {
-      var indexNumToDelete = arrayOfEntryObjects.indexOf(userEntryObj);
-      arrayOfEntryObjects.splice(indexNumToDelete, 1); 
-      $(event.currentTarget).parent().remove()
-      // renderGradeAverage(calculateGradeAverage());  
-      deleteDataFromDB ( userEntryObj );
+      showModal ('delete');
+      // var indexNumToDelete = arrayOfEntryObjects.indexOf(userEntryObj);
+      // arrayOfEntryObjects.splice(indexNumToDelete, 1); 
+      // $(event.currentTarget).parent().remove()
+      // // renderGradeAverage(calculateGradeAverage());  
+      // deleteDataFromDB ( userEntryObj );
 }
 
 
