@@ -40,18 +40,23 @@ function initializeApp(){
             uniqueBrowserId = localStorage.setItem('uniqueBrowserId', randomGeneratedId);
       }
 
-      if(targetWeight === 'Not set yet') {
+      if(targetWeight === 'Not set yet'){
             showModal('goalWeightInput');
             renderGoalWeight(targetWeight);
-      } else {
+      }else{
             targetWeight = localStorage.getItem('targetWeight');
             renderGoalWeight(targetWeight);
       }
 
-      console.log('initializedApp');
-    
+      //displays today's date (local time) as default
+      var date = new Date();
+      date.setMinutes(date.getMinutes() - date.getTimezoneOffset());
+      var dateStr = date.toISOString().substring(0, 10);
 
-      document.querySelector("#today").valueAsDate = new Date(); //displays today's date as default
+      var field = document.querySelector('#today');
+      field.value = dateStr;
+
+
       // getDataFromServer();
       addClickHandlersToElements();
       // handleFocusInForForm();
