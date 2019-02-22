@@ -167,19 +167,22 @@ function handleAddClicked(event){
       userEntryObj.date = $('#today').val();
       userEntryObj.weight = $('#weight').val(); //weight is saved as a string
 
-      // $('#edit-weight-alert').addClass("hidden");
-      // $('#edit-note-alert').addClass("hidden");
-      // $('#edit-weight-alert').removeClass("hidden");
 
       if (!userEntryObj.note) { //if note is left blank, note value is set to "N/A"
             userEntryObj.note = "N/A";
       }
 
       if ((userEntryObj.note).length < 2) { //if note field is less than 2 characters long, display alert message
-            $('#edit-note-alert').removeClass("hidden");
+            $('#edit-note-alert-desktop').removeClass("hidden");
             $('#note').focus(function(){
-                  $('#edit-note-alert').addClass('hidden');
+                  $('#edit-note-alert-desktop').addClass('hidden');
             });
+
+            $('#edit-note-alert-mobile').removeClass("hidden");
+            $('#note').focus(function(){
+                  $('#edit-note-alert-mobile').addClass('hidden');
+            });
+
             validInput = false;
       } 
 
@@ -194,13 +197,27 @@ function handleAddClicked(event){
       }
 
       if (!userEntryObj.weight) { //if weight field is empty, display alert message
-            $('#edit-weight-alert').removeClass("hidden");
+            $('#edit-weight-alert-desktop').removeClass("hidden");
+            $('#weight').focus(function(){
+                  $('#edit-weight-alert-desktop').addClass('hidden');
+            });
+
+            $('#edit-weight-alert-mobile').removeClass("hidden");
+            $('#weight').focus(function(){
+                  $('#edit-weight-alert-mobile').addClass('hidden');
+            });
+
             validInput = false;
             // handleAddClicked();
       } else if (isNaN(Number(userEntryObj.weight)) || Number(userEntryObj.weight)<2) { //if input for the weight is not a number ex) 'e' or less than 2
-            $('#edit-weight-alert').removeClass("hidden");
+            $('#edit-weight-alert-desktop').removeClass("hidden");
             $('#weight').focus(function(){
-                  $('#edit-weight-alert').addClass('hidden');
+                  $('#edit-weight-alert-desktop').addClass('hidden');
+            });
+
+            $('#edit-weight-alert-mobile').removeClass("hidden");
+            $('#weight').focus(function(){
+                  $('#edit-weight-alert-mobile').addClass('hidden');
             });
             validInput = false;
 
@@ -210,15 +227,16 @@ function handleAddClicked(event){
       if (validInput) {
             addEntry(userEntryObj);
             clearAddEntryInputs();
-      }else {
-            handleAddClicked(userEntryObj);
-      }     
+      }
+   
 
-//
       sendDataToDB(userEntryObj); /** is this needed??????????????????? */
 
-      $('#edit-weight-alert').addClass("hidden");
-      $('#edit-note-alert').addClass("hidden");
+      $('#edit-weight-alert-desktop').addClass("hidden");
+      $('#edit-note-alert-desktop').addClass("hidden");
+
+      $('#edit-weight-alert-mobile').addClass("hidden");
+      $('#edit-note-alert-mobile').addClass("hidden");
 
 }
 
