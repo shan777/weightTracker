@@ -333,8 +333,18 @@ function renderEntryOnDom( userEntryObj ){
       }else {
             newTr.append('<td>' + (moreToLose.toFixed(1) + ' lbs. more to go'));
       }
-      var deleteButton = $('<button>').addClass('btn btn-danger').text('Delete');
-      var editButton = $('<button>').addClass('btn btn-info').text('Edit');
+      var deleteButton = $('<button>', {
+            class: 'btn btn-danger',
+            id: 'delete-entry',
+            text: 'Delete'
+      });
+
+      var editButton = $('<button>', {
+            class: 'btn btn-info',
+            id: 'edit-entry',
+            text: 'Edit'
+      });
+
       newTr.append(deleteButton, editButton);
 
       $(deleteButton).click(function() {
@@ -381,11 +391,12 @@ function calculateGradeAverage(){
 
 
 function removeEntry ( userEntryObj ) {
-      var indexNumToDelete = arrayOfEntryObjects.indexOf(userEntryObj);
-      arrayOfEntryObjects.splice(indexNumToDelete, 1); 
-      $(event.currentTarget).parent().remove()
-      // renderGradeAverage(calculateGradeAverage());  
-      deleteDataFromDB ( userEntryObj );
+      showModal ('delete');
+      // var indexNumToDelete = arrayOfEntryObjects.indexOf(userEntryObj);
+      // arrayOfEntryObjects.splice(indexNumToDelete, 1); 
+      // $(event.currentTarget).parent().remove()
+      // // renderGradeAverage(calculateGradeAverage());  
+      // deleteDataFromDB ( userEntryObj );
 }
 
 

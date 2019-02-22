@@ -26,6 +26,11 @@
         text-align: center;
         font-size: 26px;
     }
+    .modal-header-delete {
+        background-color: red;
+        text-align: center;
+        font-size: 26px;
+    }
     .modalButton {
         text-align: center;
     }
@@ -113,6 +118,8 @@
         </div>
     </div>
     
+
+    <!-- beginning of edit Modal -->
     <div class="modal fade" id="editModal" role="dialog">
         <div class="modal-dialog">
             <div class="modal-content">
@@ -134,7 +141,7 @@
                         <input type="number" class="form-control" name="newInputWeight" id="updatedWeight" placeholder="Weight">
                             <span class="input-group-addon">lbs</span>
                     </div>
-                    <div class="alert alert-danger hidden" id="modal-weight-alert" role="alert" style="padding: 5px 15px">
+                    <div class="alert alert-danger hidden" id="edit-modal-weight-alert" role="alert" style="padding: 5px 15px">
                         <span class="glyphicon glyphicon-exclamation-sign"></span>
                         Valid Weight is required.
                     </div>
@@ -145,7 +152,7 @@
                         </span>
                         <textarea rows="2" type="text" class="form-control" name="newInputNote" id="updatedNote" placeholder="Add a note"></textarea>
                     </div>
-                    <div class="alert alert-danger hidden" id="modal-note-alert" role="alert" style="padding: 5px 15px">
+                    <div class="alert alert-danger hidden" id="edit-modal-note-alert" role="alert" style="padding: 5px 15px">
                             <span class="glyphicon glyphicon-exclamation-sign"></span>
                             Please enter valid note.
                     </div>
@@ -159,7 +166,27 @@
         </div>        
     </div>        
     <!-- end of edit Modal -->
-    
+        
+    <!-- beginning of delete Modal -->
+    <div class="modal fade" id="deleteModal" role="dialog">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header-delete" style="padding:20px 30px;">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                </div>
+                <div class="modal-body" style="padding:40px 50px;">
+                    <div style="color: red; padding-bottom: 25px; text-align: center; font-weight: bold; font-size: 20px;"><span>Are you sure?<br>Once deleted, it cannot be recovered.</span></div>
+                    <div style="text-align: center;">
+                        <button type="button" class="btn btn-default" id="cancel-delete-button" onclick="">Cancel</button>
+                        <button type="button" class="btn btn-danger" id="delete-entry-button" onclick="">Yes, Delete</button>
+                    </div>
+                </div>
+                </div>
+            </div>
+        </div>        
+    </div>        
+    <!-- end of delete Modal -->
+
 
     <div class="container-fluid">
         <div class="form-group col-lg-12 col-md-12 col-sm-12 col-xs-12 row">
