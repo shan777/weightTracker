@@ -21,15 +21,16 @@ $(document).ready(initializeApp);
  */
 var arrayOfEntryObjects = [];
 var counter = 0;
-var targetWeight = 'Not set yet'; // for now
+var targetWeight = 'N/A'; 
 
 /***************************************************************************************************
-* initializeApp 
-* @params {undefined} none
-* @returns: {undefined} none
-* initializes the application, including adding click handlers and pulling in any data from the server, in later versions
+* initializeApp - initializes the application, including adding click handlers and pulling in any data from the server
+* @params  none
+* @returns  none
+* 
 */
 function initializeApp(){
+     
       $('.lbs-text').addClass('hidden');
 
       //assigns unique user browser id so displays only the user's own data on user's browser
@@ -39,15 +40,31 @@ function initializeApp(){
             uniqueBrowserId = localStorage.setItem('uniqueBrowserId', randomGeneratedId);
       }
 
-      console.log('initializedApp');
-      showModal('goalWeightInput');
-      renderGoalWeight(targetWeight);
+      //show modal to input goal weight for very first time the user uses this app only
+      if(targetWeight === 'N/A'){
+            showModal('goalWeightInput');
+            renderGoalWeight(targetWeight);
+      }else{
+            targetWeight = localStorage.getItem('targetWeight');
+            renderGoalWeight(targetWeight);
+      }
+      console.log('target weight is: '+targetWeight);
 
-      document.querySelector("#today").valueAsDate = new Date(); //displays today's date as default
+      //displays today's date (local time) as default
+      var date = new Date();
+      date.setMinutes(date.getMinutes() - date.getTimezoneOffset());
+      var dateStr = date.toISOString().substring(0, 10);
+
+      var field = document.querySelector('#today');
+      field.value = dateStr;
+
+
       // getDataFromServer();
       addClickHandlersToElements();
       // handleFocusInForForm();
 }
+
+
 
 /***************************************************************************************************
 * addClickHandlersToElements - adds click handlers to the elements
@@ -65,6 +82,7 @@ function addClickHandlersToElements(){
 }
 
 
+
 /***************************************************************************************************
 * handleGoalWeight - once goal weight is entered from modal, display onto DOM
 * @params none 
@@ -74,15 +92,23 @@ function handleGoalWeight() {
       var goalWeight = $('#setGoalWeight').val();
       if(!goalWeight) { //if target weight field is empty and the user click 'Enter'
             showModal('goalWeightInput');
-            $('#modal-goal-weight-alert').removeClass('hidden');
+            $('#modal-empty-goal-weight-alert').removeClass('hidden');
             $('#setGoalWeight').focus(function(){
-                  $('#modal-goal-weight-alert').addClass('hidden');
+                  $('#modal-empty-goal-weight-alert').addClass('hidden');
             });
-      }else {            
+      }else if(goalWeight < 2){ //if goal is less than 2 lbs. (including a negative number)
+            showModal('goalWeightInput');
+            $('#modal-invalid-goal-weight-alert').removeClass('hidden');
+            $('#setGoalWeight').focus(function(){
+                  $('#modal-invalid-goal-weight-alert').addClass('hidden');
+            });
+      }else{            
             renderGoalWeight(goalWeight);
             hideModal('goalWeightInput');
             targetWeight = goalWeight;
+            localStorage.setItem('targetWeight',targetWeight);
       }
+      
 }
 
 
@@ -92,7 +118,7 @@ function handleGoalWeight() {
  * @returns {undefined} none
  */
 function renderGoalWeight( targetWeight ){
-      if(targetWeight == 'Not set yet') {
+      if(targetWeight == 'N/A') {
             $('.goal-weight-display').html(targetWeight);
       }else {
             $('.goal-weight-display').html(targetWeight + ' lbs');
@@ -132,8 +158,11 @@ function editGoalWeight(){
             saveBtn.addClass('hidden');
             $('.goal-weight-edit-btn').removeClass('hidden');
       }));
-
+      
+      //updateEntryList( userEntryObj ); //To Goal messages should be updated based on updated goal weight
 }
+
+
 
 
 /***************************************************************************************************
@@ -142,20 +171,32 @@ function editGoalWeight(){
  * @return: none
  */
 function handleAddClicked(event){
+      var validInput = true;
       var userEntryObj = {};
       userEntryObj.note = $('#note').val();
       userEntryObj.date = $('#today').val();
-      userEntryObj.weight = $('#weight').val(); //weight is a string
+      userEntryObj.weight = $('#weight').val(); //weight is saved as a string
 
-      // $('#edit-weight-alert').addClass("hidden");
-      // $('#edit-note-alert').addClass("hidden");
-      // $('#edit-weight-alert').removeClass("hidden");
 
       if (!userEntryObj.note) { //if note is left blank, note value is set to "N/A"
             userEntryObj.note = "N/A";
       }
 
-      if (!userEntryObj.date) { //if date field is left blank, date value is set to today's date
+      if ((userEntryObj.note).length < 2) { //if note field is less than 2 characters long, display alert message
+            $('#edit-note-alert-desktop').removeClass("hidden");
+            $('#note').focus(function(){
+                  $('#edit-note-alert-desktop').addClass('hidden');
+            });
+
+            $('#edit-note-alert-mobile').removeClass("hidden");
+            $('#note').focus(function(){
+                  $('#edit-note-alert-mobile').addClass('hidden');
+            });
+
+            validInput = false;
+      } 
+
+      if (!userEntryObj.date) { //if date field is left blank, default date value is set to today's date
             var fullDate = new Date();
             var yr = fullDate.getFullYear();
             var mo = fullDate.getMonth() + 1;
@@ -165,60 +206,47 @@ function handleAddClicked(event){
             userEntryObj.date = (yr+"-"+mo+"-"+dt).toString();
       }
 
-
-
-
       if (!userEntryObj.weight) { //if weight field is empty, display alert message
-            $('#edit-weight-alert').removeClass("hidden");
-            handleAddClicked();
-      } else if ((userEntryObj.note).length < 2) { //if note field is less than 2 characters long, display alert message
-            $('#edit-note-alert').removeClass("hidden");
-      } else if (isNaN(Number(userEntryObj.weight)) || Number(userEntryObj.weight)<2) { //if input for the weight is not a number or less than 2
-            $('#edit-weight-alert').removeClass("hidden");
+            $('#edit-weight-alert-desktop').removeClass("hidden");
+            $('#weight').focus(function(){
+                  $('#edit-weight-alert-desktop').addClass('hidden');
+            });
 
-            // $('#newStudentNote').val(userEntryObj.note);
-            // $('#newCourse').val(userEntryObj.date);
-            // showModal('error');
-            // userEntryObj.weight = $('#newStudentWeight').val();
-            handleAddClicked(userEntryObj);
-            clearAddEntryInputs(); 
-      } else {
+            $('#edit-weight-alert-mobile').removeClass("hidden");
+            $('#weight').focus(function(){
+                  $('#edit-weight-alert-mobile').addClass('hidden');
+            });
+
+            validInput = false;
+            // handleAddClicked();
+      } else if (isNaN(Number(userEntryObj.weight)) || Number(userEntryObj.weight)<2) { //if input for the weight is not a number ex) 'e' or less than 2
+            $('#edit-weight-alert-desktop').removeClass("hidden");
+            $('#weight').focus(function(){
+                  $('#edit-weight-alert-desktop').addClass('hidden');
+            });
+
+            $('#edit-weight-alert-mobile').removeClass("hidden");
+            $('#weight').focus(function(){
+                  $('#edit-weight-alert-mobile').addClass('hidden');
+            });
+            validInput = false;
+
+            // handleAddClicked(userEntryObj);
+      } 
+      
+      if (validInput) {
             addEntry(userEntryObj);
             clearAddEntryInputs();
-      }     
+      }
+   
 
+      sendDataToDB(userEntryObj); /** is this needed??????????????????? */
 
+      $('#edit-weight-alert-desktop').addClass("hidden");
+      $('#edit-note-alert-desktop').addClass("hidden");
 
-
-      // if (!userEntryObj.weight) { //if weight field is empty, display alert message and get new input
-      //       console.log('empty weight field');
-      //       $('#edit-weight-alert').removeClass("hidden");
-      //       // userEntryObj.weight = $('#weight').val();
-      //       // $('#weight').focus(function(){
-      //       //       $('#edit-weight-alert').addClass("hidden");
-      //       // });
-      // } 
-
-//       if ((userEntryObj.note).length < 2) { //if note field is less than 2 characters long, display alert message
-//             $('#edit-note-alert').removeClass("hidden");
-//       } 
-//       if (isNaN(Number(userEntryObj.weight)) || Number(userEntryObj.weight)<2) { //if input for the weight is not a number or less than 2
-//             $('#edit-weight-alert').removeClass("hidden");
-// // if(userEntryObj.weight)
-//             // $('#newStudentNote').val(userEntryObj.note);
-//             // $('#newCourse').val(userEntryObj.date);
-//             // showModal('error');
-//             // userEntryObj.weight = $('#newStudentWeight').val();
-//             // handleAddClicked(userEntryObj);
-//             clearAddEntryInputs(); 
-//       } else {
-//             addEntry(userEntryObj);
-//             clearAddEntryInputs();
-//       }     
-//       sendDataToDB(userEntryObj); /** is this needed??????????????????? */
-
-      $('#edit-weight-alert').addClass("hidden");
-      $('#edit-note-alert').addClass("hidden");
+      $('#edit-weight-alert-mobile').addClass("hidden");
+      $('#edit-note-alert-mobile').addClass("hidden");
 
 }
 
@@ -272,7 +300,6 @@ function clearAddEntryInputs(){
  * @param {object} userEntryObj a single student object with course, name, and weight inside
  */
 function renderEntryOnDom( userEntryObj ){
-      console.log('target weight is: '+targetWeight);
       console.log('rendering students onto DOM');
       var newTr = $('<tr>');
       var weightItem = $('<td>', {
@@ -286,8 +313,10 @@ function renderEntryOnDom( userEntryObj ){
       newTr.append('<td>' + userEntryObj.note );
       // $(newTr).append('<td>' + (targetWeight / userEntryObj.weight * 100).toFixed(1) + '%');
       var moreToLose = userEntryObj.weight - targetWeight;
-      if(moreToLose<=0) {
-            newTr.append('<td>You have reached the goal!');
+      if(moreToLose == 0) {
+            newTr.append('<td>Yayyy You have reached the goal!');
+      }else if (moreToLose<0){
+            newTr.append('<td>You might wanna set a new goal.');
       }else {
             newTr.append('<td>' + (moreToLose.toFixed(1) + ' lbs. more to go'));
       }

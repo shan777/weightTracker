@@ -82,14 +82,14 @@
     <img class="scaleBig visible-md visible-lg hidden-xs hidden-sm" src="scale.png" title="scale_image">
     <img class="scaleSmall hidden-xs visible-sm hidden-md hidden-lg" src="scale.png" title="scale_image">
 
-    <div class="modal fade" id="goalWeightInputModal" role="dialog" style="margin: 0 auto; padding-top: 13%;" data-keyboard="false" data-backdrop="static">
+    <div class="modal fade" id="goalWeightInputModal" role="dialog" style="margin: 0 auto; padding-top: 10%;" data-keyboard="false" data-backdrop="static">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header" style="padding: 15px 10px;">
                     <!-- <button type="button" class="close" id="goalWeightCloseBtn" data-dismiss="modal">&times;</button> -->
-                    <h4>Please enter your Target Weight.</span></h4>
+                    <h4>Please enter your Goal Weight.</span></h4>
                 </div>
-                <div style="text-align: center; font-style: italic; padding: 25px 0 5px 0; color: rgb(230, 77, 50);">* You can always edit your target weight anytime by clicking the weight.</div>
+                <div style="text-align: center; font-style: italic; padding: 25px 0 5px 0; color: rgb(230, 77, 50);">* You can always edit your goal weight anytime by clicking the weight.</div>
                 <div class="modal-body" style="padding: 10px 60px; margin: auto;">
                     <div class="input-group form-group" style= "width: 70%; margin: 0 auto; padding: 5px;">
                         <span class="input-group-addon">
@@ -97,9 +97,13 @@
                         </span>
                         <input type="number" class="form-control" name="goalWeightInput" id="setGoalWeight" placeholder="Goal Weight in lbs.">
                     </div>
-                    <div class="alert alert-danger hidden" id="modal-goal-weight-alert" role="alert" style="padding: 5px 10px; width: 80%; margin: 0 auto;">
+                    <div class="alert alert-danger hidden" id="modal-empty-goal-weight-alert" role="alert" style="padding: 5px 10px; width: 80%; margin: 0 auto;">
                         <span class="glyphicon glyphicon-exclamation-sign"></span>
                         Please set a goal so you can work towards your target.
+                    </div>
+                    <div class="alert alert-danger hidden" id="modal-invalid-goal-weight-alert" role="alert" style="padding: 5px 10px; width: 80%; margin: 0 auto;">
+                        <span class="glyphicon glyphicon-exclamation-sign"></span>
+                        You know your goal weight cannot be that! :D
                     </div>
                 </div>
                 <div  style="text-align: center; margin-bottom: 2%;">
@@ -187,7 +191,7 @@
                     <input type="number" class="form-control" name="studentName" id="weight" placeholder="Weight">
                         <span class="input-group-addon">lbs</span>
             </div>
-            <div class="alert alert-danger hidden" id="edit-weight-alert" role="alert" style="padding: 5px 15px">
+            <div class="alert alert-danger hidden" id="edit-weight-alert-desktop" role="alert" style="padding: 5px 15px">
                     <span class="glyphicon glyphicon-exclamation-sign"></span>
                     Valid Weight is required.
             </div>
@@ -199,7 +203,7 @@
                 <textarea rows="2" type="text" class="form-control" name="note" id="note" placeholder="Add a note"></textarea>
             </div>
             <!-- <div class="alert alert-warning hidden" id="edit-name-alert" role="alert" style="padding: 5px 15px"> -->
-            <div class="alert alert-danger hidden" id="edit-note-alert" role="alert" style="padding: 5px 15px">
+            <div class="alert alert-danger hidden" id="edit-note-alert-desktop" role="alert" style="padding: 5px 15px">
                     <span class="glyphicon glyphicon-exclamation-sign"></span>
                     Please enter valid note.
             </div>
@@ -227,7 +231,7 @@
                 <input type="number" class="form-control" name="studentName" id="weight" placeholder="Weight">
                     <span class="input-group-addon">lbs</span>
             </div>
-            <div class="alert alert-danger hidden" id="edit-weight-alert" role="alert" style="padding: 5px 15px">
+            <div class="alert alert-danger hidden" id="edit-weight-alert-mobile" role="alert" style="padding: 5px 15px">
                     <span class="glyphicon glyphicon-exclamation-sign"></span>
                     Valid Weight is required.
             </div>
@@ -239,7 +243,7 @@
                 <input type="text" class="form-control" name="note" id="note" placeholder="Simple Note">
             </div>
             <!-- <div class="alert alert-warning hidden" id="edit-name-alert" role="alert" style="padding: 5px 15px"> -->
-            <div class="alert alert-danger hidden" id="edit-note-alert" role="alert" style="padding: 5px 15px">
+            <div class="alert alert-danger hidden" id="edit-note-alert-mobile" role="alert" style="padding: 5px 15px">
                     <span class="glyphicon glyphicon-exclamation-sign"></span>
                     Please enter valid note.
             </div>
