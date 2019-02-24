@@ -71,12 +71,13 @@
     }
     
     .flashing-message {
-        color: rgb(4, 66, 250);
+        color: white;
         font-family: 'Pacifico', cursive;
         -webkit-animation: neon 1.5s ease-in-out infinite alternate;
         -moz-animation: neon 1.5s ease-in-out infinite alternate;
         animation: neon 1.5s ease-in-out infinite alternate;
         font-size: 2.5rem;
+        text-shadow: 1px 1px 2px black, 0 0 1em blue, 0 0 0.2em blue;
     }
     .flashing-message:hover {
         color: orangered;
@@ -84,36 +85,12 @@
         -moz-animation: none;
         animation: none;
     }
-
-    /* glow message for webkit*/
-    @-webkit-keyframes neon {
-        from {
-            text-shadow: 0 0 10px #fff, 0 0 20px #fff, 0 0 30px #fff, 0 0 40px #228DFF, 0 0 70px #228DFF, 0 0 80px #228DFF;
-        }
-        to {
-            text-shadow: 0 0 5px #fff, 0 0 10px #fff, 0 0 15px #fff, 0 0 20px #228DFF, 0 0 35px #228DFF, 0 0 40px #228DFF;
-        }
+    .msg-container {
+        /* margin: auto 0; */
+        padding: 15px;
+        text-align: center;
     }
-
-    /* glow message for mozilla*/
-    @-moz-keyframes neon {
-        from {
-            text-shadow: 0 0 10px #fff, 0 0 20px #fff, 0 0 30px #fff, 0 0 40px #228DFF, 0 0 70px #228DFF, 0 0 80px #228DFF;
-        }
-        to {
-            text-shadow: 0 0 5px #fff, 0 0 10px #fff, 0 0 15px #fff, 0 0 20px #228DFF, 0 0 35px #228DFF, 0 0 40px #228DFF;
-        }
-    }
-
-    /* glow */
-    @keyframes neon6 {
-        from {
-            text-shadow: 0 0 10px #fff, 0 0 20px #fff, 0 0 30px #fff, 0 0 40px #228DFF, 0 0 70px #228DFF, 0 0 80px #228DFF;
-        }
-        to {
-            text-shadow: 0 0 5px #fff, 0 0 10px #fff, 0 0 15px #fff, 0 0 20px #228DFF, 0 0 35px #228DFF, 0 0 40px #228DFF;
-        }
-    }
+   
 
     .scaleBig {
         position: absolute;
