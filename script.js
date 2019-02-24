@@ -366,13 +366,13 @@ function renderEntryOnDom( userEntryObj ){
       var deleteButton = $('<button>', {
             class: 'btn btn-danger',
             id: 'delete-entry',
-            // text: 'Delete'
-      }, '<i class="fa fa-delete" >');
+            html: '<i class="fa fa-trash">'
+      }, );
 
       var editButton = $('<button>', {
             class: 'btn btn-info',
             id: 'edit-entry',
-            text: 'Edit'
+            html: '<i class="fa fa-edit">'
       });
 
       newTr.append(deleteButton, editButton);
