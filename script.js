@@ -316,14 +316,22 @@ function renderEntryOnDom( userEntryObj ){
       console.log('rendering students onto DOM');
       var newTr = $('<tr>');
       var weightItem = $('<td>', {
-            class: 'weightOutput', //do i need to have this class??????
+            class: 'col-lg-1 col-md-1 col-sm-1 col-xs-1', 
             text: userEntryObj.weight + ' lbs'
       });
-
+      var dateItem = $('<td>', {
+            class: 'col-lg-2 col-md-2 col-sm-2 col-xs-2', 
+            text: userEntryObj.date
+      });
+      var noteItem = $('<td>', {
+            class: 'col-lg-4 col-md-4 col-sm-4 col-xs-4', 
+            text: userEntryObj.note
+      });
       $('.student-list tbody').append( newTr );
-      newTr.append('<td>' + userEntryObj.date ); 
+      newTr.append(dateItem); 
       newTr.append(weightItem);
-      newTr.append('<td>' + userEntryObj.note );
+      newTr.append(noteItem);
+
       // $(newTr).append('<td>' + (targetWeight / userEntryObj.weight * 100).toFixed(1) + '%');
 
       var moreToLose = userEntryObj.weight - targetWeight;
