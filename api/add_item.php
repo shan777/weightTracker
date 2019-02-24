@@ -31,7 +31,7 @@ if(mysqli_num_rows($result) > 0){
     while($row = mysqli_fetch_assoc($result)){
         $output['data'][] = $row;
     }
-} else {
+}else{
     $output['success'] = false;
     $output['message'] = 'There was an error trying to add the data. Please try again';
 }

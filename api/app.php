@@ -4,6 +4,7 @@ header('Access-Control-Allow-Methods: GET, POST');
 header('Content-type: application/json');
 require_once('../config/mysql_connect.php');
 $request = $_GET['request'];
+
 switch($request){
     case 'add_item':
         require_once('add_item.php');
@@ -20,6 +21,7 @@ switch($request){
     default:
         $output['Errors'] = 'Request URL failed';
 }
+
 $output = json_encode($output);
 echo $output;
 ?>
