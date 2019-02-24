@@ -326,27 +326,38 @@ function renderEntryOnDom( userEntryObj ){
       newTr.append('<td>' + userEntryObj.note );
       // $(newTr).append('<td>' + (targetWeight / userEntryObj.weight * 100).toFixed(1) + '%');
 
-      //display inspirational message to lose weight
       var moreToLose = userEntryObj.weight - targetWeight;
-      var equal = ['Yayy You have reached the goal', 'You did it!!!!', 'You rock!', 'You made it! So proud of you. :D', 'You made it happen! Keep it up!'];
-      var less = ['Wanna set a new goal? :)', 'Keep it up!', 'You are doing great', 'You are strong.', 'Let&#39;s get fit!'];
-      var more = ['You are not going to get the butt you want by sitting on it.!', 'Look in the mirror!', 'Nothing tastes as good as being thin feels.', 'Only you can change my life. No one can do it for me.', 'Don&#39;t give up!'];
+
+      //display inspirational message to lose weight
+      var equal = ['Yayy &#127930; &#127930; &#127930; You have reached the goal!', '&#127881; You did it!!!!', 'You rock!', '&#127942; You made it! So proud of you. &#128079;', 'You made it happen &#128077; Keep it up!'];
+      var less = ['Wanna set a new goal? &#128513;', 'Keep it up!', 'You are doing great &#128077;', '&#128170; You are strong.', '&#127939; Let&#39;s get fit!'];
+      var more = ['You are not going to get the butt you want by sitting on it!', 'Look in the mirror! &#128521;', 'Nothing tastes as good as being thin feels! &#128089;', 'Only you can change your life. No one can do it for you.', 'Don&#39;t give up!'];
 
       var randomNum = Math.floor(Math.random() *5);
 
-      if(moreToLose == 0) {
-            newTr.append('<td>' + equal[randomNum]);
-      }else if (moreToLose<0){
-            newTr.append('<td>' + less[randomNum]);
-      }else {
-            newTr.append('<td>' + more[randomNum]);
+      if(moreToLose == 0) { //goal achieved
+            $('#motiv-msg').html(equal[randomNum]);
+      }else if (moreToLose<0){ //lost more than the set goal
+            $('#motiv-msg').html(less[randomNum]);
+      }else { //still needs to work towards the goal
+            $('#motiv-msg').html(more[randomNum] + ' <br>Only ' +  (moreToLose.toFixed(1) + ' lbs more to go'));
       }
-      // newTr.append('<td>' + (moreToLose.toFixed(1) + ' lbs. more to go'
+
+      // if(prev === curr) { if weight did not change
+      //       newTr.append('<td><span style='font-size:24px; color: red;'>&#9660;</span>');
+      // }else if (prev > curr) //if lost weight
+      //       newTr.append('<td><span style='font-size:24px; color: green;'>&#9660;</span>');
+      // }else { //if gained weight
+      //       newTr.append('<td><span style='font-size:24px; color: red;'>&#9650;</span>');
+      // }
+
+     
+      
       var deleteButton = $('<button>', {
             class: 'btn btn-danger',
             id: 'delete-entry',
-            text: 'Delete'
-      });
+            // text: 'Delete'
+      }, '<i class="fa fa-delete" >');
 
       var editButton = $('<button>', {
             class: 'btn btn-info',
