@@ -372,7 +372,7 @@ function renderEntryOnDom( userEntryObj ){
       var editButton = $('<button>', {
             class: 'btn btn-info',
             id: 'edit-entry',
-            html: '<i class="fa fa-edit">'
+            html: '<i class="fa fa-pencil-square-o">'
       });
 
       newTr.append(deleteButton, editButton);
