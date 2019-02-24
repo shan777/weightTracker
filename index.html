@@ -9,6 +9,10 @@
     <script src="script.js"></script>
     <meta name="viewport" content="initial-scale=1, user-scalable=no">
     <link rel="shortcut icon" type="image/png" href="favicon.png"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link href="http://maxcdn.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Pacifico" rel="stylesheet">
+
     <style>
     body {
         font-family: Arial, Helvetica, sans-serif;
@@ -66,6 +70,29 @@
         75% { color:  rgb(171, 15, 255);}
         100% { color: rgb(23, 15, 255);}
     }
+    
+    .flashing-message {
+        color: white;
+        font-family: 'Pacifico', cursive;
+        -webkit-animation: neon 1.5s ease-in-out infinite alternate;
+        -moz-animation: neon 1.5s ease-in-out infinite alternate;
+        animation: neon 1.5s ease-in-out infinite alternate;
+        font-size: 2.5rem;
+        text-shadow: 1px 1px 2px black, 0 0 1em blue, 0 0 0.2em blue;
+    }
+    .flashing-message:hover {
+        color: orangered;
+        -webkit-animation: none;
+        -moz-animation: none;
+        animation: none;
+    }
+    .msg-container {
+        /* margin: auto 0; */
+        padding: 15px;
+        text-align: center;
+    }
+   
+
     .scaleBig {
         position: absolute;
         bottom: 0;
@@ -84,6 +111,9 @@
 
 </head>
 <body>
+
+<div>       <i class="fa fa-edit" ></i></div> 
+
     <img class="scaleBig visible-md visible-lg hidden-xs hidden-sm" src="scale.png" title="scale_image">
     <img class="scaleSmall hidden-xs visible-sm hidden-md hidden-lg" src="scale.png" title="scale_image">
 
@@ -281,22 +311,24 @@
             <!-- <button type="button" class="btn-info">Get data From Server</button> -->
         </div>
 
-
         <!-- filtering with input -->
         <!-- <div class="input-group form-group">
             <input class=" form-control col-xs-12 col-sm-12 col-md-8 col-lg-8 pull-left" id="myInput" type="text" placeholder="Type something here to search the table"><br>
         </div> -->
 
+        <div class="msg-container col-xs-12 col-sm-12 col-md-8 col-lg-9">
+            <span id="motiv-msg" class="flashing-message"></span>
+        </div>
 
         <div class="student-list-container col-xs-12 col-sm-12 col-md-8 col-lg-9">
             <table class="student-list table table-striped table-hover">
                 <thead>
                 <tr style="background-color:rgb(15, 93, 248); color: white;">
-                    <th>Date</th>
-                    <th>Weight</th>
-                    <th>Note</th>
-                    <th>To Goal</th>
-                    <th>Action</th>
+                    <th class="col-lg-2 col-md-2 col-sm-2 col-xs-2">Date</th>
+                    <th class="col-lg-1 col-md-1 col-sm-1 col-xs-1">Weight</th>
+                    <th class="col-lg-4 col-md-4 col-sm-4 col-xs-4">Note</th>
+                    <th class="col-lg-4 col-md-4 col-sm-4 col-xs-4">Progress</th>
+                    <th class="col-lg-1 col-md-1 col-sm-1 col-xs-1">Action</th>
                 </tr>
                 </thead>
                 <tbody id="weightTable">
