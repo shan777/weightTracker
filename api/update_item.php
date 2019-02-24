@@ -7,19 +7,19 @@ $entry_note = $_POST['entryNote'];
 $to_goal = $_POST['toGoal'];
 $browser_id = $_POST['browserId'];
 $updateEntryQuery = "UPDATE `entries` 
-SET `entry_date` = '{$entry_date}', 
-`entry_weight` = '{$entry_weight}', 
-`entry_note` = '{$entry_note}', 
-`to_goal` = '{$to_goal}' 
-WHERE `entriess`.`id` = '{$entry_id}' 
-AND browser_id = '{$browser_id}' 
-";
+    SET `entry_date` = '{$entry_date}', 
+    `entry_weight` = '{$entry_weight}', 
+    `entry_note` = '{$entry_note}', 
+    `to_goal` = '{$to_goal}' 
+    WHERE `entries`.`id` = '{$entry_id}' 
+    AND browser_id = '{$browser_id}' 
+    ";
 // print($updateItemQuery);
 // exit();
 mysqli_query($conn, $updateEntryQuery);
 $query = "SELECT DISTINCT * 
           FROM entries 
-          WHERE id = '$item_id'
+          WHERE id = '$entry_id'
           AND entry_date = '$entry_date'
           AND entry_weight = '$entry_weight'
           AND entry_note = '$entry_note'
