@@ -35,12 +35,13 @@ function initializeApp(){
 
       //assigns unique user browser id so displays only the user's own data on user's browser
       var uniqueBrowserId = localStorage.getItem('uniqueBrowserId');
-      if (!uniqueBrowserId) { //if it doesn't already, assign a new id
+      if (!uniqueBrowserId) { //if it doesn't have one existed already, assign a new id
             var randomGeneratedId = Math.floor(Math.random() * new Date());
             uniqueBrowserId = localStorage.setItem('uniqueBrowserId', randomGeneratedId);
       }
 
-      //show modal to input goal weight for very first time the user uses this app only
+      //show modal to ask for goal weight for very first time the user uses this app only
+      //not working thoooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo
       if(targetWeight === 'N/A'){
             showModal('goalWeightInput');
             renderGoalWeight(targetWeight);
@@ -50,7 +51,7 @@ function initializeApp(){
       }
       console.log('target weight is: '+targetWeight);
 
-      //displays today's date (local time) as default
+      //displays today's date (in local time) as default
       var date = new Date();
       date.setMinutes(date.getMinutes() - date.getTimezoneOffset());
       var dateStr = date.toISOString().substring(0, 10);
@@ -157,6 +158,7 @@ function editGoalWeight(){
 
       var saveBtn = $('<button>', {
             id: 'saveButton',
+            class: 'save-btn',
             text: 'Save'
       });
 
@@ -327,6 +329,11 @@ function renderEntryOnDom( userEntryObj ){
             class: 'col-lg-4 col-md-4 col-sm-4 col-xs-4', 
             text: userEntryObj.note
       });
+      // var percentageToGoal = 
+      // var progressItem = $('<td>', {
+      //       class: 'col-lg-3 col-md-3 col-sm-3 col-xs-3'
+      //       text:  NO NON NONONOONONONONONONONONONONONONONONONONONONONONONONOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO
+      // });
       $('.student-list tbody').append( newTr );
       newTr.append(dateItem); 
       newTr.append(weightItem);
@@ -337,9 +344,9 @@ function renderEntryOnDom( userEntryObj ){
       var moreToLose = userEntryObj.weight - targetWeight;
 
       //display inspirational message to lose weight
-      var equal = ['Yayy &#127930; &#127930; &#127930; You have reached the goal!', '&#127881; You did it!!!!', 'You rock!', '&#127942; You made it! So proud of you. &#128079;', 'You made it happen &#128077; Keep it up!'];
-      var less = ['You can set a new goal if you want &#128513;', '&#128077; Keep it up!', 'You are doing great &#128077;', '&#128170; You are strong', '&#127939; &#127939; &#127939; Let&#39;s get fit!'];
-      var more = ['You are not going to get the butt you want by sitting on it!', 'Look in the mirror! &#128521;', 'Nothing tastes as good as being thin feels! &#128089;', 'Only you can change your life. No one can do it for you.', 'Don&#39;t give up!'];
+      var equal = ['Yayy &#127930; &#127930; &#127930; You have reached the goal!', '&#127881; &#127881; &#127881; You did it!!!', '&#128077; You rock! &#10071;', '&#127942; You made it! So proud of you. &#128079;', 'You made it happen &#128077; Keep it up!'];
+      var less = ['You can set a new goal if you want &#128513;', '&#128175; Keep it up!', 'You are doing great &#128077;', '&#128170; You are strong &#10071;', '&#127939; &#127939; &#127939; Let&#39;s get fit!'];
+      var more = ['Excuses don’t burn calories &#128581;', 'Don’t stop until you’re proud &#128521;', 'Nothing tastes as good as being thin feels! &#128089;', 'Only you can change your life. No one can do it for you&#10071;', 'Don&#39;t reward yourself with food. You are not a dog &#128545;'];
 
       var randomNum = Math.floor(Math.random() *5);
 
@@ -348,7 +355,7 @@ function renderEntryOnDom( userEntryObj ){
       }else if (moreToLose<0){ //lost more than the set goal
             $('#motiv-msg').html(less[randomNum]);
       }else { //still needs to work towards the goal
-            $('#motiv-msg').html(more[randomNum] + ' Only ' +  (moreToLose.toFixed(1) + ' lbs more to go!'));
+            $('#motiv-msg').html(more[randomNum] + ' Only <span style="color: orangered">' +  (moreToLose.toFixed(1) + '</span> lbs left!'));
       }
 
       //just a placeholder
