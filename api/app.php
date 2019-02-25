@@ -6,17 +6,17 @@ require_once('../config/mysql_connect.php');
 $request = $_GET['request'];
 
 switch($request){
-    case 'add_item':
-        require_once('add_item.php');
+    case 'add_entry':
+        require_once('add_entry.php');
         break;
-    case 'get_items':
-        require_once('get_items.php');
+    case 'get_entries':
+        require_once('get_entries.php');
         break;
-    case 'update_item':
-        require_once('update_item.php');
+    case 'update_entry':
+        require_once('update_entry.php');
         break;
-    case 'delete_item':
-        require_once('delete_item.php');
+    case 'delete_entry':
+        require_once('delete_entry.php');
         break;
     default:
         $output['Errors'] = 'Request URL failed';

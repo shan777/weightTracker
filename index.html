@@ -89,7 +89,7 @@
     }
     .msg-container {
         /* margin: auto 0; */
-        padding: 10px 5px;
+        padding: 20px 5px;
         text-align: center;
     }
     .save-btn {
@@ -166,7 +166,7 @@
                         <span class="input-group-addon">
                             <span class="glyphicon glyphicon-calendar"></span>
                         </span>
-                        <input type="date" class="form-control" name="newInputDate" id="updatedDate">
+                        <input type="date" class="form-control" name="newInputDate" id="updatedDate" placeholder="">
                     </div>
                     <div class="input-group form-group">
                         <span class="input-group-addon">
@@ -184,7 +184,7 @@
                         <span class="input-group-addon">
                             <span class="glyphicon glyphicon-comment"></span>
                         </span>
-                        <textarea rows="2" type="text" class="form-control" name="newInputNote" id="updatedNote" placeholder="Add a note"></textarea>
+                        <textarea rows="2" type="text" class="form-control" name="newInputNote" id="updatedNote" placeholder="Update the note"></textarea>
                     </div>
                     <div class="alert alert-danger hidden" id="edit-modal-note-alert" role="alert" style="padding: 5px 15px">
                             <span class="glyphicon glyphicon-exclamation-sign"></span>
@@ -211,8 +211,8 @@
                 <div class="modal-body" style="padding:40px 50px;">
                     <div style="color: red; padding-bottom: 25px; text-align: center; font-weight: bold; font-size: 20px;"><span>Are you sure?<br>Once deleted, it cannot be recovered.</span></div>
                     <div style="text-align: center;">
-                        <button type="button" class="btn btn-default" id="cancel-delete-button" onclick="">Cancel</button>
-                        <button type="button" class="btn btn-danger" id="delete-entry-button" onclick="">Yes, Delete</button>
+                        <button type="button" class="btn btn-default" id="cancel-delete-button">Cancel</button>
+                        <button type="button" class="btn btn-danger" id="delete-entry-button">Yes, Delete</button>
                     </div>
                 </div>
                 </div>

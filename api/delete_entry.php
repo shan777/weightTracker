@@ -3,8 +3,8 @@ require_once('../config/mysql_connect.php');
 $entry_id = $_POST['entryID'];
 $browser_id = $_POST['browserId'];
 $deleteEntryQuery = "DELETE FROM `entries` 
-WHERE `entries`.`id` = '{$entry_id}'
-AND browser_id = '{$browser_id}' 
+                    WHERE `entries`.`id` = '{$entry_id}'
+                    AND browser_id = '{$browser_id}' 
 ";
 // exit();
 mysqli_query($conn, $deleteEntryQuery);
