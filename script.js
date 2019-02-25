@@ -386,8 +386,8 @@ function renderEntryOnDom( userEntryObj ){
       });
  }
 
-/***************************************************************************************************
- * updateEntryList - updates the entry list
+/*************************************************************************************************** 
+ * updateEntryList - updates the entry list ORRRRRRRRRRRR should i call it renderUpdatedListOnDom ???????? ?????? ????? ??????????? ??????? ??????? ???????? ?????????
  * @param students {array} the array of entry objects???????????????? needs to work on this!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
  * @returns {undefined} none
  * @calls renderEntryOnDom
@@ -396,7 +396,6 @@ function updateEntryList( arrayOfEntryObjects ){
       console.log('updating student lists');
       //get data from server and render? or use the global arrayofentryobjects??
       // renderEntryOnDom( userEntryObj );
-      // renderGradeAverage(calculateGradeAverage());  
 }
 
 
@@ -453,18 +452,19 @@ function handleEditEntry (userEntryObj) {
       // document.getElementsByName('newInputNote')[0].placeholder = userEntryObj.note;
 
       if($('#updateButton').click(function() {
+            console.log('updatebutton clicked');
             var indexNumToUpdate = arrayOfEntryObjects.indexOf(userEntryObj);
 
             var newUserEntryObj = {};
             newUserEntryObj.date = $('#updatedDate').val();
-            newUserEntryObj.weight = $('#updatedWeight').val(); //weight is saved as a string
+            newUserEntryObj.weight = $('#updatedWeight').val();
             newUserEntryObj.note = $('#updatedNote').val();
             arrayOfEntryObjects[indexNumToUpdate] = newUserEntryObj;
 
-            console.log(arrayOfEntryObjects[indexNumToUpdate]);
+            hideModal ('edit');
 
-            updateDataFromServer ( userEntryObj ); //gotta create this function
-
+            var entryIDToUpdate = arrayOfEntryObjects[indexNumToUpdate].entryID;
+            updateDataInServer ( newUserEntryObj, entryIDToUpdate ); 
       }));
 }
 
@@ -485,8 +485,8 @@ function getDataFromServer() {
                   result = serverResponse;
                   if (result.success) {
                         for (var i = 0; i < result.data.length; i++) {
-                              itemArray.push(result.data[i]);
-                              updateItemList();
+                              arrayOfEntryObjects.push(result.data[i]);
+                              updateEntryList();
                         };
                   };
             },
@@ -494,6 +494,39 @@ function getDataFromServer() {
       }
       $.ajax(ajaxConfig);
 }
+
+
+
+function updateDataInServer (newEntryObj, entryIDToUpdate) {
+      var ajaxConfig = {
+            dataType: 'json',
+            method: 'post',
+            url: api_url.update_entry_url,
+            data: {
+                  browserID: localStorage.getItem('uniqueBrowserID'),
+                  entry_id: entryIDToUpdate,
+                  entry_date: newEntryObj.date,
+                  entry_weight: newEntryObj.weight,
+                  entry_note: newEntryObj.note
+            },
+            success: function (serverResponse) {
+                  var result = {};
+                  result = serverResponse;
+                  if (result.success) {
+                        for (var i = 0; i < result.data.length; i++) {
+                              arrayOfEntryObjects.push(result.data[i]);
+                              updateEntryList();
+                        };
+                  };
+            },
+            error: displayError,
+      }
+      $.ajax(ajaxConfig);
+}
+
+
+
+
 
 
 
@@ -516,9 +549,9 @@ function sendDataToServer ( userEntryObj ) {
             url: api_url.add_entry_url,
             data: {
                   // api_key: 'wjaABAN7N4',
-                  note: userEntryObj.note,
-                  date: userEntryObj.date,  
-                  weight: userEntryObj.weight,
+                  entry_note: userEntryObj.note,
+                  entry_date: userEntryObj.date,  
+                  entry_weight: userEntryObj.weight,
                   // course_name: "Hllooooooooooooooooooo",
                   action: 'insert'
             },
