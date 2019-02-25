@@ -34,13 +34,14 @@ function initializeApp(){
       $('.lbs-text').addClass('hidden');
 
       //assigns unique user browser id so displays only the user's own data on user's browser
-      var uniqueBrowserId = localStorage.getItem('uniqueBrowserId');
-      if (!uniqueBrowserId) { //if it doesn't already, assign a new id
-            var randomGeneratedId = Math.floor(Math.random() * new Date());
-            uniqueBrowserId = localStorage.setItem('uniqueBrowserId', randomGeneratedId);
+      var uniqueBrowserID = localStorage.getItem('uniqueBrowserID');
+      if (!uniqueBrowserID) { //if it doesn't have one existed already, assign a new id
+            var randomGeneratedID = Math.floor(Math.random() * new Date());
+            uniqueBrowserID = localStorage.setItem('uniqueBrowserID', randomGeneratedID);
       }
 
-      //show modal to input goal weight for very first time the user uses this app only
+      //show modal to ask for goal weight for very first time the user uses this app only
+      //not working thoooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo
       if(targetWeight === 'N/A'){
             showModal('goalWeightInput');
             renderGoalWeight(targetWeight);
@@ -50,7 +51,7 @@ function initializeApp(){
       }
       console.log('target weight is: '+targetWeight);
 
-      //displays today's date (local time) as default
+      //displays today's date (in local time) as default
       var date = new Date();
       date.setMinutes(date.getMinutes() - date.getTimezoneOffset());
       var dateStr = date.toISOString().substring(0, 10);
@@ -77,8 +78,9 @@ function addClickHandlersToElements(){
       $("#addButton").click(handleAddClicked); //add button
       // $("#newAddButton").click(handleModalAddClicked); //add button from modal
       $("#cancelButton").click(handleCancelClick); //cancel button
-      // $(".btn-info").click(getData); //get data from server button
+      // $(".btn-info").click(getDataFromServer); //get data from server button
       $('.goal-weight-display').click(editGoalWeight);
+      // $("#updateButton").click(handleUpdateClicked); //update button from editing modal
 }
 
 
@@ -157,6 +159,7 @@ function editGoalWeight(){
 
       var saveBtn = $('<button>', {
             id: 'saveButton',
+            class: 'save-btn',
             text: 'Save'
       });
 
@@ -186,9 +189,9 @@ function editGoalWeight(){
 function handleAddClicked(event){
       var validInput = true;
       var userEntryObj = {};
-      userEntryObj.note = $('#note').val();
       userEntryObj.date = $('#today').val();
       userEntryObj.weight = $('#weight').val(); //weight is saved as a string
+      userEntryObj.note = $('#note').val();
 
 
       if (!userEntryObj.note) { //if note is left blank, note value is set to "N/A"
@@ -253,7 +256,7 @@ function handleAddClicked(event){
       }
    
 
-      sendDataToDB(userEntryObj); /** is this needed??????????????????? */
+      sendDataToServer(userEntryObj); 
 
       $('#edit-weight-alert-desktop').addClass("hidden");
       $('#edit-note-alert-desktop').addClass("hidden");
@@ -263,14 +266,6 @@ function handleAddClicked(event){
 
 }
 
-
-
-function handleModalAddClicked(entryObj){
-      console.log(entryObj);
-      addEntry(entryObj);
-      clearAddEntryInputs();
-      sendDataToDB(entryObj); 
-}
 
 
 /***************************************************************************************************
@@ -294,7 +289,8 @@ function addEntry(userEntryObj){
       console.log('addEntry function called');
       arrayOfEntryObjects.push(userEntryObj); 
       counter++;
-      updateEntryList( userEntryObj );
+      renderEntryOnDom(userEntryObj);
+      // updateEntryList( userEntryObj );
       // clearAddEntryInputs();
 }
 
@@ -327,6 +323,11 @@ function renderEntryOnDom( userEntryObj ){
             class: 'col-lg-4 col-md-4 col-sm-4 col-xs-4', 
             text: userEntryObj.note
       });
+      // var percentageToGoal = 
+      // var progressItem = $('<td>', {
+      //       class: 'col-lg-3 col-md-3 col-sm-3 col-xs-3'
+      //       text:  NO NON NONONOONONONONONONONONONONONONONONONONONONONONONONOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO
+      // });
       $('.student-list tbody').append( newTr );
       newTr.append(dateItem); 
       newTr.append(weightItem);
@@ -337,9 +338,9 @@ function renderEntryOnDom( userEntryObj ){
       var moreToLose = userEntryObj.weight - targetWeight;
 
       //display inspirational message to lose weight
-      var equal = ['Yayy &#127930; &#127930; &#127930; You have reached the goal!', '&#127881; You did it!!!!', 'You rock!', '&#127942; You made it! So proud of you. &#128079;', 'You made it happen &#128077; Keep it up!'];
-      var less = ['You can set a new goal if you want &#128513;', '&#128077; Keep it up!', 'You are doing great &#128077;', '&#128170; You are strong', '&#127939; &#127939; &#127939; Let&#39;s get fit!'];
-      var more = ['You are not going to get the butt you want by sitting on it!', 'Look in the mirror! &#128521;', 'Nothing tastes as good as being thin feels! &#128089;', 'Only you can change your life. No one can do it for you.', 'Don&#39;t give up!'];
+      var equal = ['Yayy &#127930; &#127930; &#127930; You have reached the goal!', '&#127881; &#127881; &#127881; You did it!!!', '&#128077; You rock! &#10071;', '&#127942; You made it! So proud of you. &#128079;', 'You made it happen &#128077; Keep it up!'];
+      var less = ['You can set a new goal if you want &#128513;', '&#128175; Keep it up!', 'You are doing great &#128077;', '&#128170; You are strong &#10071;', '&#127939; &#127939; &#127939; Let&#39;s get fit!'];
+      var more = ['Excuses don’t burn calories &#128581;', 'Don’t stop until you’re proud &#128521;', 'Nothing tastes as good as being thin feels! &#128089;', 'Only you can change your life. No one can do it for you&#10071;', 'Don&#39;t reward yourself with food. You are not a dog &#128545;'];
 
       var randomNum = Math.floor(Math.random() *5);
 
@@ -348,11 +349,11 @@ function renderEntryOnDom( userEntryObj ){
       }else if (moreToLose<0){ //lost more than the set goal
             $('#motiv-msg').html(less[randomNum]);
       }else { //still needs to work towards the goal
-            $('#motiv-msg').html(more[randomNum] + ' Only ' +  (moreToLose.toFixed(1) + ' lbs more to go!'));
+            $('#motiv-msg').html(more[randomNum] + ' Only <span style="color: orangered">' +  (moreToLose.toFixed(1) + '</span> lbs left!'));
       }
 
       //just a placeholder
-      newTr.append('<td>progress bar here');
+      newTr.append('<td>change progress here');
       // if(prev === curr) { if weight did not change
       //       newTr.append('<td><span style='font-size:24px; color: red;'>&#9660;</span>');
       // }else if (prev > curr) //if lost weight
@@ -363,38 +364,38 @@ function renderEntryOnDom( userEntryObj ){
 
      
       
+      var editButton = $('<button>', {
+            class: 'btn btn-info',
+            id: 'edit-entry',
+            html: '<i class="fa fa-pencil-square-o">'
+      });
       var deleteButton = $('<button>', {
             class: 'btn btn-danger',
             id: 'delete-entry',
             html: '<i class="fa fa-trash">'
       }, );
 
-      var editButton = $('<button>', {
-            class: 'btn btn-info',
-            id: 'edit-entry',
-            html: '<i class="fa fa-pencil-square-o">'
-      });
+      newTr.append(editButton, deleteButton);
 
-      newTr.append(deleteButton, editButton);
-
-      $(deleteButton).click(function() {
-            removeEntry (userEntryObj);
-      });
+      
       $(editButton).click(function() {
-            editEntry (userEntryObj);
+            handleEditEntry (userEntryObj);
+      });
+      $(deleteButton).click(function() {
+            handleDeleteEntry (userEntryObj);
       });
  }
 
-/***************************************************************************************************
- * updateEntryList - centralized function to update the average and call student list update
- * @param students {array} the array of student objects
+/*************************************************************************************************** 
+ * updateEntryList - updates the entry list ORRRRRRRRRRRR should i call it renderUpdatedListOnDom ???????? ?????? ????? ??????????? ??????? ??????? ???????? ?????????
+ * @param students {array} the array of entry objects???????????????? needs to work on this!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
  * @returns {undefined} none
- * @calls renderEntryOnDom, calculateGradeAverage, renderGradeAverage
+ * @calls renderEntryOnDom
  */
-function updateEntryList( userEntryObj ){
+function updateEntryList( arrayOfEntryObjects ){
       console.log('updating student lists');
-      renderEntryOnDom( userEntryObj );
-      // renderGradeAverage(calculateGradeAverage());  
+      //get data from server and render? or use the global arrayofentryobjects??
+      // renderEntryOnDom( userEntryObj );
 }
 
 
@@ -420,41 +421,72 @@ function calculateGradeAverage(){
 
 
 
-function removeEntry ( userEntryObj ) {
+function handleDeleteEntry (userEntryObj) {
       showModal ('delete');
-      // var indexNumToDelete = arrayOfEntryObjects.indexOf(userEntryObj);
-      // arrayOfEntryObjects.splice(indexNumToDelete, 1); 
-      // $(event.currentTarget).parent().remove()
-      // // renderGradeAverage(calculateGradeAverage());  
-      // deleteDataFromDB ( userEntryObj );
+      
+      if($('#delete-entry-button').click(function() {
+            //gotta call updateEntryList function here to render the updated list on dom 
+            var indexNumToDelete = arrayOfEntryObjects.indexOf(userEntryObj);
+            arrayOfEntryObjects.splice(indexNumToDelete, 1); //???????????????????????????????
+            $(event.currentTarget).parent().remove(); //not sure what this is doing
+
+            deleteDataFromServer ( userEntryObj );
+            hideModal ('delete');
+      }));
+      
 }
 
 
 
-function editEntry (userEntryObj) {
-      var indexNumToDelete = arrayOfEntryObjects.indexOf(userEntryObj);
+function handleEditEntry (userEntryObj) {
       showModal ('edit');
+
+      var dateField = document.querySelector('#updatedDate');
+      dateField.value = userEntryObj.date;
+      var weightField = document.querySelector('#updatedWeight');
+      weightField.value = userEntryObj.weight;
+      var noteField = document.querySelector('#updatedNote');
+      noteField.value = userEntryObj.note;
+
+      // document.getElementsByName('newInputWeight')[0].placeholder = userEntryObj.weight;
+      // document.getElementsByName('newInputNote')[0].placeholder = userEntryObj.note;
+
+      if($('#updateButton').click(function() {
+            console.log('updatebutton clicked');
+            var indexNumToUpdate = arrayOfEntryObjects.indexOf(userEntryObj);
+
+            var newUserEntryObj = {};
+            newUserEntryObj.date = $('#updatedDate').val();
+            newUserEntryObj.weight = $('#updatedWeight').val();
+            newUserEntryObj.note = $('#updatedNote').val();
+            arrayOfEntryObjects[indexNumToUpdate] = newUserEntryObj;
+
+            hideModal ('edit');
+
+            var entryIDToUpdate = arrayOfEntryObjects[indexNumToUpdate].entryID;
+            updateDataInServer ( newUserEntryObj, entryIDToUpdate ); 
+      }));
 }
 
 
 
 
-function getData() {
+function getDataFromServer() {
       var ajaxConfig = {
             dataType: 'json',
             method: 'post',
             // url: 'http://localhost:8888/data.php',
-            url: api_url.get_items_url,
+            url: api_url.get_entries_url,
             data: {
-                  browserId: localStorage.getItem('uniqueBrowserId'),
+                  browserID: localStorage.getItem('uniqueBrowserID'),
             },
             success: function (serverResponse) {
                   var result = {};
                   result = serverResponse;
                   if (result.success) {
                         for (var i = 0; i < result.data.length; i++) {
-                              itemArray.push(result.data[i]);
-                              updateItemList();
+                              arrayOfEntryObjects.push(result.data[i]);
+                              updateEntryList();
                         };
                   };
             },
@@ -462,6 +494,39 @@ function getData() {
       }
       $.ajax(ajaxConfig);
 }
+
+
+
+function updateDataInServer (newEntryObj, entryIDToUpdate) {
+      var ajaxConfig = {
+            dataType: 'json',
+            method: 'post',
+            url: api_url.update_entry_url,
+            data: {
+                  browserID: localStorage.getItem('uniqueBrowserID'),
+                  entry_id: entryIDToUpdate,
+                  entry_date: newEntryObj.date,
+                  entry_weight: newEntryObj.weight,
+                  entry_note: newEntryObj.note
+            },
+            success: function (serverResponse) {
+                  var result = {};
+                  result = serverResponse;
+                  if (result.success) {
+                        for (var i = 0; i < result.data.length; i++) {
+                              arrayOfEntryObjects.push(result.data[i]);
+                              updateEntryList();
+                        };
+                  };
+            },
+            error: displayError,
+      }
+      $.ajax(ajaxConfig);
+}
+
+
+
+
 
 
 
@@ -475,18 +540,18 @@ function displayLFZ( result ) {
 
 
 
-function sendDataToDB ( userEntryObj ) {
-      console.log('sendDataToDB function called');
+function sendDataToServer ( userEntryObj ) {
+      console.log('sendDataToServer function called');
       var ajaxConfg = {
             dataType: 'json',
             method: 'post',
             // url: 'http://localhost:8888/data.php',
-            url: api_url.add_item_url,
+            url: api_url.add_entry_url,
             data: {
                   // api_key: 'wjaABAN7N4',
-                  note: userEntryObj.note,
-                  date: userEntryObj.date,  
-                  weight: userEntryObj.weight,
+                  entry_note: userEntryObj.note,
+                  entry_date: userEntryObj.date,  
+                  entry_weight: userEntryObj.weight,
                   // course_name: "Hllooooooooooooooooooo",
                   action: 'insert'
             },
@@ -523,14 +588,14 @@ function displayError() {
 
 
 
-function deleteDataFromDB ( userEntryObj ) {
+function deleteDataFromServer ( userEntryObj ) {
       var ajaxConfg = {
             dataType: 'json',
             method: 'post',
-            url: 'http://s-apis.learningfuze.com/sgt/delete',
+            url: api_url.delete_entry_url,
             data: {
-                  api_key: 'wjaABAN7N4', 
-                  student_id: userEntryObj.id //tell DB the id you want to delete
+                  browserID: localStorage.getItem('uniqueBrowserID'),
+                  entryID: userEntryObj.entryID //tell DB the id you want to delete
             },
             success: function() {
                   console.log('You have successfully deleted the data');

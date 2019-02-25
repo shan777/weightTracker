@@ -11,7 +11,6 @@
     <link rel="shortcut icon" type="image/png" href="favicon.png"/>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <link href="http://maxcdn.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css?family=Pacifico" rel="stylesheet">
 
     <style>
     body {
@@ -45,17 +44,18 @@
         text-shadow: none;
     }
     .goal-text {
-        margin-top: -2px;
-        font-size: 18px;
+        margin-top: -8px;
+        font-size: 17px;
         background-color: ghostwhite;
         font-weight: bold;
         border-radius: 5px;
         border: 0.5px solid slateblue;
-        padding: 3px;
+        padding: 3px 6px;
     }
     .input-goal-weight {
         width: 155px;
         display: inline;
+        margin: 0 4px;
     }
     
     .blinking {
@@ -73,11 +73,10 @@
     
     .flashing-message {
         color: white;
-        font-family: 'Pacifico', cursive;
         -webkit-animation: neon 1.5s ease-in-out infinite alternate;
         -moz-animation: neon 1.5s ease-in-out infinite alternate;
         animation: neon 1.5s ease-in-out infinite alternate;
-        font-size: 2.5rem;
+        font-size: 1.8rem;
         text-shadow: 1px 1px 2px black, 0 0 1em blue, 0 0 0.2em blue;
     }
     .flashing-message:hover {
@@ -88,10 +87,16 @@
     }
     .msg-container {
         /* margin: auto 0; */
-        padding: 10px;
+        padding: 20px 5px;
         text-align: center;
     }
-   
+    .save-btn {
+        font-size: 14px;
+        padding: 4px;
+        margin: 1px;
+        color: white;
+        background-color: black;
+    }
 
     .scaleBig {
         position: absolute;
@@ -121,7 +126,7 @@
                     <!-- <button type="button" class="close" id="goalWeightCloseBtn" data-dismiss="modal">&times;</button> -->
                     <h4>Please enter your Goal Weight.</span></h4>
                 </div>
-                <div style="text-align: center; font-style: italic; padding: 25px 0 5px 0; color: rgb(230, 77, 50);">* You can always edit your goal weight anytime by clicking the weight.</div>
+                <div style="text-align: center; font-style: italic; padding: 25px 0 5px 0; color: rgb(230, 77, 50);">* You can edit your goal weight anytime by clicking the number.</div>
                 <div class="modal-body" style="padding: 10px 60px; margin: auto;">
                     <div class="input-group form-group" style= "width: 70%; margin: 0 auto; padding: 5px;">
                         <span class="input-group-addon">
@@ -159,7 +164,7 @@
                         <span class="input-group-addon">
                             <span class="glyphicon glyphicon-calendar"></span>
                         </span>
-                        <input type="date" class="form-control" name="newInputDate" id="updatedDate">
+                        <input type="date" class="form-control" name="newInputDate" id="updatedDate" placeholder="">
                     </div>
                     <div class="input-group form-group">
                         <span class="input-group-addon">
@@ -177,7 +182,7 @@
                         <span class="input-group-addon">
                             <span class="glyphicon glyphicon-comment"></span>
                         </span>
-                        <textarea rows="2" type="text" class="form-control" name="newInputNote" id="updatedNote" placeholder="Add a note"></textarea>
+                        <textarea rows="2" type="text" class="form-control" name="newInputNote" id="updatedNote" placeholder="Update the note"></textarea>
                     </div>
                     <div class="alert alert-danger hidden" id="edit-modal-note-alert" role="alert" style="padding: 5px 15px">
                             <span class="glyphicon glyphicon-exclamation-sign"></span>
@@ -204,8 +209,8 @@
                 <div class="modal-body" style="padding:40px 50px;">
                     <div style="color: red; padding-bottom: 25px; text-align: center; font-weight: bold; font-size: 20px;"><span>Are you sure?<br>Once deleted, it cannot be recovered.</span></div>
                     <div style="text-align: center;">
-                        <button type="button" class="btn btn-default" id="cancel-delete-button" onclick="">Cancel</button>
-                        <button type="button" class="btn btn-danger" id="delete-entry-button" onclick="">Yes, Delete</button>
+                        <button type="button" class="btn btn-default" id="cancel-delete-button">Cancel</button>
+                        <button type="button" class="btn btn-danger" id="delete-entry-button">Yes, Delete</button>
                     </div>
                 </div>
                 </div>
@@ -324,8 +329,8 @@
                     <th class="col-lg-2 col-md-2 col-sm-2 col-xs-2">Date</th>
                     <th class="col-lg-1 col-md-1 col-sm-1 col-xs-1">Weight</th>
                     <th class="col-lg-4 col-md-4 col-sm-4 col-xs-4">Note</th>
-                    <th class="col-lg-4 col-md-4 col-sm-4 col-xs-4">Progress</th>
-                    <th class="col-lg-1 col-md-1 col-sm-1 col-xs-1">Action</th>
+                    <th class="col-lg-3 col-md-3 col-sm-3 col-xs-3">Progress</th>
+                    <th class="col-lg-2 col-md-2 col-sm-2 col-xs-2">Action</th>
                 </tr>
                 </thead>
                 <tbody id="weightTable">
