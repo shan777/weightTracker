@@ -154,7 +154,7 @@
                     </div>
                 </div>
                 <div  style="text-align: center; margin-bottom: 2%;">
-                    <button type="button" class="btn btn-success" id="goalWeightEnterButton" onclick="">Enter</button>
+                    <button type="button" class="btn btn-success" id="goalWeightEnterButton" onclick="handleGoalWeight()">Enter</button> <!--add handleGoalWeight function to onclick attribute? -->
                 </div>
             </div>
         </div>
@@ -163,7 +163,7 @@
 
     
 
-    <!-- beginning of edit Modal -->
+    <!-- beginning of edit entry Modal -->
     <div class="modal fade" id="editModal" role="dialog">
         <div class="modal-dialog">
             <div class="modal-content">
@@ -209,9 +209,9 @@
             </div>
         </div>        
     </div>        
-    <!-- end of edit Modal -->
+    <!-- end of edit entry Modal -->
         
-    <!-- beginning of delete Modal -->
+    <!-- beginning of delete entry Modal -->
     <div class="modal fade" id="deleteModal" role="dialog">
         <div class="modal-dialog">
             <div class="modal-content">
@@ -229,7 +229,7 @@
             </div>
         </div>        
     </div>        
-    <!-- end of delete Modal -->
+    <!-- end of delete entry Modal -->
 
 
     <div class="container-fluid">
@@ -237,8 +237,6 @@
             <!-- below is visible on all sizes EXCEPT mobile and tablet sizes -->
             <h3 class="page-header">My Weight Tracker</h3>
         </div>
-        
-
 
         <div class="row-no-gutters col-lg12 col-md-12 col-sm-12 col-xs-12">
             <span class="pull-left goal-text">Goal Weight: <span class="goal-weight-display blinking"></span> <span class="lbs-text"> lbs </span></span>            

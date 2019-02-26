@@ -1,8 +1,8 @@
 <?php
 require_once('../config/mysql_connect.php');
-$browser_id = $_POST['browserId'];
+$browser_id = $_POST['browserID'];
 $output=[];
-$query = "SELECT id, entry_date as entryDate, entry_weight as entryWeight, entry_note as entryNote, change as change FROM entries WHERE browser_id = '$browser_id' ";
+$query = "SELECT entryID, entryDate, entryWeight, entryNote FROM weight_entry WHERE browserID = '$browser_id' ";
 $result = mysqli_query($conn, $query);
 if(mysqli_num_rows($result) > 0){
     $output['success'] = true;

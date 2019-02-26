@@ -1,17 +1,17 @@
 <?php
 require_once('../config/mysql_connect.php');
 $entry_id = $_POST['entryID'];
-$browser_id = $_POST['browserId'];
-$deleteEntryQuery = "DELETE FROM `entries` 
-                    WHERE `entries`.`id` = '{$entry_id}'
-                    AND browser_id = '{$browser_id}' 
+$browser_id = $_POST['browserID'];
+$deleteEntryQuery = "DELETE FROM `weight_entry` 
+                    WHERE entryID = '{$entry_id}'
+                    AND browserID = '{$browser_id}' 
 ";
 // exit();
 mysqli_query($conn, $deleteEntryQuery);
 $query = "SELECT DISTINCT * 
-          FROM entries 
-          WHERE id = '$entry_id'
-          AND browser_id = '$browser_id' 
+          FROM weight_entry 
+          WHERE entryID = '$entry_id'
+          AND browserID = '$browser_id' 
           ";
 $result = mysqli_query($conn, $query);
 $output=[];
