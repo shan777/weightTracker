@@ -36,7 +36,7 @@ function initializeApp(){
       //assigns unique user browser id so displays only the user's own data on user's browser
       var uniqueBrowserID = localStorage.getItem('uniqueBrowserID');
       if (!uniqueBrowserID) { //if it doesn't have one existed already, assign a new id
-            var randomGeneratedID = Math.floor(Math.random() * new Date());
+            var randomGeneratedID = Math.floor(Math.random() * new Date(10000000000)); //random integer (up to 10 digit)
             uniqueBrowserID = localStorage.setItem('uniqueBrowserID', randomGeneratedID);
       }
 
@@ -198,7 +198,7 @@ function handleAddClicked(event){
             userEntryObj.note = "N/A";
       }
 
-      if ((userEntryObj.note).length < 2) { //if note field is less than 2 characters long, display alert message
+      if ((userEntryObj.note).length > 100) { //if note longer than 100 characters long, display error message
             $('#edit-note-alert-desktop').removeClass("hidden");
             $('#note').focus(function(){
                   $('#edit-note-alert-desktop').addClass('hidden');
@@ -338,9 +338,12 @@ function renderEntryOnDom( userEntryObj ){
       var moreToLose = userEntryObj.weight - targetWeight;
 
       //display inspirational message to lose weight
-      var equal = ['Yayy &#127930; &#127930; &#127930; You have reached the goal!', '&#127881; &#127881; &#127881; You did it!!!', '&#128077; You rock! &#10071;', '&#127942; You made it! So proud of you. &#128079;', 'You made it happen &#128077; Keep it up!'];
-      var less = ['You can set a new goal if you want &#128513;', '&#128175; Keep it up!', 'You are doing great &#128077;', '&#128170; You are strong &#10071;', '&#127939; &#127939; &#127939; Let&#39;s get fit!'];
-      var more = ['Excuses don’t burn calories &#128581;', 'Don’t stop until you’re proud &#128521;', 'Nothing tastes as good as being thin feels! &#128089;', 'Only you can change your life. No one can do it for you&#10071;', 'Don&#39;t reward yourself with food. You are not a dog &#128545;'];
+      var equal = ['Yayy &#127930; &#127930; &#127930; You have reached the goal!', '&#127881; &#127881; &#127881; You did it!!!', '&#128077; You rock! &#10071;', 
+            '&#127942; You made it! So proud of you. &#128079;', 'You made it happen &#128077; Keep it up!'];
+      var less = ['You can set a new goal if you want &#128513;', '&#128175; Keep it up!', 'You are doing great &#128077;', '&#128170; You are strong &#10071;', 
+            '&#127939; &#127939; &#127939; Let&#39;s get fit!'];
+      var more = ['Excuses don’t burn calories &#128581;', 'Yesterday you said tomorrow &#129324;&#129324;&#129324;', 'Nothing tastes as good as being thin feels! &#128089;', 
+            'Only you can change your life. No one can do it for you&#10071;', 'Don&#39;t reward yourself with food. You are not a dog &#128544;'];
 
       var randomNum = Math.floor(Math.random() *5);
 
@@ -353,7 +356,7 @@ function renderEntryOnDom( userEntryObj ){
       }
 
       //just a placeholder
-      newTr.append('<td>change progress here');
+      newTr.append('<td>difference here');
       // if(prev === curr) { if weight did not change
       //       newTr.append('<td><span style='font-size:24px; color: red;'>&#9660;</span>');
       // }else if (prev > curr) //if lost weight
@@ -367,12 +370,14 @@ function renderEntryOnDom( userEntryObj ){
       var editButton = $('<button>', {
             class: 'btn btn-info',
             id: 'edit-entry',
-            html: '<i class="fa fa-pencil-square-o">'
+            html: '<i class="fa fa-pencil-square-o">',
+            style: 'margin-right: 5px; padding: 3px 5px; width: 30px;'
       });
       var deleteButton = $('<button>', {
             class: 'btn btn-danger',
             id: 'delete-entry',
-            html: '<i class="fa fa-trash">'
+            html: '<i class="fa fa-trash">',
+            style: 'padding: 3px 5px; width: 30px; vertical-align: middle;'
       }, );
 
       newTr.append(editButton, deleteButton);

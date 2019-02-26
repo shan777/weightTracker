@@ -97,7 +97,16 @@
         color: white;
         background-color: black;
     }
-
+    .goal-weight {
+        width: 50%; 
+        margin: 0 auto; 
+        padding: 5px;
+    }
+    @media only screen and (max-width: 600px) {
+        .goal-weight {
+            width: 70%; 
+        }
+    }
     .scaleBig {
         position: absolute;
         bottom: 0;
@@ -107,10 +116,10 @@
     }
     .scaleSmall {
         position: absolute;
-        top: 150px;
+        top: 135px;
         right: 0;
         padding: 15px 0 5px 25px;
-        width: 35%;
+        width: 32%;
     }
     </style>
 
@@ -119,6 +128,7 @@
     <img class="scaleBig visible-md visible-lg hidden-xs hidden-sm" src="scale.png" title="scale_image">
     <img class="scaleSmall hidden-xs visible-sm hidden-md hidden-lg" src="scale.png" title="scale_image">
 
+    <!-- beginning of goal weight modal -->
     <div class="modal fade" id="goalWeightInputModal" role="dialog" style="margin: 0 auto; padding-top: 10%;" data-keyboard="false" data-backdrop="static">
         <div class="modal-dialog">
             <div class="modal-content">
@@ -127,8 +137,8 @@
                     <h4>Please enter your Goal Weight.</span></h4>
                 </div>
                 <div style="text-align: center; font-style: italic; padding: 25px 0 5px 0; color: rgb(230, 77, 50);">* You can edit your goal weight anytime by clicking the number.</div>
-                <div class="modal-body" style="padding: 10px 60px; margin: auto;">
-                    <div class="input-group form-group" style= "width: 70%; margin: 0 auto; padding: 5px;">
+                <div class="modal-body" style="padding: 10px 20px; margin: auto;">
+                    <div class="input-group form-group goal-weight">
                         <span class="input-group-addon">
                             <span class="glyphicon glyphicon-scale"></span>
                         </span>
@@ -149,6 +159,8 @@
             </div>
         </div>
     </div>
+    <!-- end of goal weight modal -->
+
     
 
     <!-- beginning of edit Modal -->
@@ -259,12 +271,12 @@
                 <span class="input-group-addon">
                     <span class="glyphicon glyphicon-comment"></span>
                 </span>
-                <textarea rows="2" type="text" class="form-control" name="note" id="note" placeholder="Add a note"></textarea>
+                <textarea rows="2" type="text" class="form-control" name="note" id="note" placeholder="Add a note (0 to 100 characters)"></textarea>
             </div>
             <!-- <div class="alert alert-warning hidden" id="edit-name-alert" role="alert" style="padding: 5px 15px"> -->
             <div class="alert alert-danger hidden" id="edit-note-alert-desktop" role="alert" style="padding: 5px 15px">
                     <span class="glyphicon glyphicon-exclamation-sign"></span>
-                    Please enter valid note.
+                    Note must not exceed 100 characters.
             </div>
 
             <button type="button" class="btn btn-success" id="addButton" onclick="">Add</button>
@@ -299,12 +311,12 @@
                 <span class="input-group-addon">
                     <span class="glyphicon glyphicon-comment"></span>
                 </span>
-                <input type="text" class="form-control" name="note" id="note" placeholder="Simple Note">
+                <input type="text" class="form-control" name="note" id="note" placeholder="Add a note (0 to 100 characters)">
             </div>
             <!-- <div class="alert alert-warning hidden" id="edit-name-alert" role="alert" style="padding: 5px 15px"> -->
             <div class="alert alert-danger hidden" id="edit-note-alert-mobile" role="alert" style="padding: 5px 15px">
                     <span class="glyphicon glyphicon-exclamation-sign"></span>
-                    Please enter valid note.
+                    Note must not exceed 100 characters.
             </div>
             <div style="margin-bottom: 20px;">
                 <button type="button" class="btn btn-success" id="addButton" onclick="">Add</button>
