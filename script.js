@@ -36,7 +36,7 @@ function initializeApp(){
       //assigns unique user browser id so displays only the user's own data on user's browser
       var uniqueBrowserID = localStorage.getItem('uniqueBrowserID');
       if (!uniqueBrowserID) { //if it doesn't have one existed already, assign a new id
-            var randomGeneratedID = Math.floor(Math.random() * new Date());
+            var randomGeneratedID = Math.floor(Math.random() * new Date(10000000000)); //random integer (up to 10 digit)
             uniqueBrowserID = localStorage.setItem('uniqueBrowserID', randomGeneratedID);
       }
 
@@ -198,7 +198,7 @@ function handleAddClicked(event){
             userEntryObj.note = "N/A";
       }
 
-      if ((userEntryObj.note).length < 2) { //if note field is less than 2 characters long, display alert message
+      if ((userEntryObj.note).length > 100) { //if note longer than 100 characters long, display error message
             $('#edit-note-alert-desktop').removeClass("hidden");
             $('#note').focus(function(){
                   $('#edit-note-alert-desktop').addClass('hidden');
@@ -353,7 +353,7 @@ function renderEntryOnDom( userEntryObj ){
       }
 
       //just a placeholder
-      newTr.append('<td>change progress here');
+      newTr.append('<td>difference here');
       // if(prev === curr) { if weight did not change
       //       newTr.append('<td><span style='font-size:24px; color: red;'>&#9660;</span>');
       // }else if (prev > curr) //if lost weight

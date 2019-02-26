@@ -7,21 +7,22 @@ $request = $_GET['request'];
 
 switch($request){
     case 'add_entry':
-        require_once('add_entry.php');
+        require_once('dataApi/add_entry.php');
         break;
     case 'get_entries':
-        require_once('get_entries.php');
+        require_once('dataApi/get_entries.php');
         break;
     case 'update_entry':
-        require_once('update_entry.php');
+        require_once('dataApi/update_entry.php');
         break;
     case 'delete_entry':
-        require_once('delete_entry.php');
+        require_once('dataApi/delete_entry.php');
         break;
     default:
         $output['Errors'] = 'Request URL failed';
 }
 
+//convert the $output variable to json, store the result in $outputJSON
 $output = json_encode($output);
 echo $output;
 ?>
