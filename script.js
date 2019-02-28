@@ -55,6 +55,7 @@ function initializeApp(){
       field.value = dateStr;
 
 
+
       // getDataFromServer();
       addClickHandlersToElements();
       // handleFocusInForForm();
@@ -76,12 +77,13 @@ function addClickHandlersToElements(){
       // $(".btn-info").click(getDataFromServer); //get data from server button
       $('.goal-weight-display').click(editGoalWeight);
       // $("#updateButton").click(handleUpdateClicked); //update button from editing modal
+      
 }
 
 
 
 /***************************************************************************************************
-* checkEnterKeyPressed - checks if Enter key is clicked in modal for goal weight input, if clicked, call handleGoalWeight function
+* checkEnterKeyPressed - checks if Enter key is pressed in modal after inputting goal weight and call handleGoalWeight function
 * @params event 
 * @returns  none 
 */
@@ -94,13 +96,28 @@ function checkEnterKeyPressed(e){
 
 
 /***************************************************************************************************
+* checkRemainingChar - checks if Enter key is clicked in modal for goal weight input, if clicked, call handleGoalWeight function
+* @params event 
+* @returns  none 
+*/
+function checkRemainingChar(){
+      console.log('inside checkreminingagag');
+      if(this.value.length > 10){
+            return false;
+      }
+      $("#remainingC").html("Remaining characters : " +(10 - this.value.length));
+}
+
+
+
+/***************************************************************************************************
 * handleGoalWeight - once goal weight is entered from modal, display onto DOM
 * @params none 
 * @returns none
 */
 function handleGoalWeight() {
       var goalWeight = $('#setGoalWeight').val(); //from the goal weight input modal
-      debugger;
+      
       if(!goalWeight) { //if target weight field is empty and the user click 'Enter'
             showModal('goalWeightInput');
             $('#modal-empty-goal-weight-alert').removeClass('hidden');
@@ -247,17 +264,19 @@ function handleAddClicked(event){
       if (validInput) {
             addEntry(userEntryObj);
             clearAddEntryInputs();
-      }
+            // sendDataToServer(userEntryObj); 
+      }else {
+            
+      
    
 
-      sendDataToServer(userEntryObj); 
 
       $('#edit-weight-alert-desktop').addClass("hidden");
       $('#edit-note-alert-desktop').addClass("hidden");
 
       $('#edit-weight-alert-mobile').addClass("hidden");
       $('#edit-note-alert-mobile').addClass("hidden");
-
+}
 }
 
 
@@ -519,9 +538,6 @@ function updateDataInServer (newEntryObj, entryIDToUpdate) {
       }
       $.ajax(ajaxConfig);
 }
-
-
-
 
 
 

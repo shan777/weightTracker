@@ -1,7 +1,7 @@
 <!doctype html>
 <html>
 <head>
-    <title>Simple Weight Tracking Journal</title>
+    <title>My Weight Tracker</title>
     <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <script src="http://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
@@ -194,7 +194,10 @@
                         <span class="input-group-addon">
                             <span class="glyphicon glyphicon-comment"></span>
                         </span>
-                        <textarea rows="2" type="text" class="form-control" name="newInputNote" id="updatedNote" placeholder="Update the note"></textarea>
+                        <div>
+                            <textarea rows="2" type="text" class="form-control note-text" name="newInputNote" id="updatedNote" placeholder="Update the note"></textarea>
+                        </div>
+                        <span id="remaining-char"></span>
                     </div>
                     <div class="alert alert-danger hidden" id="edit-modal-note-alert" role="alert" style="padding: 5px 15px">
                             <span class="glyphicon glyphicon-exclamation-sign"></span>
@@ -348,5 +351,14 @@
             </table>
         </div>
     </div>
+    <script>
+    $('.note-text').keypress(function(){
+
+if(this.value.length > 10){
+    return false;
+}
+$("#remainingC").html("Remaining characters : " +(10 - this.value.length));
+});
+    </script>
 </body>
 </html>
