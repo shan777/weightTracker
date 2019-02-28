@@ -352,7 +352,7 @@ function renderEntryOnDom( userEntryObj ){
             '&#127942; You made it! So proud of you. &#128079;', 'You made it happen &#128077; Keep it up!'];
       var less = ['You can set a new goal if you want &#128513;', '&#128175; Keep it up!', 'You are doing great &#128077;', '&#128170; You are strong &#10071;', 
             '&#127939; &#127939; &#127939; Let&#39;s get fit!'];
-      var more = ['Excuses don’t burn calories &#128581;', 'Yesterday you said tomorrow! &#129324;&#129324;&#129324;', 'Nothing tastes as good as being thin feels! &#128089;', 
+      var more = ['Excuses don&#39;t burn calories &#128581;', 'Yesterday you said tomorrow! &#129324;&#129324;&#129324;', 'Nothing tastes as good as being thin feels! &#128089;', 
             'Only you can change your life. No one can do it for you&#10071;', 'Don&#39;t reward yourself with food. You are not a dog &#128544;'];
 
       var randomNum = Math.floor(Math.random() *5);
