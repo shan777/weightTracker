@@ -176,13 +176,13 @@
                         <span class="input-group-addon">
                             <span class="glyphicon glyphicon-calendar"></span>
                         </span>
-                        <input type="date" class="form-control" name="newInputDate" id="updatedDate" placeholder="">
+                        <input type="date" class="form-control" name="newInputDate" id="updatedDate">
                     </div>
                     <div class="input-group form-group">
                         <span class="input-group-addon">
                             <span class="glyphicon glyphicon-scale"></span>
                         </span>
-                        <input type="number" class="form-control" name="newInputWeight" id="updatedWeight" placeholder="Weight">
+                        <input type="number" class="form-control" name="newInputWeight" id="updatedWeight">
                             <span class="input-group-addon">lbs</span>
                     </div>
                     <div class="alert alert-danger hidden" id="edit-modal-weight-alert" role="alert" style="padding: 5px 15px">
@@ -195,7 +195,7 @@
                             <span class="glyphicon glyphicon-comment"></span>
                         </span>
                         <div>
-                            <textarea rows="2" type="text" class="form-control note-text" name="newInputNote" id="updatedNote" placeholder="Update the note"></textarea>
+                            <textarea rows="2" type="text" class="form-control note-text" name="newInputNote" id="updatedNote"></textarea>
                         </div>
                         <span id="remaining-char"></span>
                     </div>
@@ -222,7 +222,7 @@
                     <button type="button" class="close" data-dismiss="modal">&times;</button>
                 </div>
                 <div class="modal-body" style="padding:40px 50px;">
-                    <div style="color: red; padding-bottom: 25px; text-align: center; font-weight: bold; font-size: 20px;"><span>Are you sure?<br>Once deleted, it cannot be recovered.</span></div>
+                    <div style="color: rgb(236, 38, 38); padding-bottom: 25px; text-align: center; font-weight: bold; font-size: 20px;"><span>Are you sure?<br>Once deleted, it cannot be recovered.</span></div>
                     <div style="text-align: center;">
                         <button type="button" class="btn btn-default" id="cancel-delete-button">Cancel</button>
                         <button type="button" class="btn btn-danger" id="delete-entry-button">Yes, Delete</button>
@@ -268,21 +268,24 @@
                     Valid Weight is required.
             </div>
 
-            <div class="input-group form-group">
+            <div class="input-group form-group" style="margin-bottom: 0;">
                 <span class="input-group-addon">
                     <span class="glyphicon glyphicon-comment"></span>
                 </span>
-                <textarea rows="2" type="text" class="form-control" name="note" id="note" placeholder="Add a note (0 to 100 characters)"></textarea>
+                <textarea rows="2" type="text" class="form-control" name="note" id="note" maxlength="80" placeholder="Add a note (0 to 80 characters)"></textarea>
             </div>
+            <span id="remainingC" style="padding-left: 45px; font-style: italic; color: gray;"></span>
+
             <!-- <div class="alert alert-warning hidden" id="edit-name-alert" role="alert" style="padding: 5px 15px"> -->
             <div class="alert alert-danger hidden" id="edit-note-alert-desktop" role="alert" style="padding: 5px 15px">
                     <span class="glyphicon glyphicon-exclamation-sign"></span>
-                    Note must not exceed 100 characters.
+                    Note must not exceed 80 characters.
             </div>
-
-            <button type="button" class="btn btn-success" id="addButton" onclick="">Add</button>
-            <button type="button" class="btn btn-default" id="cancelButton" onclick="">Cancel</button>
-            <!-- <button type="button" class="btn-info">Get data From Server</button> -->
+            <div style="margin-top: 40px;">
+                <button type="button" class="btn btn-success" id="addButton" onclick="">Add</button>
+                <button type="button" class="btn btn-default" id="cancelButton" onclick="">Cancel</button>
+                <!-- <button type="button" class="btn-info">Get data From Server</button> -->
+            </div>
         </div>
         
 
@@ -339,11 +342,11 @@
             <table class="student-list table table-striped table-hover">
                 <thead>
                 <tr style="background-color:rgb(15, 93, 248); color: white;">
-                    <th class="col-lg-2 col-md-2 col-sm-2 col-xs-2">Date</th>
-                    <th class="col-lg-1 col-md-1 col-sm-1 col-xs-1">Weight</th>
-                    <th class="col-lg-4 col-md-4 col-sm-4 col-xs-4">Note</th>
-                    <th class="col-lg-3 col-md-3 col-sm-3 col-xs-3">Progress</th>
-                    <th class="col-lg-2 col-md-2 col-sm-2 col-xs-2">Action</th>
+                    <th class="col-lg-1 col-md-2 col-sm-2 col-xs-2 text-center">Date</th>
+                    <th class="col-lg-2 col-md-2 col-sm-2 col-xs-2 text-center">Weight</th>
+                    <th class="col-lg-4 col-md-4 col-sm-4 col-xs-4 text-center">Note</th>
+                    <th class="col-lg-2 col-md-2 col-sm-2 col-xs-2 text-center">Progress</th>
+                    <th class="col-lg-2 col-md-2 col-sm-2 col-xs-2 text-center">Action</th>
                 </tr>
                 </thead>
                 <tbody id="weightTable">
