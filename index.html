@@ -1,7 +1,7 @@
 <!doctype html>
 <html>
 <head>
-    <title>Simple Weight Tracking Journal</title>
+    <title>My Weight Tracker</title>
     <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <script src="http://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
@@ -45,6 +45,7 @@
     }
     .goal-text {
         margin-top: -8px;
+        margin-bottom: 16px;
         font-size: 17px;
         background-color: ghostwhite;
         font-weight: bold;
@@ -86,9 +87,8 @@
         animation: none;
     }
     .msg-container {
-        /* margin: auto 0; */
-        padding: 20px 5px;
         text-align: center;
+        padding: 1px 5px 18px;
     }
     .save-btn {
         font-size: 14px;
@@ -154,7 +154,7 @@
                     </div>
                 </div>
                 <div  style="text-align: center; margin-bottom: 2%;">
-                    <button type="button" class="btn btn-success" id="goalWeightEnterButton" onclick="">Enter</button>
+                    <button type="button" class="btn btn-success" id="goalWeightEnterButton" onclick="handleGoalWeight()">Enter</button> <!--add handleGoalWeight function to onclick attribute? -->
                 </div>
             </div>
         </div>
@@ -163,7 +163,7 @@
 
     
 
-    <!-- beginning of edit Modal -->
+    <!-- beginning of edit entry Modal -->
     <div class="modal fade" id="editModal" role="dialog">
         <div class="modal-dialog">
             <div class="modal-content">
@@ -194,7 +194,10 @@
                         <span class="input-group-addon">
                             <span class="glyphicon glyphicon-comment"></span>
                         </span>
-                        <textarea rows="2" type="text" class="form-control" name="newInputNote" id="updatedNote" placeholder="Update the note"></textarea>
+                        <div>
+                            <textarea rows="2" type="text" class="form-control note-text" name="newInputNote" id="updatedNote" placeholder="Update the note"></textarea>
+                        </div>
+                        <span id="remaining-char"></span>
                     </div>
                     <div class="alert alert-danger hidden" id="edit-modal-note-alert" role="alert" style="padding: 5px 15px">
                             <span class="glyphicon glyphicon-exclamation-sign"></span>
@@ -209,9 +212,9 @@
             </div>
         </div>        
     </div>        
-    <!-- end of edit Modal -->
+    <!-- end of edit entry Modal -->
         
-    <!-- beginning of delete Modal -->
+    <!-- beginning of delete entry Modal -->
     <div class="modal fade" id="deleteModal" role="dialog">
         <div class="modal-dialog">
             <div class="modal-content">
@@ -229,16 +232,14 @@
             </div>
         </div>        
     </div>        
-    <!-- end of delete Modal -->
+    <!-- end of delete entry Modal -->
 
 
     <div class="container-fluid">
         <div class="form-group col-lg-12 col-md-12 col-sm-12 col-xs-12 row">
             <!-- below is visible on all sizes EXCEPT mobile and tablet sizes -->
-            <h2 class="page-header">My Weight Tracker</h2>
+            <h3 class="page-header">My Weight Tracker</h3>
         </div>
-        
-
 
         <div class="row-no-gutters col-lg12 col-md-12 col-sm-12 col-xs-12">
             <span class="pull-left goal-text">Goal Weight: <span class="goal-weight-display blinking"></span> <span class="lbs-text"> lbs </span></span>            
@@ -247,7 +248,7 @@
 
         <!-- below is visible on all sizes EXCEPT mobile and tablet sizes -->
         <div class="hidden-xs hidden-sm visible-md visible-lg student-add-form col-lg-3 col-md-4 pull-right">
-            <h3 style="margin-top: 2px; margin-bottom: 20px;">Add Entry</h3>
+            <h4 style="margin-top: 2px; margin-bottom: 20px;">Add Entry</h4>
             <div class="input-group form-group">
                 <span class="input-group-addon">
                     <span class="glyphicon glyphicon-calendar"></span>
@@ -287,7 +288,7 @@
 
         <!-- only show this element when the user gets to mobile and tablet versions-->
         <div class="visible-xs visible-sm hidden-md hidden-lg student-add-form col-sm-7 col-xs-12 pull-left">
-            <h3>Add Entry</h3>
+            <h4>Add Entry</h4>
             <div class="input-group form-group">
                 <span class="input-group-addon">
                     <span class="glyphicon glyphicon-calendar"></span>
@@ -350,5 +351,14 @@
             </table>
         </div>
     </div>
+    <script>
+    $('.note-text').keypress(function(){
+
+if(this.value.length > 10){
+    return false;
+}
+$("#remainingC").html("Remaining characters : " +(10 - this.value.length));
+});
+    </script>
 </body>
 </html>

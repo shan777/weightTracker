@@ -4,27 +4,24 @@ $entry_id = $_POST['entryID'];
 $entry_date = $_POST['entryDate'];
 $entry_weight = $_POST['entryWeight'];
 $entry_note = $_POST['entryNote'];
-$change = $_POST['change'];
-$browser_id = $_POST['browserId'];
-$updateEntryQuery = "UPDATE `entries` 
-    SET `entry_date` = '{$entry_date}', 
-    `entry_weight` = '{$entry_weight}', 
-    `entry_note` = '{$entry_note}', 
-    `change` = '{$change}' 
-    WHERE `entries`.`id` = '{$entry_id}' 
-    AND browser_id = '{$browser_id}' 
+$browser_id = $_POST['browserID'];
+$updateEntryQuery = "UPDATE `weight_entry` 
+    SET `entryDate` = '{$entry_date}', 
+    `entryWeight` = '{$entry_weight}', 
+    `entryNote` = '{$entry_note}'
+    WHERE `entryID` = '{$entry_id}' 
+    AND browseID = '{$browser_id}' 
     ";
 // print($updateEntryQuery);
 // exit();
 mysqli_query($conn, $updateEntryQuery);
 $query = "SELECT DISTINCT * 
-          FROM entries 
-          WHERE id = '$entry_id'
-          AND entry_date = '$entry_date'
-          AND entry_weight = '$entry_weight'
-          AND entry_note = '$entry_note'
-          AND change = '$change'
-          AND browser_id = '$browser_id'
+          FROM weight_entry 
+          WHERE entryID = '$entry_id'
+          AND entryDate = '$entry_date'
+          AND entryWeight = '$entry_weight'
+          AND entryNote = '$entry_note'
+          AND browserID = '$browser_id'
           ";
 $result = mysqli_query($conn, $query);
 $output=[];

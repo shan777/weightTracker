@@ -1,7 +1,3 @@
-/* information about jsdocs: 
-* param: http://usejsdoc.org/tags-param.html#examples
-* returns: http://usejsdoc.org/tags-returns.html
-* 
 /**
  * Listen for the document to load and initialize the application
  */
@@ -55,9 +51,9 @@ function initializeApp(){
       var date = new Date();
       date.setMinutes(date.getMinutes() - date.getTimezoneOffset());
       var dateStr = date.toISOString().substring(0, 10);
-
       var field = document.querySelector('#today');
       field.value = dateStr;
+
 
 
       // getDataFromServer();
@@ -74,26 +70,42 @@ function initializeApp(){
 */
 function addClickHandlersToElements(){
       console.log('click handlers added');
-      $("#goalWeightEnterButton").click(handleGoalWeight);
-      $("#addButton").click(handleAddClicked); //add button
+      // $("#goalWeightEnterButton").click(handleGoalWeight); //from edit goal weight modal
+      $("#addButton").click(handleAddClicked); //add entry button
       // $("#newAddButton").click(handleModalAddClicked); //add button from modal
-      $("#cancelButton").click(handleCancelClick); //cancel button
+      $("#cancelButton").click(handleCancelClick); //cancel entry button
       // $(".btn-info").click(getDataFromServer); //get data from server button
       $('.goal-weight-display').click(editGoalWeight);
       // $("#updateButton").click(handleUpdateClicked); //update button from editing modal
+      
 }
 
 
 
 /***************************************************************************************************
-* checkEnterKeyPressed - checks if Enter key is pressed in modal for goal weight input, if pressed, call handleGoalWeight function
+* checkEnterKeyPressed - checks if Enter key is pressed in modal after inputting goal weight and call handleGoalWeight function
 * @params event 
 * @returns  none 
 */
 function checkEnterKeyPressed(e){
-      if(e.which == 13) {
+      if(e.which == 13) { //"13" is the "Enter" key
             handleGoalWeight();
       }
+}
+
+
+
+/***************************************************************************************************
+* checkRemainingChar - checks if Enter key is clicked in modal for goal weight input, if clicked, call handleGoalWeight function
+* @params event 
+* @returns  none 
+*/
+function checkRemainingChar(){
+      console.log('inside checkreminingagag');
+      if(this.value.length > 10){
+            return false;
+      }
+      $("#remainingC").html("Remaining characters : " +(10 - this.value.length));
 }
 
 
@@ -104,7 +116,8 @@ function checkEnterKeyPressed(e){
 * @returns none
 */
 function handleGoalWeight() {
-      var goalWeight = $('#setGoalWeight').val();
+      var goalWeight = $('#setGoalWeight').val(); //from the goal weight input modal
+      
       if(!goalWeight) { //if target weight field is empty and the user click 'Enter'
             showModal('goalWeightInput');
             $('#modal-empty-goal-weight-alert').removeClass('hidden');
@@ -121,9 +134,8 @@ function handleGoalWeight() {
             renderGoalWeight(goalWeight);
             hideModal('goalWeightInput');
             targetWeight = goalWeight;
-            localStorage.setItem('targetWeight',targetWeight);
+            localStorage.setItem('targetWeight', targetWeight);
       }
-      
 }
 
 
@@ -180,7 +192,6 @@ function editGoalWeight(){
 
 
 
-
 /***************************************************************************************************
  * handleAddClicked - Event Handler when user clicks the add button
  * @param: {object} event  The event object from the click
@@ -198,7 +209,7 @@ function handleAddClicked(event){
             userEntryObj.note = "N/A";
       }
 
-      if ((userEntryObj.note).length > 100) { //if note longer than 100 characters long, display error message
+      if ((userEntryObj.note).length > 100) { //if note is more than 100 characters long, display error message
             $('#edit-note-alert-desktop').removeClass("hidden");
             $('#note').focus(function(){
                   $('#edit-note-alert-desktop').addClass('hidden');
@@ -212,7 +223,7 @@ function handleAddClicked(event){
             validInput = false;
       } 
 
-      if (!userEntryObj.date) { //if date field is left blank, default date value is set to today's date
+      if (!userEntryObj.date) { //if date field is left blank, default date value is set to today's date in local time
             var fullDate = new Date();
             var yr = fullDate.getFullYear();
             var mo = fullDate.getMonth() + 1;
@@ -253,17 +264,19 @@ function handleAddClicked(event){
       if (validInput) {
             addEntry(userEntryObj);
             clearAddEntryInputs();
-      }
+            // sendDataToServer(userEntryObj); 
+      }else {
+            
+      
    
 
-      sendDataToServer(userEntryObj); 
 
       $('#edit-weight-alert-desktop').addClass("hidden");
       $('#edit-note-alert-desktop').addClass("hidden");
 
       $('#edit-weight-alert-mobile').addClass("hidden");
       $('#edit-note-alert-mobile').addClass("hidden");
-
+}
 }
 
 
@@ -294,6 +307,7 @@ function addEntry(userEntryObj){
       // clearAddEntryInputs();
 }
 
+
 /***************************************************************************************************
  * clearAddStudentForm - clears out the form values based on inputIds variable
  */
@@ -323,26 +337,22 @@ function renderEntryOnDom( userEntryObj ){
             class: 'col-lg-4 col-md-4 col-sm-4 col-xs-4', 
             text: userEntryObj.note
       });
-      // var percentageToGoal = 
-      // var progressItem = $('<td>', {
-      //       class: 'col-lg-3 col-md-3 col-sm-3 col-xs-3'
-      //       text:  NO NON NONONOONONONONONONONONONONONONONONONONONONONONONONOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO
-      // });
+
       $('.student-list tbody').append( newTr );
       newTr.append(dateItem); 
       newTr.append(weightItem);
       newTr.append(noteItem);
 
-      // $(newTr).append('<td>' + (targetWeight / userEntryObj.weight * 100).toFixed(1) + '%');
+      // $(newTr).append('<td>' + (targetWeight / userEntryObj.weight * 100).toFixed(1) + '%'); //not gonna work
 
       var moreToLose = userEntryObj.weight - targetWeight;
 
-      //display inspirational message to lose weight
+      //display motivational quotes to lose weight/cheer up
       var equal = ['Yayy &#127930; &#127930; &#127930; You have reached the goal!', '&#127881; &#127881; &#127881; You did it!!!', '&#128077; You rock! &#10071;', 
             '&#127942; You made it! So proud of you. &#128079;', 'You made it happen &#128077; Keep it up!'];
       var less = ['You can set a new goal if you want &#128513;', '&#128175; Keep it up!', 'You are doing great &#128077;', '&#128170; You are strong &#10071;', 
             '&#127939; &#127939; &#127939; Let&#39;s get fit!'];
-      var more = ['Excuses don’t burn calories &#128581;', 'Yesterday you said tomorrow &#129324;&#129324;&#129324;', 'Nothing tastes as good as being thin feels! &#128089;', 
+      var more = ['Excuses don&#39;t burn calories &#128581;', 'Yesterday you said tomorrow! &#129324;&#129324;&#129324;', 'Nothing tastes as good as being thin feels! &#128089;', 
             'Only you can change your life. No one can do it for you&#10071;', 'Don&#39;t reward yourself with food. You are not a dog &#128544;'];
 
       var randomNum = Math.floor(Math.random() *5);
@@ -367,26 +377,26 @@ function renderEntryOnDom( userEntryObj ){
 
      
       
-      var editButton = $('<button>', {
+      var editBtn = $('<button>', {
             class: 'btn btn-info',
             id: 'edit-entry',
             html: '<i class="fa fa-pencil-square-o">',
             style: 'margin-right: 5px; padding: 3px 5px; width: 30px;'
       });
-      var deleteButton = $('<button>', {
+      var deleteBtn = $('<button>', {
             class: 'btn btn-danger',
             id: 'delete-entry',
             html: '<i class="fa fa-trash">',
-            style: 'padding: 3px 5px; width: 30px; vertical-align: middle;'
+            style: 'padding: 3px 5px; width: 30px;'
       }, );
 
-      newTr.append(editButton, deleteButton);
+      newTr.append(editBtn, deleteBtn);
 
       
-      $(editButton).click(function() {
+      $(editBtn).click(function() {
             handleEditEntry (userEntryObj);
       });
-      $(deleteButton).click(function() {
+      $(deleteBtn).click(function() {
             handleDeleteEntry (userEntryObj);
       });
  }
@@ -432,11 +442,11 @@ function handleDeleteEntry (userEntryObj) {
       if($('#delete-entry-button').click(function() {
             //gotta call updateEntryList function here to render the updated list on dom 
             var indexNumToDelete = arrayOfEntryObjects.indexOf(userEntryObj);
-            arrayOfEntryObjects.splice(indexNumToDelete, 1); //???????????????????????????????
+            arrayOfEntryObjects.splice(indexNumToDelete, 1); // check again!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
             $(event.currentTarget).parent().remove(); //not sure what this is doing
+            hideModal ('delete');
 
             deleteDataFromServer ( userEntryObj );
-            hideModal ('delete');
       }));
       
 }
@@ -532,9 +542,6 @@ function updateDataInServer (newEntryObj, entryIDToUpdate) {
 
 
 
-
-
-
 function displayLFZ( result ) {
       console.log('displayLFZ function called');
       for (var i=0; i<result.data.length; i++) {
@@ -551,22 +558,26 @@ function sendDataToServer ( userEntryObj ) {
             dataType: 'json',
             method: 'post',
             // url: 'http://localhost:8888/data.php',
-            url: api_url.add_entry_url,
+            url: 'dataApi/add_entry.php',
             data: {
                   // api_key: 'wjaABAN7N4',
-                  entry_note: userEntryObj.note,
-                  entry_date: userEntryObj.date,  
-                  entry_weight: userEntryObj.weight,
+                  entryNote: userEntryObj.note,
+                  entryDate: userEntryObj.date,  
+                  entryWeight: userEntryObj.weight,
                   // course_name: "Hllooooooooooooooooooo",
                   action: 'insert'
             },
             success: function (serverResponse) {
+                  console.log("adding is successful");
                   var result = serverResponse;
                   if (result.success) {
+                        
                         lastObjInitemArray.id = result.data[result.data.length - 1].id;
                   }
             },
             error: function (serverResponse) {
+                  console.log("adding is NOT successful");
+
                   $(".add-item-error").removeClass('hidden')
             }
       }
