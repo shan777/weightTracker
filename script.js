@@ -185,6 +185,8 @@ function editGoalWeight(){
             newGoalWeight.addClass('hidden');
             saveBtn.addClass('hidden');
             $('.goal-weight-edit-btn').removeClass('hidden');
+            saveBtn.remove();
+            newGoalWeight.remove();
       }));
       
       //updateEntryList( userEntryObj ); //To Goal messages should be updated based on updated goal weight
