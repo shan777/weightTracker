@@ -204,6 +204,16 @@ function handleAddClicked(event){
       var userEntryObj = {};
       userEntryObj.date = $('#today').val();
       userEntryObj.weight = $('#weight').val(); //weight is saved as a string
+
+      //removes leading zero(s) from user's weight input if there's any
+      if(userEntryObj.weight[0] === '0') {
+            console.log('inside');
+            var weightWithoutLeadingZeros = userEntryObj.weight;
+            while(weightWithoutLeadingZeros[0]==='0') {
+                  weightWithoutLeadingZeros = weightWithoutLeadingZeros.substring(1, weightWithoutLeadingZeros.length);
+            }
+            userEntryObj.weight = weightWithoutLeadingZeros;
+      }
       userEntryObj.note = $('#note').val();
 
 
