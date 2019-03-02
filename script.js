@@ -213,8 +213,6 @@ function editGoalWeight(){
  * @return: none
  */
 function handleAddClicked(event){
-      console.log('inside handle add clicked');
-      // debugger;
       var validInput = true;
       var userEntryObj = {};
       userEntryObj.date = $('#today').val();
@@ -222,7 +220,6 @@ function handleAddClicked(event){
 
       //removes leading zero(s) from user's weight input if there's any
       if(userEntryObj.weight[0] === '0') {
-            console.log('inside');
             var weightWithoutLeadingZeros = userEntryObj.weight;
             while(weightWithoutLeadingZeros[0]==='0') {
                   weightWithoutLeadingZeros = weightWithoutLeadingZeros.substring(1, weightWithoutLeadingZeros.length);
@@ -235,7 +232,6 @@ function handleAddClicked(event){
       if (!userEntryObj.note) { //if note is left blank, note value is set to "N/A"
             userEntryObj.note = "N/A";
       }
-
       
       if (!userEntryObj.date) { //if date field is left blank, default date value is set to today's date in local time
             var fullDate = new Date();
@@ -249,110 +245,56 @@ function handleAddClicked(event){
             userEntryObj.date = (yr+"-"+mo+"-"+dt).toString();
       }
 
-      validInput = validateWeight(userEntryObj.weight);
-
-      // if (!userEntryObj.weight) { //if weight field is empty, display alert message
-      //       $('#edit-weight-alert-desktop').removeClass("hidden");
-      //       $('#weight').focus(function(){
-      //             $('#edit-weight-alert-desktop').addClass('hidden');
-      //       });
-      //       validInput = false;
-
-      //       $('#edit-weight-alert-mobile').removeClass("hidden");
-      //       $('#weight').focus(function(){
-      //             $('#edit-weight-alert-mobile').addClass('hidden');
-      //       });
-
-      //       // handleAddClicked();
-      // } else if (isNaN(Number(userEntryObj.weight)) || Number(userEntryObj.weight)<2) { //if input for the weight is not a number ex) 'e' or less than 2
-      // console.log('weight errorrrrrrrrrrrrrrrrrr');
-      //       $('#edit-weight-alert-desktop').removeClass("hidden");
-      //       $('#weight').focus(function(){
-      //             $('#edit-weight-alert-desktop').addClass('hidden');
-      //       });
-
-      //       $('#edit-weight-alert-mobile').removeClass("hidden");
-      //       $('#weight').focus(function(){
-      //             $('#edit-weight-alert-mobile').addClass('hidden');
-      //       });
-      //       // validInput = false;
-
-      //       // handleAddClicked(userEntryObj);
-      // } 
-      
-      if (validInput) {
-            // $('.add-entry-btn').click(function(){
-            addEntry(userEntryObj);
-            clearAddEntryInputs();
-      }     
-            // sendDataToServer(userEntryObj); 
-     
-            // $('#edit-weight-alert-desktop').addClass("hidden");
-            // $('#edit-note-alert-desktop').addClass("hidden");
-
-            // $('#edit-weight-alert-mobile').addClass("hidden");
-            // $('#edit-note-alert-mobile').addClass("hidden");
-      // });
+      validateWeight(userEntryObj.weight);
+    
+      addEntry(userEntryObj);
+      clearAddEntryInputs();
+   
 }
 
 
+/***************************************************************************************************
+ * validateWeight - validates weight and keeps fixing until get the valid weight
+ * @param: weight
+ * @return: true if valid input, false if otherwise
+ */
 function validateWeight (weight) {
-      var validInput = true;
-      var newWeight = null;
       if (!weight) { //if weight field is empty, display alert message
             $('#edit-weight-alert-desktop').removeClass("hidden");
             $('#weight').focus(function(){
                   $('#edit-weight-alert-desktop').addClass('hidden');
                   fixWeight ();
-
             });
-            validInput = false;
-           
-
-            // handleAddClicked();
-      } else if (isNaN(Number(weight)) || Number(weight)<2) { //if input for the weight is not a number ex) 'e' or less than 2
-      console.log('weight errorrrrrrrrrrrrrrrrrr');
+      }else if (isNaN(Number(weight)) || Number(weight)<2) { //if input for the weight is not a number ex) 'e' or less than 2
             $('#edit-weight-alert-desktop').removeClass("hidden");
             $('#edit-weight-alert-mobile').removeClass("hidden");
-            validInput = false;
-
-            
-                  fixWeight();
-
-           
-
-            // validInput = false;
-
-            // handleAddClicked(userEntryObj);
+            fixWeight();
       } 
-      
-      return validInput;
-      
-
 }
 
 
+/***************************************************************************************************
+ * fixWeight - Fixes weight value until it is a valid weight
+ * @param: none
+ * @returns: none
+ * @calls: validateWeight
+ */
 function fixWeight() {
-      console.log('inside fix weight');
-      var newWeight = null;
       $('#weight').focus(function(){
             console.log('focused');
             $('#edit-weight-alert-mobile').addClass("hidden");
             $('#edit-weight-alert-desktop').addClass("hidden");
 
-            $('#weight').on('keyup', function(){
-                  var val = this.value;
-                  if (val.length > 1) {
-                  newWeight = $('#weight').val();
-                  validateWeight(newWeight);
+            $('#weight').on('focusout', function(){
+                  var newWeight = this.value;
+                  console.log('new weight is '+ newWeight);
+                  if (newWeight.length > 1) {
+                        validateWeight(newWeight);
                   }
             });
       });
-      
-    
-      console.log('new weight is '+newWeight);
-      
 }
+
 
 /***************************************************************************************************
  * handleCancelClicked - Event Handler when user clicks the cancel button, should clear out student form
