@@ -276,20 +276,15 @@
             </div>
             <span id="remainingC" style="padding-left: 45px; font-style: italic; color: gray;"></span>
 
-            <!-- <div class="alert alert-warning hidden" id="edit-name-alert" role="alert" style="padding: 5px 15px"> -->
-            <div class="alert alert-danger hidden" id="edit-note-alert-desktop" role="alert" style="padding: 5px 15px">
-                    <span class="glyphicon glyphicon-exclamation-sign"></span>
-                    Note must not exceed 80 characters.
-            </div>
             <div style="margin-top: 40px;">
-                <button type="button" class="btn btn-success" id="addButton" onclick="">Add</button>
-                <button type="button" class="btn btn-default" id="cancelButton" onclick="">Cancel</button>
+                <button type="button" class="btn btn-success add-entry-btn" id="addButton">Add</button>
+                <button type="button" class="btn btn-default" id="cancelButton">Cancel</button>
                 <!-- <button type="button" class="btn-info">Get data From Server</button> -->
             </div>
         </div>
         
 
-        <!-- only show this element when the user gets to mobile and tablet versions-->
+        <!-- only show this element when the user gets to MOBILE and TABLET versions-->
         <div class="visible-xs visible-sm hidden-md hidden-lg student-add-form col-sm-7 col-xs-12 pull-left">
             <h4>Add Entry</h4>
             <div class="input-group form-group">
@@ -315,16 +310,12 @@
                 <span class="input-group-addon">
                     <span class="glyphicon glyphicon-comment"></span>
                 </span>
-                <input type="text" class="form-control" name="note" id="note" placeholder="Add a note (0 to 100 characters)">
+                <input type="text" class="form-control" name="note" id="note" placeholder="Add a note (0 to 80 characters)">
             </div>
-            <!-- <div class="alert alert-warning hidden" id="edit-name-alert" role="alert" style="padding: 5px 15px"> -->
-            <div class="alert alert-danger hidden" id="edit-note-alert-mobile" role="alert" style="padding: 5px 15px">
-                    <span class="glyphicon glyphicon-exclamation-sign"></span>
-                    Note must not exceed 100 characters.
-            </div>
+            
             <div style="margin-bottom: 20px;">
-                <button type="button" class="btn btn-success" id="addButton" onclick="">Add</button>
-                <button type="button" class="btn btn-default" id="cancelButton" onclick="">Cancel</button>
+                <button type="button" class="btn btn-success add-entry-btn" id="addButton">Add</button>
+                <button type="button" class="btn btn-default" id="cancelButton">Cancel</button>
             </div>
             <!-- <button type="button" class="btn-info">Get data From Server</button> -->
         </div>
