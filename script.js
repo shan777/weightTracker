@@ -69,11 +69,16 @@ function initializeApp(){
 * @returns none 
 */
 function addClickHandlersToElements(){
-      console.log('click handlers added');
+      console.log('click handlers addeddddddddddddddddddddddddd');
       // $("#goalWeightEnterButton").click(handleGoalWeight); //from edit goal weight modal
-      $("#addButton").click(handleAddClicked); //add entry button
-      // $("#newAddButton").click(handleModalAddClicked); //add button from modal
+      // $("#addButton-mobile").click(handleAddClicked); //add entry button
+      // $("#addButton-desktop").click(handleAddClicked); //add entry button
+      $(".add-entry-btn").click(handleAddClicked); //add entry button
+
+      // $("#cancelButton-mobile").click(handleCancelClick); //cancel entry button
+      // $("#cancelButton-desktop").click(handleCancelClick); //cancel entry button
       $("#cancelButton").click(handleCancelClick); //cancel entry button
+
       // $(".btn-info").click(getDataFromServer); //get data from server button
       $('.goal-weight-display').click(editGoalWeight);
       // $("#updateButton").click(handleUpdateClicked); //update button from editing modal
@@ -102,13 +107,6 @@ function checkEnterKeyPressed(e){
 * @returns  none 
 */
 function checkRemainingChar(){
-      // var maxchar = 80;
-      // console.log(this.value.length);
-      // if(this.value.length+1 > maxchar){
-      //       return false;
-      // }
-      // $("#remainingC").html("Remaining characters : " +(maxchar - this.value.length));
-
       var len = 0;
       var maxchar = 80;
 
@@ -222,7 +220,6 @@ function handleAddClicked(event){
 
       //removes leading zero(s) from user's weight input if there's any
       if(userEntryObj.weight[0] === '0') {
-            console.log('inside');
             var weightWithoutLeadingZeros = userEntryObj.weight;
             while(weightWithoutLeadingZeros[0]==='0') {
                   weightWithoutLeadingZeros = weightWithoutLeadingZeros.substring(1, weightWithoutLeadingZeros.length);
@@ -235,21 +232,7 @@ function handleAddClicked(event){
       if (!userEntryObj.note) { //if note is left blank, note value is set to "N/A"
             userEntryObj.note = "N/A";
       }
-
-      if ((userEntryObj.note).length > 100) { //if note is more than 100 characters long, display error message
-            $('#edit-note-alert-desktop').removeClass("hidden");
-            $('#note').focus(function(){
-                  $('#edit-note-alert-desktop').addClass('hidden');
-            });
-
-            $('#edit-note-alert-mobile').removeClass("hidden");
-            $('#note').focus(function(){
-                  $('#edit-note-alert-mobile').addClass('hidden');
-            });
-
-            validInput = false;
-      } 
-
+      
       if (!userEntryObj.date) { //if date field is left blank, default date value is set to today's date in local time
             var fullDate = new Date();
             var yr = fullDate.getFullYear();
@@ -262,52 +245,55 @@ function handleAddClicked(event){
             userEntryObj.date = (yr+"-"+mo+"-"+dt).toString();
       }
 
-      if (!userEntryObj.weight) { //if weight field is empty, display alert message
-            $('#edit-weight-alert-desktop').removeClass("hidden");
-            $('#weight').focus(function(){
-                  $('#edit-weight-alert-desktop').addClass('hidden');
-            });
-
-            $('#edit-weight-alert-mobile').removeClass("hidden");
-            $('#weight').focus(function(){
-                  $('#edit-weight-alert-mobile').addClass('hidden');
-            });
-
-            validInput = false;
-            // handleAddClicked();
-      } else if (isNaN(Number(userEntryObj.weight)) || Number(userEntryObj.weight)<2) { //if input for the weight is not a number ex) 'e' or less than 2
-            $('#edit-weight-alert-desktop').removeClass("hidden");
-            $('#weight').focus(function(){
-                  $('#edit-weight-alert-desktop').addClass('hidden');
-            });
-
-            $('#edit-weight-alert-mobile').removeClass("hidden");
-            $('#weight').focus(function(){
-                  $('#edit-weight-alert-mobile').addClass('hidden');
-            });
-            validInput = false;
-
-            // handleAddClicked(userEntryObj);
-      } 
-      
-      if (validInput) {
-            addEntry(userEntryObj);
-            clearAddEntryInputs();
-            // sendDataToServer(userEntryObj); 
-      }else {
-            
-      
+      validateWeight(userEntryObj.weight);
+    
+      addEntry(userEntryObj);
+      clearAddEntryInputs();
    
-
-
-      $('#edit-weight-alert-desktop').addClass("hidden");
-      $('#edit-note-alert-desktop').addClass("hidden");
-
-      $('#edit-weight-alert-mobile').addClass("hidden");
-      $('#edit-note-alert-mobile').addClass("hidden");
-}
 }
 
+
+/***************************************************************************************************
+ * validateWeight - validates weight and keeps fixing until get the valid weight
+ * @param: weight
+ * @return: true if valid input, false if otherwise
+ */
+function validateWeight (weight) {
+      if (!weight) { //if weight field is empty, display alert message
+            $('#edit-weight-alert-desktop').removeClass("hidden");
+            $('#weight').focus(function(){
+                  $('#edit-weight-alert-desktop').addClass('hidden');
+                  fixWeight ();
+            });
+      }else if (isNaN(Number(weight)) || Number(weight)<2) { //if input for the weight is not a number ex) 'e' or less than 2
+            $('#edit-weight-alert-desktop').removeClass("hidden");
+            $('#edit-weight-alert-mobile').removeClass("hidden");
+            fixWeight();
+      } 
+}
+
+
+/***************************************************************************************************
+ * fixWeight - Fixes weight value until it is a valid weight
+ * @param: none
+ * @returns: none
+ * @calls: validateWeight
+ */
+function fixWeight() {
+      $('#weight').focus(function(){
+            console.log('focused');
+            $('#edit-weight-alert-mobile').addClass("hidden");
+            $('#edit-weight-alert-desktop').addClass("hidden");
+
+            $('#weight').on('focusout', function(){
+                  var newWeight = this.value;
+                  console.log('new weight is '+ newWeight);
+                  if (newWeight.length > 1) {
+                        validateWeight(newWeight);
+                  }
+            });
+      });
+}
 
 
 /***************************************************************************************************
