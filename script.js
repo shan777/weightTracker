@@ -303,6 +303,9 @@ function handleCancelClick(){
       clearAddEntryInputs();
 }
 
+
+
+
 function compare(a, b) {
       var dateA = a.date;
       var dateB = b.date;
@@ -328,8 +331,6 @@ function addEntry(userEntryObj){
       arrayOfEntryObjects.sort(compare);
 
           
-          
-          console.log(bands.sort(compare));
       // counter++;
       renderEntryOnDom(userEntryObj);
       // updateEntryList( userEntryObj );
@@ -351,30 +352,75 @@ function clearAddEntryInputs(){
  * into the .student_list tbody
  * @param {object} userEntryObj a single student object with course, name, and weight inside
  */
-function renderEntryOnDom( userEntryObj ){
-      console.log('rendering students onto DOM');
-      var newTr = $('<tr>');
-      var dateItem = $('<td>', {
-            // class: 'col-lg-1 col-md-1 col-sm-1 col-xs-1 text-center', 
-            class: 'text-center',
-            text: userEntryObj.date
-      });
-      var weightItem = $('<td>', {
-            // class: 'col-lg-1 col-md-1 col-sm-1 col-xs-1 text-right', 
-            class: 'text-right',
-            style: 'padding-right: 6%;',
-            text: userEntryObj.weight + ' lbs'
-      });
+function renderEntryOnDom(userEntryObj){
+      // remove all children of the weight table before rendering sorted array of entry objects
+      var tableChildren = document.getElementById("weightTable");
+      while (tableChildren.firstChild) {
+            tableChildren.removeChild(tableChildren.firstChild);
+      }
       
-      var noteItem = $('<td>', {
-            // class: 'col-lg-4 col-md-4 col-sm-4 col-xs-4', 
-            text: userEntryObj.note
-      });
+      for (var i=0; i<arrayOfEntryObjects.length; i++){
+            var newTr = $('<tr>');
+            var dateItem = $('<td>', {
+                  // class: 'col-lg-1 col-md-1 col-sm-1 col-xs-1 text-center', 
+                  class: 'text-center',
+                  text: arrayOfEntryObjects[i].date
+            });
+            var weightItem = $('<td>', {
+                  // class: 'col-lg-1 col-md-1 col-sm-1 col-xs-1 text-right', 
+                  class: 'text-right',
+                  style: 'padding-right: 6%;',
+                  text: arrayOfEntryObjects[i].weight + ' lbs'
+            });
+            
+            var noteItem = $('<td>', {
+                  // class: 'col-lg-4 col-md-4 col-sm-4 col-xs-4', 
+                  text: arrayOfEntryObjects[i].note
+            });
+      
+            $('.student-list tbody').append(newTr);
+            newTr.append(dateItem); 
+            newTr.append(weightItem);
+            newTr.append(noteItem);
 
-      $('.student-list tbody').append(newTr);
-      newTr.append(dateItem); 
-      newTr.append(weightItem);
-      newTr.append(noteItem);
+            //just a placeholder
+            newTr.append('<td class="text-center">difference here');
+            // if(prev === curr) { if weight did not change
+            //       newTr.append('<td><span style='font-size:24px; color: red;'>&#9660;</span>');
+            // }else if (prev > curr) //if lost weight
+            //       newTr.append('<td><span style='font-size:24px; color: green;'>&#9660;</span>');
+            // }else { //if gained weight
+            //       newTr.append('<td><span style='font-size:24px; color: red;'>&#9650;</span>');
+            // }
+
+            var editDelButtons = $('<td>', {
+                  class: 'text-center'
+            });
+            var editBtn = $('<button>', {
+                  class: 'btn btn-info',
+                  id: 'edit-entry',
+                  html: '<i class="fa fa-pencil-square-o">',
+                  style: 'margin-right: 5px; padding: 3px 5px; width: 30px;'
+            });
+            var deleteBtn = $('<button>', {
+                  class: 'btn btn-danger',
+                  id: 'delete-entry',
+                  html: '<i class="fa fa-trash">',
+                  style: 'padding: 3px 5px; width: 30px;'
+            }, );
+      
+            editDelButtons.append(editBtn, deleteBtn);
+            newTr.append(editDelButtons);
+      
+            
+            $(editBtn).click(function() {
+                  handleEditEntry (userEntryObj);
+            });
+            $(deleteBtn).click(function() {
+                  handleDeleteEntry (userEntryObj);
+            });
+      }
+     
 
       // $(newTr).append('<td>' + (targetWeight / userEntryObj.weight * 100).toFixed(1) + '%'); //not gonna work
 
@@ -398,43 +444,10 @@ function renderEntryOnDom( userEntryObj ){
             $('#motiv-msg').html(more[randomNum] + ' Only <span style="color: orangered">' +  (moreToLose.toFixed(1) + '</span> lbs left!'));
       }
 
-      //just a placeholder
-      newTr.append('<td class="text-center">difference here');
-      // if(prev === curr) { if weight did not change
-      //       newTr.append('<td><span style='font-size:24px; color: red;'>&#9660;</span>');
-      // }else if (prev > curr) //if lost weight
-      //       newTr.append('<td><span style='font-size:24px; color: green;'>&#9660;</span>');
-      // }else { //if gained weight
-      //       newTr.append('<td><span style='font-size:24px; color: red;'>&#9650;</span>');
-      // }
+      
 
      
-      var editDelButtons = $('<td>', {
-            class: 'text-center'
-      });
-      var editBtn = $('<button>', {
-            class: 'btn btn-info',
-            id: 'edit-entry',
-            html: '<i class="fa fa-pencil-square-o">',
-            style: 'margin-right: 5px; padding: 3px 5px; width: 30px;'
-      });
-      var deleteBtn = $('<button>', {
-            class: 'btn btn-danger',
-            id: 'delete-entry',
-            html: '<i class="fa fa-trash">',
-            style: 'padding: 3px 5px; width: 30px;'
-      }, );
-
-      editDelButtons.append(editBtn, deleteBtn);
-      newTr.append(editDelButtons);
-
       
-      $(editBtn).click(function() {
-            handleEditEntry (userEntryObj);
-      });
-      $(deleteBtn).click(function() {
-            handleDeleteEntry (userEntryObj);
-      });
  }
 
 /*************************************************************************************************** 
