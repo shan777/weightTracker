@@ -17,7 +17,7 @@ $(document).ready(initializeApp);
  */
 var arrayOfEntryObjects = [];
 var counter = 0;
-var targetWeight = 'N/A'; 
+var targetWeight; 
 
 /***************************************************************************************************
 * initializeApp - initializes the application, including adding click handlers and pulling in any data from the server
@@ -38,14 +38,13 @@ function initializeApp(){
 
       //show modal to ask for goal weight for very first time the user uses this app only
       //not working thoooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo
-      if(targetWeight === 'N/A'){
+      if(targetWeight === undefined){
             showModal('goalWeightInput');
             renderGoalWeight(targetWeight);
-      }else{
+      }else{ console.log('helllllooooo');
             targetWeight = localStorage.getItem('targetWeight');
             renderGoalWeight(targetWeight);
       }
-      console.log('target weight is: '+targetWeight);
 
       //displays today's date (in local time) as default
       var date = new Date();
@@ -53,7 +52,6 @@ function initializeApp(){
       var dateStr = date.toISOString().substring(0, 10);
       var field = document.querySelector('#today');
       field.value = dateStr;
-
 
 
       // getDataFromServer();
@@ -69,7 +67,6 @@ function initializeApp(){
 * @returns none 
 */
 function addClickHandlersToElements(){
-      console.log('click handlers addeddddddddddddddddddddddddd');
       // $("#goalWeightEnterButton").click(handleGoalWeight); //from edit goal weight modal
       // $("#addButton-mobile").click(handleAddClicked); //add entry button
       // $("#addButton-desktop").click(handleAddClicked); //add entry button
@@ -158,8 +155,8 @@ function handleGoalWeight() {
  * @returns {undefined} none
  */
 function renderGoalWeight( targetWeight ){
-      if(targetWeight == 'N/A') {
-            $('.goal-weight-display').html(targetWeight);
+      if(targetWeight == undefined) {
+            $('.goal-weight-display').html('N/A');
       }else {
             $('.goal-weight-display').html(targetWeight + ' lbs');
       }
@@ -212,11 +209,11 @@ function editGoalWeight(){
  * @param: {object} event  The event object from the click
  * @return: none
  */
-function handleAddClicked(event){
-      var validInput = true;
+function handleAddClicked(){
       var userEntryObj = {};
       userEntryObj.date = $('#today').val();
       userEntryObj.weight = $('#weight').val(); //weight is saved as a string
+      userEntryObj.note = $('#note').val();
 
       //removes leading zero(s) from user's weight input if there's any
       if(userEntryObj.weight[0] === '0') {
@@ -225,12 +222,6 @@ function handleAddClicked(event){
                   weightWithoutLeadingZeros = weightWithoutLeadingZeros.substring(1, weightWithoutLeadingZeros.length);
             }
             userEntryObj.weight = weightWithoutLeadingZeros;
-      }
-      userEntryObj.note = $('#note').val();
-
-
-      if (!userEntryObj.note) { //if note is left blank, note value is set to "N/A"
-            userEntryObj.note = "N/A";
       }
       
       if (!userEntryObj.date) { //if date field is left blank, default date value is set to today's date in local time
@@ -244,11 +235,16 @@ function handleAddClicked(event){
                   dt = "0" + dt;
             userEntryObj.date = (yr+"-"+mo+"-"+dt).toString();
       }
-
-      validateWeight(userEntryObj.weight);
     
-      addEntry(userEntryObj);
-      clearAddEntryInputs();
+      if (!userEntryObj.note) { //if note is left blank, note value is set to "N/A"
+            userEntryObj.note = "N/A";
+      }
+      
+      if(validateWeight(userEntryObj.weight)){
+            addEntry(userEntryObj);
+            clearAddEntryInputs();
+            sendDataToServer(userEntryObj);
+      }
    
 }
 
@@ -263,13 +259,15 @@ function validateWeight (weight) {
             $('#edit-weight-alert-desktop').removeClass("hidden");
             $('#weight').focus(function(){
                   $('#edit-weight-alert-desktop').addClass('hidden');
-                  fixWeight ();
+                  fixWeight();
             });
       }else if (isNaN(Number(weight)) || Number(weight)<2) { //if input for the weight is not a number ex) 'e' or less than 2
             $('#edit-weight-alert-desktop').removeClass("hidden");
             $('#edit-weight-alert-mobile').removeClass("hidden");
             fixWeight();
-      } 
+      } else {
+            return true;
+      }
 }
 
 
@@ -281,13 +279,11 @@ function validateWeight (weight) {
  */
 function fixWeight() {
       $('#weight').focus(function(){
-            console.log('focused');
             $('#edit-weight-alert-mobile').addClass("hidden");
             $('#edit-weight-alert-desktop').addClass("hidden");
 
             $('#weight').on('focusout', function(){
                   var newWeight = this.value;
-                  console.log('new weight is '+ newWeight);
                   if (newWeight.length > 1) {
                         validateWeight(newWeight);
                   }
@@ -307,16 +303,39 @@ function handleCancelClick(){
 }
 
 
+
+/***************************************************************************************************
+ * compare - used to sort the array in ascending order by date
+ * @param: a and b to compare
+ * @returns: compareResult 0 (if a=b), 1 (if a>b), or -1 (if a<b)
+ */
+function compare(a, b) {
+      var dateA = a.date;
+      var dateB = b.date;      
+      var compareResult = 0;
+
+      if (dateA > dateB){
+            compareResult = 1;
+      }else if (dateA < dateB){
+            compareResult = -1;
+      }
+      return compareResult;
+}
+
+
 /***************************************************************************************************
  * addEntry - creates a student objects based on input fields in the form and adds the object to global student array
- * @param {undefined} none
+ * @param {object} userEntryObj
  * @return undefined
- * @calls clearAddEntryInputs, updateEntryList
+ * @calls renderEntryOnDom
  */
 function addEntry(userEntryObj){
-      console.log('addEntry function called');
       arrayOfEntryObjects.push(userEntryObj); 
-      counter++;
+      
+      //sorting the entries by order of the date (ascending - old on top and recent on the bottom)
+      arrayOfEntryObjects.sort(compare);
+          
+      // counter++;
       renderEntryOnDom(userEntryObj);
       // updateEntryList( userEntryObj );
       // clearAddEntryInputs();
@@ -325,6 +344,8 @@ function addEntry(userEntryObj){
 
 /***************************************************************************************************
  * clearAddStudentForm - clears out the form values based on inputIds variable
+ * @param none
+ * @return none
  */
 function clearAddEntryInputs(){
       $('#note').val('');
@@ -332,37 +353,102 @@ function clearAddEntryInputs(){
       $('#weight').val('');
 }
 
+
 /***************************************************************************************************
  * renderEntryOnDom - take in a student object, create html elements from the values and then append the elements
  * into the .student_list tbody
  * @param {object} userEntryObj a single student object with course, name, and weight inside
  */
-function renderEntryOnDom( userEntryObj ){
-      console.log('rendering students onto DOM');
-      var newTr = $('<tr>');
-      var dateItem = $('<td>', {
-            // class: 'col-lg-1 col-md-1 col-sm-1 col-xs-1 text-center', 
-            class: 'text-center',
-            text: userEntryObj.date
-      });
-      var weightItem = $('<td>', {
-            // class: 'col-lg-1 col-md-1 col-sm-1 col-xs-1 text-right', 
-            class: 'text-right',
-            style: 'padding-right: 6%;',
-            text: userEntryObj.weight + ' lbs'
-      });
+function renderEntryOnDom(userEntryObj){
+      //remove all children of the weight table before rendering sorted array of entry objects
+      var weightTable = document.getElementById("weightTable");
+      while (weightTable.firstChild) { //while there's any child left, remove - basically removes all children
+            weightTable.removeChild(weightTable.firstChild);
+      }
+
+      //rendering onto dom from already sorted arrayOfEntryObjects
+      for (var i=0; i<arrayOfEntryObjects.length; i++){
+            var newTr = $('<tr>');
+            var dateItem = $('<td>', {
+                  // class: 'col-lg-1 col-md-1 col-sm-1 col-xs-1 text-center', 
+                  class: 'text-center',
+                  text: arrayOfEntryObjects[i].date
+            });
+            var weightItem = $('<td>', {
+                  // class: 'col-lg-1 col-md-1 col-sm-1 col-xs-1 text-right', 
+                  class: 'text-right',
+                  style: 'padding-right: 6%;',
+                  text: arrayOfEntryObjects[i].weight + ' lbs'
+            });
+            
+            var noteItem = $('<td>', {
+                  // class: 'col-lg-4 col-md-4 col-sm-4 col-xs-4', 
+                  text: arrayOfEntryObjects[i].note
+            });
       
-      var noteItem = $('<td>', {
-            // class: 'col-lg-4 col-md-4 col-sm-4 col-xs-4', 
-            text: userEntryObj.note
-      });
+            $('.student-list tbody').append(newTr);
+            newTr.append(dateItem); 
+            newTr.append(weightItem);
+            newTr.append(noteItem);
 
-      $('.student-list tbody').append(newTr);
-      newTr.append(dateItem); 
-      newTr.append(weightItem);
-      newTr.append(noteItem);
+            if(i == 0){    
+                  newTr.append('<td class="text-center"><span style="font-size:18px; color:black;">-</span>');
+            }else if (i !== 0) {
+                  var prev = arrayOfEntryObjects[i-1].weight;
+                  var curr = arrayOfEntryObjects[i].weight;
+                  console.log('prev:'+ prev);
+                  console.log('curr:'+ curr);
 
-      // $(newTr).append('<td>' + (targetWeight / userEntryObj.weight * 100).toFixed(1) + '%'); //not gonna work
+                  var lostWeightItem = $('<td>', {
+                        class: 'text-center', 
+                        style: 'font-size:14px; color: green;',
+                        // text: '&#9660;' + prev-curr
+                        text: prev-curr
+
+                  });
+                  var gainedWeightItem = $('<td>', {
+                        class: 'text-center', 
+                        style: 'font-size:14px; color: red;',
+                        text: '&#9650;' + curr-prev
+                  });
+
+                  if(prev === curr) { //if weight did not change
+                        newTr.append('<td class="text-center"><span style="font-size:18px; color: blue;">&#9644;</span>');
+                  }else if (prev > curr){ //if lost weight
+                        newTr.append(lostWeightItem);
+                  }else { //if gained weight
+                        newTr.append(gainedWeightItem);
+                  }
+            }
+
+            var editDelButtons = $('<td>', {
+                  class: 'text-center'
+            });
+            var editBtn = $('<button>', {
+                  class: 'btn btn-info',
+                  id: 'edit-entry',
+                  html: '<i class="fa fa-pencil-square-o">',
+                  style: 'margin-right: 5px; padding: 3px 5px; width: 30px;'
+            });
+            var deleteBtn = $('<button>', {
+                  class: 'btn btn-danger',
+                  id: 'delete-entry',
+                  html: '<i class="fa fa-trash">',
+                  style: 'padding: 3px 5px; width: 30px;'
+            }, );
+      
+            editDelButtons.append(editBtn, deleteBtn);
+            newTr.append(editDelButtons);
+      
+            
+            $(editBtn).click(function() {
+                  handleEditEntry (userEntryObj);
+            });
+            $(deleteBtn).click(function() {
+                  handleDeleteEntry (userEntryObj);
+            });
+      }
+     
 
       var moreToLose = userEntryObj.weight - targetWeight;
 
@@ -374,7 +460,7 @@ function renderEntryOnDom( userEntryObj ){
       var more = ['Excuses don&#39;t burn calories &#128581;', 'Yesterday you said tomorrow! &#129324;&#129324;&#129324;', 'Nothing tastes as good as being thin feels! &#128089;', 
             'Only you can change your life. No one can do it for you&#10071;', 'Don&#39;t reward yourself with food. You are not a dog &#128544;'];
 
-      var randomNum = Math.floor(Math.random() *5);
+      var randomNum = Math.floor(Math.random() *5); //to display a random quote from the array
 
       if(moreToLose == 0) { //goal achieved
             $('#motiv-msg').html(equal[randomNum]);
@@ -382,54 +468,20 @@ function renderEntryOnDom( userEntryObj ){
             $('#motiv-msg').html(less[randomNum]);
       }else { //still needs to work towards the goal
             $('#motiv-msg').html(more[randomNum] + ' Only <span style="color: orangered">' +  (moreToLose.toFixed(1) + '</span> lbs left!'));
+  
       }
-
-      //just a placeholder
-      newTr.append('<td class="text-center">difference here');
-      // if(prev === curr) { if weight did not change
-      //       newTr.append('<td><span style='font-size:24px; color: red;'>&#9660;</span>');
-      // }else if (prev > curr) //if lost weight
-      //       newTr.append('<td><span style='font-size:24px; color: green;'>&#9660;</span>');
-      // }else { //if gained weight
-      //       newTr.append('<td><span style='font-size:24px; color: red;'>&#9650;</span>');
-      // }
-
-     
-      var editDelButtons = $('<td>', {
-            class: 'text-center'
-      });
-      var editBtn = $('<button>', {
-            class: 'btn btn-info',
-            id: 'edit-entry',
-            html: '<i class="fa fa-pencil-square-o">',
-            style: 'margin-right: 5px; padding: 3px 5px; width: 30px;'
-      });
-      var deleteBtn = $('<button>', {
-            class: 'btn btn-danger',
-            id: 'delete-entry',
-            html: '<i class="fa fa-trash">',
-            style: 'padding: 3px 5px; width: 30px;'
-      }, );
-
-      editDelButtons.append(editBtn, deleteBtn);
-      newTr.append(editDelButtons);
-
       
-      $(editBtn).click(function() {
-            handleEditEntry (userEntryObj);
-      });
-      $(deleteBtn).click(function() {
-            handleDeleteEntry (userEntryObj);
-      });
- }
+}
+
+
 
 /*************************************************************************************************** 
  * updateEntryList - updates the entry list ORRRRRRRRRRRR should i call it renderUpdatedListOnDom ???????? ?????? ????? ??????????? ??????? ??????? ???????? ?????????
- * @param students {array} the array of entry objects???????????????? needs to work on this!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+ * @param none
  * @returns {undefined} none
  * @calls renderEntryOnDom
  */
-function updateEntryList( arrayOfEntryObjects ){
+function updateEntryList(){
       console.log('updating student lists');
       //get data from server and render? or use the global arrayofentryobjects??
       // renderEntryOnDom( userEntryObj );
@@ -452,7 +504,6 @@ function calculateGradeAverage(){
             return 0;
       return average;
 } */
-
 
 
 
@@ -508,12 +559,13 @@ function handleEditEntry (userEntryObj) {
 
 
 
+
+
 function getDataFromServer() {
       var ajaxConfig = {
             dataType: 'json',
             method: 'post',
-            // url: 'http://localhost:8888/data.php',
-            url: api_url.get_entries_url,
+            url: 'dataApi/get_entries.php',
             data: {
                   browserID: localStorage.getItem('uniqueBrowserID'),
             },
@@ -538,7 +590,7 @@ function updateDataInServer (newEntryObj, entryIDToUpdate) {
       var ajaxConfig = {
             dataType: 'json',
             method: 'post',
-            url: api_url.update_entry_url,
+            url: 'dataApi/update_entry.php',
             data: {
                   browserID: localStorage.getItem('uniqueBrowserID'),
                   entry_id: entryIDToUpdate,
@@ -564,38 +616,21 @@ function updateDataInServer (newEntryObj, entryIDToUpdate) {
 
 
 
-function displayLFZ( result ) {
-      console.log('displayLFZ function called');
-      for (var i=0; i<result.data.length; i++) {
-            addEntry(result.data[i]); //each contains the userEntryObj
-      }
-      console.log('displayLFZ line 212: ', result);
-}
-
-
-
 function sendDataToServer ( userEntryObj ) {
       console.log('sendDataToServer function called');
       var ajaxConfg = {
             dataType: 'json',
             method: 'post',
-            // url: 'http://localhost:8888/data.php',
             url: 'dataApi/add_entry.php',
             data: {
-                  // api_key: 'wjaABAN7N4',
                   entryNote: userEntryObj.note,
                   entryDate: userEntryObj.date,  
                   entryWeight: userEntryObj.weight,
-                  // course_name: "Hllooooooooooooooooooo",
                   action: 'insert'
             },
             success: function (serverResponse) {
                   console.log("adding is successful");
-                  var result = serverResponse;
-                  if (result.success) {
-                        
-                        lastObjInitemArray.id = result.data[result.data.length - 1].id;
-                  }
+                  
             },
             error: function (serverResponse) {
                   console.log("adding is NOT successful");
@@ -608,29 +643,12 @@ function sendDataToServer ( userEntryObj ) {
 
 
 
-function displaySuccess( serverResponse ) {
-      var lastObjFromTheArray = arrayOfEntryObjects[arrayOfEntryObjects.length-1];
-      if(serverResponse.success) {
-            lastObjFromTheArray.id = serverResponse.new_id; //assign new_id in the database to the last student added
-            console.log('Successful!');
-      }
-}
-
-
-
-
-function displayError() {
-      console.log('errrrrrrrrrrrrrrrrrrrror');
-}
-
-
-
 
 function deleteDataFromServer ( userEntryObj ) {
       var ajaxConfg = {
             dataType: 'json',
             method: 'post',
-            url: api_url.delete_entry_url,
+            url: 'dataApi/delete_entry.php',
             data: {
                   browserID: localStorage.getItem('uniqueBrowserID'),
                   entryID: userEntryObj.entryID //tell DB the id you want to delete
@@ -643,6 +661,18 @@ function deleteDataFromServer ( userEntryObj ) {
       $.ajax(ajaxConfg);
 }
 
+
+
+
+
+
+function displayLFZ( result ) {
+      console.log('displayLFZ function called');
+      for (var i=0; i<result.data.length; i++) {
+            addEntry(result.data[i]); //each contains the userEntryObj
+      }
+      console.log('displayLFZ line 212: ', result);
+}
 
 
 
