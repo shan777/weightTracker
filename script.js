@@ -213,10 +213,12 @@ function editGoalWeight(){
  * @return: none
  */
 function handleAddClicked(event){
+      console.log('inside handle add clicked function');
       var validInput = true;
       var userEntryObj = {};
       userEntryObj.date = $('#today').val();
       userEntryObj.weight = $('#weight').val(); //weight is saved as a string
+      userEntryObj.note = $('#note').val();
 
       //removes leading zero(s) from user's weight input if there's any
       if(userEntryObj.weight[0] === '0') {
@@ -226,12 +228,7 @@ function handleAddClicked(event){
             }
             userEntryObj.weight = weightWithoutLeadingZeros;
       }
-      userEntryObj.note = $('#note').val();
-
-
-      if (!userEntryObj.note) { //if note is left blank, note value is set to "N/A"
-            userEntryObj.note = "N/A";
-      }
+      validateWeight(userEntryObj.weight);
       
       if (!userEntryObj.date) { //if date field is left blank, default date value is set to today's date in local time
             var fullDate = new Date();
@@ -244,9 +241,11 @@ function handleAddClicked(event){
                   dt = "0" + dt;
             userEntryObj.date = (yr+"-"+mo+"-"+dt).toString();
       }
-
-      validateWeight(userEntryObj.weight);
     
+      if (!userEntryObj.note) { //if note is left blank, note value is set to "N/A"
+            userEntryObj.note = "N/A";
+      }
+      
       addEntry(userEntryObj);
       clearAddEntryInputs();
    
@@ -259,6 +258,7 @@ function handleAddClicked(event){
  * @return: true if valid input, false if otherwise
  */
 function validateWeight (weight) {
+      console.log('inside validate weight function. weight is: '+weight);
       if (!weight) { //if weight field is empty, display alert message
             $('#edit-weight-alert-desktop').removeClass("hidden");
             $('#weight').focus(function(){
@@ -266,10 +266,11 @@ function validateWeight (weight) {
                   fixWeight ();
             });
       }else if (isNaN(Number(weight)) || Number(weight)<2) { //if input for the weight is not a number ex) 'e' or less than 2
+      console.log('inside else if');
             $('#edit-weight-alert-desktop').removeClass("hidden");
             $('#edit-weight-alert-mobile').removeClass("hidden");
             fixWeight();
-      } 
+      } else {console.log('inside else');}
 }
 
 
@@ -280,6 +281,8 @@ function validateWeight (weight) {
  * @calls: validateWeight
  */
 function fixWeight() {
+      var fixTried = false;
+      console.log('inside fix weight function');
       $('#weight').focus(function(){
             console.log('focused');
             $('#edit-weight-alert-mobile').addClass("hidden");
@@ -292,7 +295,11 @@ function fixWeight() {
                         validateWeight(newWeight);
                   }
             });
+            fixTried = true;
       });
+      if (fixTried)
+            return;
+
 }
 
 
