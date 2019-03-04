@@ -214,7 +214,6 @@ function editGoalWeight(){
  */
 function handleAddClicked(event){
       console.log('inside handle add clicked function');
-      var validInput = true;
       var userEntryObj = {};
       userEntryObj.date = $('#today').val();
       userEntryObj.weight = $('#weight').val(); //weight is saved as a string
@@ -228,7 +227,6 @@ function handleAddClicked(event){
             }
             userEntryObj.weight = weightWithoutLeadingZeros;
       }
-      validateWeight(userEntryObj.weight);
       
       if (!userEntryObj.date) { //if date field is left blank, default date value is set to today's date in local time
             var fullDate = new Date();
@@ -246,8 +244,10 @@ function handleAddClicked(event){
             userEntryObj.note = "N/A";
       }
       
-      addEntry(userEntryObj);
-      clearAddEntryInputs();
+      if(validateWeight(userEntryObj.weight)){
+            addEntry(userEntryObj);
+            clearAddEntryInputs();
+      }
    
 }
 
@@ -258,19 +258,19 @@ function handleAddClicked(event){
  * @return: true if valid input, false if otherwise
  */
 function validateWeight (weight) {
-      console.log('inside validate weight function. weight is: '+weight);
       if (!weight) { //if weight field is empty, display alert message
             $('#edit-weight-alert-desktop').removeClass("hidden");
             $('#weight').focus(function(){
                   $('#edit-weight-alert-desktop').addClass('hidden');
-                  fixWeight ();
+                  fixWeight();
             });
       }else if (isNaN(Number(weight)) || Number(weight)<2) { //if input for the weight is not a number ex) 'e' or less than 2
-      console.log('inside else if');
             $('#edit-weight-alert-desktop').removeClass("hidden");
             $('#edit-weight-alert-mobile').removeClass("hidden");
             fixWeight();
-      } else {console.log('inside else');}
+      } else {
+            return true;
+      }
 }
 
 
@@ -281,25 +281,17 @@ function validateWeight (weight) {
  * @calls: validateWeight
  */
 function fixWeight() {
-      var fixTried = false;
-      console.log('inside fix weight function');
       $('#weight').focus(function(){
-            console.log('focused');
             $('#edit-weight-alert-mobile').addClass("hidden");
             $('#edit-weight-alert-desktop').addClass("hidden");
 
             $('#weight').on('focusout', function(){
                   var newWeight = this.value;
-                  console.log('new weight is '+ newWeight);
                   if (newWeight.length > 1) {
                         validateWeight(newWeight);
                   }
             });
-            fixTried = true;
       });
-      if (fixTried)
-            return;
-
 }
 
 
