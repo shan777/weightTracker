@@ -45,7 +45,6 @@ function initializeApp(){
             targetWeight = localStorage.getItem('targetWeight');
             renderGoalWeight(targetWeight);
       }
-      console.log('target weight is: '+targetWeight);
 
       //displays today's date (in local time) as default
       var date = new Date();
@@ -211,7 +210,6 @@ function editGoalWeight(){
  * @return: none
  */
 function handleAddClicked(){
-      console.log('inside handle add clicked function');
       var userEntryObj = {};
       userEntryObj.date = $('#today').val();
       userEntryObj.weight = $('#weight').val(); //weight is saved as a string
@@ -245,6 +243,7 @@ function handleAddClicked(){
       if(validateWeight(userEntryObj.weight)){
             addEntry(userEntryObj);
             clearAddEntryInputs();
+            sendDataToServer(userEntryObj);
       }
    
 }
@@ -305,31 +304,36 @@ function handleCancelClick(){
 
 
 
-
+/***************************************************************************************************
+ * compare - used to sort the array in ascending order by date
+ * @param: a and b to compare
+ * @returns: compareResult 0 (if a=b), 1 (if a>b), or -1 (if a<b)
+ */
 function compare(a, b) {
       var dateA = a.date;
-      var dateB = b.date;
-      
-      let comparison = 0;
-      if (dateA > dateB) {
-        comparison = 1;
-      } else if (dateA < dateB) {
-        comparison = -1;
+      var dateB = b.date;      
+      var compareResult = 0;
+
+      if (dateA > dateB){
+            compareResult = 1;
+      }else if (dateA < dateB){
+            compareResult = -1;
       }
-      return comparison * -1;
-    }
+      return compareResult;
+}
+
 
 /***************************************************************************************************
  * addEntry - creates a student objects based on input fields in the form and adds the object to global student array
- * @param {undefined} none
+ * @param {object} userEntryObj
  * @return undefined
- * @calls clearAddEntryInputs, updateEntryList
+ * @calls renderEntryOnDom
  */
 function addEntry(userEntryObj){
       arrayOfEntryObjects.push(userEntryObj); 
-      console.log('arrayOfEntryObjects: '+ arrayOfEntryObjects[0].date);
+      
+      //sorting the entries by order of the date (ascending - old on top and recent on the bottom)
       arrayOfEntryObjects.sort(compare);
-
           
       // counter++;
       renderEntryOnDom(userEntryObj);
@@ -340,6 +344,8 @@ function addEntry(userEntryObj){
 
 /***************************************************************************************************
  * clearAddStudentForm - clears out the form values based on inputIds variable
+ * @param none
+ * @return none
  */
 function clearAddEntryInputs(){
       $('#note').val('');
@@ -347,18 +353,20 @@ function clearAddEntryInputs(){
       $('#weight').val('');
 }
 
+
 /***************************************************************************************************
  * renderEntryOnDom - take in a student object, create html elements from the values and then append the elements
  * into the .student_list tbody
  * @param {object} userEntryObj a single student object with course, name, and weight inside
  */
 function renderEntryOnDom(userEntryObj){
-      // remove all children of the weight table before rendering sorted array of entry objects
-      var tableChildren = document.getElementById("weightTable");
-      while (tableChildren.firstChild) {
-            tableChildren.removeChild(tableChildren.firstChild);
+      //remove all children of the weight table before rendering sorted array of entry objects
+      var weightTable = document.getElementById("weightTable");
+      while (weightTable.firstChild) { //while there's any child left, remove - basically removes all children
+            weightTable.removeChild(weightTable.firstChild);
       }
-      
+
+      //rendering onto dom from already sorted arrayOfEntryObjects
       for (var i=0; i<arrayOfEntryObjects.length; i++){
             var newTr = $('<tr>');
             var dateItem = $('<td>', {
@@ -383,15 +391,35 @@ function renderEntryOnDom(userEntryObj){
             newTr.append(weightItem);
             newTr.append(noteItem);
 
-            //just a placeholder
-            newTr.append('<td class="text-center">difference here');
-            // if(prev === curr) { if weight did not change
-            //       newTr.append('<td><span style='font-size:24px; color: red;'>&#9660;</span>');
-            // }else if (prev > curr) //if lost weight
-            //       newTr.append('<td><span style='font-size:24px; color: green;'>&#9660;</span>');
-            // }else { //if gained weight
-            //       newTr.append('<td><span style='font-size:24px; color: red;'>&#9650;</span>');
-            // }
+            if(i == 0){    
+                  newTr.append('<td class="text-center"><span style="font-size:18px; color:black;">-</span>');
+            }else if (i !== 0) {
+                  var prev = arrayOfEntryObjects[i-1].weight;
+                  var curr = arrayOfEntryObjects[i].weight;
+                  console.log('prev:'+ prev);
+                  console.log('curr:'+ curr);
+
+                  var lostWeightItem = $('<td>', {
+                        class: 'text-center', 
+                        style: 'font-size:14px; color: green;',
+                        // text: '&#9660;' + prev-curr
+                        text: prev-curr
+
+                  });
+                  var gainedWeightItem = $('<td>', {
+                        class: 'text-center', 
+                        style: 'font-size:14px; color: red;',
+                        text: '&#9650;' + curr-prev
+                  });
+
+                  if(prev === curr) { //if weight did not change
+                        newTr.append('<td class="text-center"><span style="font-size:18px; color: blue;">&#9644;</span>');
+                  }else if (prev > curr){ //if lost weight
+                        newTr.append(lostWeightItem);
+                  }else { //if gained weight
+                        newTr.append(gainedWeightItem);
+                  }
+            }
 
             var editDelButtons = $('<td>', {
                   class: 'text-center'
@@ -422,8 +450,6 @@ function renderEntryOnDom(userEntryObj){
       }
      
 
-      // $(newTr).append('<td>' + (targetWeight / userEntryObj.weight * 100).toFixed(1) + '%'); //not gonna work
-
       var moreToLose = userEntryObj.weight - targetWeight;
 
       //display motivational quotes to lose weight/cheer up
@@ -434,7 +460,7 @@ function renderEntryOnDom(userEntryObj){
       var more = ['Excuses don&#39;t burn calories &#128581;', 'Yesterday you said tomorrow! &#129324;&#129324;&#129324;', 'Nothing tastes as good as being thin feels! &#128089;', 
             'Only you can change your life. No one can do it for you&#10071;', 'Don&#39;t reward yourself with food. You are not a dog &#128544;'];
 
-      var randomNum = Math.floor(Math.random() *5);
+      var randomNum = Math.floor(Math.random() *5); //to display a random quote from the array
 
       if(moreToLose == 0) { //goal achieved
             $('#motiv-msg').html(equal[randomNum]);
@@ -442,21 +468,20 @@ function renderEntryOnDom(userEntryObj){
             $('#motiv-msg').html(less[randomNum]);
       }else { //still needs to work towards the goal
             $('#motiv-msg').html(more[randomNum] + ' Only <span style="color: orangered">' +  (moreToLose.toFixed(1) + '</span> lbs left!'));
+  
       }
-
       
+}
 
-     
-      
- }
+
 
 /*************************************************************************************************** 
  * updateEntryList - updates the entry list ORRRRRRRRRRRR should i call it renderUpdatedListOnDom ???????? ?????? ????? ??????????? ??????? ??????? ???????? ?????????
- * @param students {array} the array of entry objects???????????????? needs to work on this!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+ * @param none
  * @returns {undefined} none
  * @calls renderEntryOnDom
  */
-function updateEntryList( arrayOfEntryObjects ){
+function updateEntryList(){
       console.log('updating student lists');
       //get data from server and render? or use the global arrayofentryobjects??
       // renderEntryOnDom( userEntryObj );
@@ -479,7 +504,6 @@ function calculateGradeAverage(){
             return 0;
       return average;
 } */
-
 
 
 
@@ -535,12 +559,13 @@ function handleEditEntry (userEntryObj) {
 
 
 
+
+
 function getDataFromServer() {
       var ajaxConfig = {
             dataType: 'json',
             method: 'post',
-            // url: 'http://localhost:8888/data.php',
-            url: api_url.get_entries_url,
+            url: 'dataApi/get_entries.php',
             data: {
                   browserID: localStorage.getItem('uniqueBrowserID'),
             },
@@ -565,7 +590,7 @@ function updateDataInServer (newEntryObj, entryIDToUpdate) {
       var ajaxConfig = {
             dataType: 'json',
             method: 'post',
-            url: api_url.update_entry_url,
+            url: 'dataApi/update_entry.php',
             data: {
                   browserID: localStorage.getItem('uniqueBrowserID'),
                   entry_id: entryIDToUpdate,
@@ -591,38 +616,21 @@ function updateDataInServer (newEntryObj, entryIDToUpdate) {
 
 
 
-function displayLFZ( result ) {
-      console.log('displayLFZ function called');
-      for (var i=0; i<result.data.length; i++) {
-            addEntry(result.data[i]); //each contains the userEntryObj
-      }
-      console.log('displayLFZ line 212: ', result);
-}
-
-
-
 function sendDataToServer ( userEntryObj ) {
       console.log('sendDataToServer function called');
       var ajaxConfg = {
             dataType: 'json',
             method: 'post',
-            // url: 'http://localhost:8888/data.php',
             url: 'dataApi/add_entry.php',
             data: {
-                  // api_key: 'wjaABAN7N4',
                   entryNote: userEntryObj.note,
                   entryDate: userEntryObj.date,  
                   entryWeight: userEntryObj.weight,
-                  // course_name: "Hllooooooooooooooooooo",
                   action: 'insert'
             },
             success: function (serverResponse) {
                   console.log("adding is successful");
-                  var result = serverResponse;
-                  if (result.success) {
-                        
-                        lastObjInitemArray.id = result.data[result.data.length - 1].id;
-                  }
+                  
             },
             error: function (serverResponse) {
                   console.log("adding is NOT successful");
@@ -635,29 +643,12 @@ function sendDataToServer ( userEntryObj ) {
 
 
 
-function displaySuccess( serverResponse ) {
-      var lastObjFromTheArray = arrayOfEntryObjects[arrayOfEntryObjects.length-1];
-      if(serverResponse.success) {
-            lastObjFromTheArray.id = serverResponse.new_id; //assign new_id in the database to the last student added
-            console.log('Successful!');
-      }
-}
-
-
-
-
-function displayError() {
-      console.log('errrrrrrrrrrrrrrrrrrrror');
-}
-
-
-
 
 function deleteDataFromServer ( userEntryObj ) {
       var ajaxConfg = {
             dataType: 'json',
             method: 'post',
-            url: api_url.delete_entry_url,
+            url: 'dataApi/delete_entry.php',
             data: {
                   browserID: localStorage.getItem('uniqueBrowserID'),
                   entryID: userEntryObj.entryID //tell DB the id you want to delete
@@ -670,6 +661,18 @@ function deleteDataFromServer ( userEntryObj ) {
       $.ajax(ajaxConfg);
 }
 
+
+
+
+
+
+function displayLFZ( result ) {
+      console.log('displayLFZ function called');
+      for (var i=0; i<result.data.length; i++) {
+            addEntry(result.data[i]); //each contains the userEntryObj
+      }
+      console.log('displayLFZ line 212: ', result);
+}
 
 
 
