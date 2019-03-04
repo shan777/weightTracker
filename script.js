@@ -17,7 +17,7 @@ $(document).ready(initializeApp);
  */
 var arrayOfEntryObjects = [];
 var counter = 0;
-var targetWeight = 'N/A'; 
+var targetWeight; 
 
 /***************************************************************************************************
 * initializeApp - initializes the application, including adding click handlers and pulling in any data from the server
@@ -38,10 +38,10 @@ function initializeApp(){
 
       //show modal to ask for goal weight for very first time the user uses this app only
       //not working thoooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo
-      if(targetWeight === 'N/A'){
+      if(targetWeight === undefined){
             showModal('goalWeightInput');
             renderGoalWeight(targetWeight);
-      }else{
+      }else{ console.log('helllllooooo');
             targetWeight = localStorage.getItem('targetWeight');
             renderGoalWeight(targetWeight);
       }
@@ -53,7 +53,6 @@ function initializeApp(){
       var dateStr = date.toISOString().substring(0, 10);
       var field = document.querySelector('#today');
       field.value = dateStr;
-
 
 
       // getDataFromServer();
@@ -69,7 +68,6 @@ function initializeApp(){
 * @returns none 
 */
 function addClickHandlersToElements(){
-      console.log('click handlers addeddddddddddddddddddddddddd');
       // $("#goalWeightEnterButton").click(handleGoalWeight); //from edit goal weight modal
       // $("#addButton-mobile").click(handleAddClicked); //add entry button
       // $("#addButton-desktop").click(handleAddClicked); //add entry button
@@ -158,8 +156,8 @@ function handleGoalWeight() {
  * @returns {undefined} none
  */
 function renderGoalWeight( targetWeight ){
-      if(targetWeight == 'N/A') {
-            $('.goal-weight-display').html(targetWeight);
+      if(targetWeight == undefined) {
+            $('.goal-weight-display').html('N/A');
       }else {
             $('.goal-weight-display').html(targetWeight + ' lbs');
       }
@@ -212,7 +210,7 @@ function editGoalWeight(){
  * @param: {object} event  The event object from the click
  * @return: none
  */
-function handleAddClicked(event){
+function handleAddClicked(){
       console.log('inside handle add clicked function');
       var userEntryObj = {};
       userEntryObj.date = $('#today').val();
@@ -305,6 +303,18 @@ function handleCancelClick(){
       clearAddEntryInputs();
 }
 
+function compare(a, b) {
+      var dateA = a.date;
+      var dateB = b.date;
+      
+      let comparison = 0;
+      if (dateA > dateB) {
+        comparison = 1;
+      } else if (dateA < dateB) {
+        comparison = -1;
+      }
+      return comparison * -1;
+    }
 
 /***************************************************************************************************
  * addEntry - creates a student objects based on input fields in the form and adds the object to global student array
@@ -313,9 +323,14 @@ function handleCancelClick(){
  * @calls clearAddEntryInputs, updateEntryList
  */
 function addEntry(userEntryObj){
-      console.log('addEntry function called');
       arrayOfEntryObjects.push(userEntryObj); 
-      counter++;
+      console.log('arrayOfEntryObjects: '+ arrayOfEntryObjects[0].date);
+      arrayOfEntryObjects.sort(compare);
+
+          
+          
+          console.log(bands.sort(compare));
+      // counter++;
       renderEntryOnDom(userEntryObj);
       // updateEntryList( userEntryObj );
       // clearAddEntryInputs();
