@@ -392,28 +392,25 @@ function renderEntryOnDom(userEntryObj){
             newTr.append(noteItem);
 
             if(i == 0){    
-                  newTr.append('<td class="text-center"><span style="font-size:18px; color:black;">-</span>');
+                  newTr.append('<td class="text-left" style="font-size:18px; color:black; padding-left: 8%;">-');
             }else if (i !== 0) {
                   var prev = arrayOfEntryObjects[i-1].weight;
                   var curr = arrayOfEntryObjects[i].weight;
-                  console.log('prev:'+ prev);
-                  console.log('curr:'+ curr);
-
+                  
                   var lostWeightItem = $('<td>', {
-                        class: 'text-center', 
-                        style: 'font-size:14px; color: green;',
-                        // text: '&#9660;' + prev-curr
-                        text: prev-curr
+                        class: 'text-left', 
+                        style: 'font-size:14px; color: green; padding-left: 7%;',
+                        html: '&#9660; ' + (prev-curr)
 
                   });
                   var gainedWeightItem = $('<td>', {
-                        class: 'text-center', 
-                        style: 'font-size:14px; color: red;',
-                        text: '&#9650;' + curr-prev
+                        class: 'text-left', 
+                        style: 'font-size:14px; color: red; padding-left: 7%;',
+                        html: '&#9650; ' + (curr-prev)
                   });
 
                   if(prev === curr) { //if weight did not change
-                        newTr.append('<td class="text-center"><span style="font-size:18px; color: blue;">&#9644;</span>');
+                        newTr.append('<td class="text-left" style="font-size:18px; color: blue; padding-left: 8%;">-');
                   }else if (prev > curr){ //if lost weight
                         newTr.append(lostWeightItem);
                   }else { //if gained weight
