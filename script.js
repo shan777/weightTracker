@@ -382,7 +382,7 @@ function renderEntryOnDom(userEntryObj){
             });
             
             var noteItem = $('<td>', {
-                  // class: 'col-lg-4 col-md-4 col-sm-4 col-xs-4', 
+                  class: 'text-center', 
                   text: arrayOfEntryObjects[i].note
             });
       
