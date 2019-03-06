@@ -1,18 +1,18 @@
 <?php
 require_once('../config/mysql_connect.php');
 $entry_date = $_POST['entryDate'];
-$entry_weight = $_POST['weight'];
-$entry_note = $_POST['note'];
-$entry_id = $_POST['entryID'];
-$browser_id = $_POST['browserId'];
+$entry_weight = $_POST['entryWeight'];
+$entry_note = $_POST['entryNote'];
+$browser_id = $_POST['browserID'];
 
 echo "inside php file : entry_note is" . $entry_note;
 
 // print($item_name);
 $addEntryQuery = "INSERT INTO `weight_entry`
-(`entryID`, `entryDate`, `entryWeight`, `entryNote`, `browseID`) 
-VALUES (NULL, '{$entry_date}', '{$entry_weight}', '{$entry_note}', '{$entry_id}', '{$browser_id}');";
-mysqli_query($conn, $addItemQuery);
+(`entryID`, `entryDate`, `entryWeight`, `entryNote`, `browserID`) 
+VALUES (NULL, '{$entry_date}', {$entry_weight}, '{$entry_note}', {$browser_id});";
+mysqli_query($conn, $addEntryQuery); //takes query and send to db
+$entry_id = mysqli_insert_id($conn); //should return the last id of my insert
 // print($addItemQuery);
 // exit();
 $query = "SELECT DISTINCT * 
@@ -20,7 +20,7 @@ $query = "SELECT DISTINCT *
           WHERE entryDate = '$entry_date'
           AND entryWeight = '$entry_weight'
           AND entryNote = '$entry_note'
-          AND entryID = '$entry_id'
+          AND entryID = $entry_id
           AND browserID = '$browser_id' 
           ";
 // print($query);

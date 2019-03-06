@@ -38,11 +38,12 @@ function initializeApp(){
 
       //show modal to ask for goal weight for very first time the user uses this app only
       //not working thoooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo
+      targetWeight = localStorage.getItem('targetWeight');
+
       if(targetWeight === undefined){
             showModal('goalWeightInput');
             renderGoalWeight(targetWeight);
       }else{ console.log('helllllooooo');
-            targetWeight = localStorage.getItem('targetWeight');
             renderGoalWeight(targetWeight);
       }
 
@@ -545,6 +546,7 @@ function handleEditEntry (event) {
       console.log('node value: ', ex.nodeValue); //not working - why nodeValue not working?
       console.log('innerHTML: ', ex.innerHTML); //working
       console.log('textContent: ', ex.textContent); //working ... textContent is faster than innerHTML so textContent?
+      console.log('innerText: ', ex.innerText); //working ... textContent is faster than innerHTML so textContent?
 
 
 
@@ -571,7 +573,6 @@ function handleEditEntry (event) {
 
 
       // console.log($(event.currentTarget).parent().text());
-      debugger;
       showModal ('edit');
 
       //gotta update the following::::::::::::::::::::::
@@ -670,6 +671,7 @@ function sendDataToServer ( userEntryObj ) {
                   entryNote: userEntryObj.note,
                   entryDate: userEntryObj.date,  
                   entryWeight: userEntryObj.weight,
+                  browserID: localStorage.getItem('uniqueBrowserID'),
                   action: 'insert'
             },
             success: function (serverResponse) {
