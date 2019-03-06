@@ -107,7 +107,8 @@ function checkRemainingChar(){
       var len = 0;
       var maxchar = 80;
 
-      len = this.value.length
+      $("#remainingC").removeClass('hidden');
+      len = this.value.length;
       if(len > maxchar){
             return false;
       }else if (len > 0){
@@ -115,6 +116,11 @@ function checkRemainingChar(){
       }else{
             $("#remainingC").html("Remaining characters: " + (maxchar));
       }
+
+      $('#add-entry-btn').click(function() {
+
+            $("#remainingC").addClass('hidden');
+      });
   
 }
 
