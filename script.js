@@ -117,8 +117,7 @@ function checkRemainingChar(){
             $("#remainingC").html("Remaining characters: " + (maxchar));
       }
 
-      $('#add-entry-btn').click(function() {
-
+      $('#note').focusout(function() {
             $("#remainingC").addClass('hidden');
       });
   
