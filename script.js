@@ -80,7 +80,8 @@ function addClickHandlersToElements(){
       $('.goal-weight-display').click(editGoalWeight);
       // $("#updateButton").click(handleUpdateClicked); //update button from editing modal
       $('#note').keyup(checkRemainingChar);
-      
+      $('#entry-editBtn').click(handleEditEntry);
+      $('#entry-deleteBtn').click(handleDeleteEntry);
 }
 
 
@@ -107,7 +108,8 @@ function checkRemainingChar(){
       var len = 0;
       var maxchar = 80;
 
-      len = this.value.length
+      $("#remainingC").removeClass('hidden');
+      len = this.value.length;
       if(len > maxchar){
             return false;
       }else if (len > 0){
@@ -115,6 +117,10 @@ function checkRemainingChar(){
       }else{
             $("#remainingC").html("Remaining characters: " + (maxchar));
       }
+
+      $('#note').focusout(function() {
+            $("#remainingC").addClass('hidden');
+      });
   
 }
 
@@ -170,7 +176,7 @@ function renderGoalWeight( targetWeight ){
  * @returns none
  */
 function editGoalWeight(){
-      var newGoalWeight = $('<input>', {
+      var newGoalWeightInput = $('<input>', {
             type: 'number',
             class: 'form-control input-goal-weight',
             name: 'updatedGoalWeight',
@@ -179,24 +185,24 @@ function editGoalWeight(){
             text: $('#updated-goal-weight').val(),
       });
 
-      var saveBtn = $('<button>', {
+      var newGoalWeightSaveBtn = $('<button>', {
             id: 'saveButton',
             class: 'save-btn',
             text: 'Save'
       });
 
       $('.goal-weight-edit-btn').addClass('hidden');
-      $('.goal-text').append(newGoalWeight, saveBtn);
+      $('.goal-text').append(newGoalWeightInput, newGoalWeightSaveBtn);
 
       if($('#saveButton').click(function() {
             var updatedWeight = $('#updated-goal-weight').val(); 
             renderGoalWeight(updatedWeight);
             targetWeight = updatedWeight;
-            newGoalWeight.addClass('hidden');
-            saveBtn.addClass('hidden');
+            newGoalWeightInput.addClass('hidden');
+            newGoalWeightSaveBtn.addClass('hidden');
             $('.goal-weight-edit-btn').removeClass('hidden');
-            saveBtn.remove();
-            newGoalWeight.remove();
+            newGoalWeightSaveBtn.remove();
+            newGoalWeightInput.remove();
       }));
       
       //updateEntryList( userEntryObj ); //To Goal messages should be updated based on updated goal weight
@@ -370,19 +376,22 @@ function renderEntryOnDom(userEntryObj){
       for (var i=0; i<arrayOfEntryObjects.length; i++){
             var newTr = $('<tr>');
             var dateItem = $('<td>', {
-                  // class: 'col-lg-1 col-md-1 col-sm-1 col-xs-1 text-center', 
-                  class: 'text-center',
+                  // class: 'col-lg-1 col-md-1 col-sm-1 col-xs-1 text-center',
+                  // id: 'entry-'+i+'-date', 
+                  class: 'text-center entry-date',
                   text: arrayOfEntryObjects[i].date
             });
             var weightItem = $('<td>', {
                   // class: 'col-lg-1 col-md-1 col-sm-1 col-xs-1 text-right', 
+                  id: 'entry-'+i+'-weight', 
                   class: 'text-right',
                   style: 'padding-right: 6%;',
                   text: arrayOfEntryObjects[i].weight + ' lbs'
             });
             
             var noteItem = $('<td>', {
-                  // class: 'col-lg-4 col-md-4 col-sm-4 col-xs-4', 
+                  id: 'entry-'+i+'-note', 
+                  class: 'text-center', 
                   text: arrayOfEntryObjects[i].note
             });
       
@@ -398,12 +407,14 @@ function renderEntryOnDom(userEntryObj){
                   var curr = arrayOfEntryObjects[i].weight;
                   
                   var lostWeightItem = $('<td>', {
+                        id: 'entry-'+i+'-diff', 
                         class: 'text-left', 
                         style: 'font-size:14px; color: green; padding-left: 7%;',
                         html: '&#9660; ' + (prev-curr)
 
                   });
                   var gainedWeightItem = $('<td>', {
+                        id: 'entry-'+i+'-diff', 
                         class: 'text-left', 
                         style: 'font-size:14px; color: red; padding-left: 7%;',
                         html: '&#9650; ' + (curr-prev)
@@ -422,28 +433,22 @@ function renderEntryOnDom(userEntryObj){
                   class: 'text-center'
             });
             var editBtn = $('<button>', {
-                  class: 'btn btn-info',
-                  id: 'edit-entry',
-                  html: '<i class="fa fa-pencil-square-o">',
+                  class: 'btn btn-info fa fa-pencil-square-o entry-editBtn',
+                  // html: '<i class="fa fa-pencil-square-o">',
                   style: 'margin-right: 5px; padding: 3px 5px; width: 30px;'
             });
             var deleteBtn = $('<button>', {
-                  class: 'btn btn-danger',
-                  id: 'delete-entry',
-                  html: '<i class="fa fa-trash">',
+                  class: 'btn btn-danger fa fa-trash entry-deleteBtn',
+                  // html: '<i class="fa fa-trash">',
                   style: 'padding: 3px 5px; width: 30px;'
             }, );
       
             editDelButtons.append(editBtn, deleteBtn);
             newTr.append(editDelButtons);
       
+            $('.entry-editBtn').click(handleEditEntry);
+            $('.entry-deleteBtn').click(handleDeleteEntry);
             
-            $(editBtn).click(function() {
-                  handleEditEntry (userEntryObj);
-            });
-            $(deleteBtn).click(function() {
-                  handleDeleteEntry (userEntryObj);
-            });
       }
      
 
@@ -454,8 +459,8 @@ function renderEntryOnDom(userEntryObj){
             '&#127942; You made it! So proud of you. &#128079;', 'You made it happen &#128077; Keep it up!'];
       var less = ['You can set a new goal if you want &#128513;', '&#128175; Keep it up!', 'You are doing great &#128077;', '&#128170; You are strong &#10071;', 
             '&#127939; &#127939; &#127939; Let&#39;s get fit!'];
-      var more = ['Excuses don&#39;t burn calories &#128581;', 'Yesterday you said tomorrow! &#129324;&#129324;&#129324;', 'Nothing tastes as good as being thin feels! &#128089;', 
-            'Only you can change your life. No one can do it for you&#10071;', 'Don&#39;t reward yourself with food. You are not a dog &#128544;'];
+      var more = ['Excuses don&#39;t burn calories &#128581; &#9656;&#9656; ', 'Yesterday you said tomorrow! &#129324;&#129324;&#129324; &#9656;&#9656; ', 'Nothing tastes as good as being thin feels! &#128089; &#9656;&#9656; ', 
+            'Only you can change your life. No one can do it for you &#9656;&#9656; ', 'Don&#39;t reward yourself with food. You are not a dog &#128544; &#9656;&#9656; '];
 
       var randomNum = Math.floor(Math.random() *5); //to display a random quote from the array
 
@@ -464,7 +469,7 @@ function renderEntryOnDom(userEntryObj){
       }else if (moreToLose<0){ //lost more than the set goal
             $('#motiv-msg').html(less[randomNum]);
       }else { //still needs to work towards the goal
-            $('#motiv-msg').html(more[randomNum] + ' Only <span style="color: orangered">' +  (moreToLose.toFixed(1) + '</span> lbs left!'));
+            $('#motiv-msg').html(more[randomNum] + ' <span style="color: orangered">' +  (moreToLose.toFixed(1) + '</span> lbs left!'));
   
       }
       
@@ -523,9 +528,53 @@ function handleDeleteEntry (userEntryObj) {
 
 
 
-function handleEditEntry (userEntryObj) {
+function handleEditEntry (event) {
+
+//which is the best way?
+
+      var target= event.currentTarget;       console.log('target:',target);
+
+      var parent = target.parentElement; 
+      console.log('parents parents first child :',parent.parentElement.firstChild);
+      console.log('parents parents first child nodevalue :', (parent.parentElement.firstChild).nodeValue);   //nodeValue not working
+      console.log('parents parents first child innerHTML :', ((parent.parentElement.firstChild).innerHTML)); //works
+
+
+      var ex = document.getElementsByClassName("entry-date")[0];
+      console.log('node ex: ', ex);
+      console.log('node value: ', ex.nodeValue); //not working - why nodeValue not working?
+      console.log('innerHTML: ', ex.innerHTML); //working
+      console.log('textContent: ', ex.textContent); //working ... textContent is faster than innerHTML so textContent?
+
+
+
+      var parentss = event.currentTarget.parents;  
+      console.log('parentSSSS working?: ', parentss); //doesn't work
+
+
+      var trparent= $(".entry-editBtn").parents("tr");
+      console.log('parentsuntil first child (date): ', trparent[0].firstChild.innerHTML);
+      console.log('parentsuntil 2nd child (weight): ', trparent[0].childNodes[1].innerHTML);
+      console.log('parentsuntil 3rd child (note): ', trparent[0].childNodes[2].innerHTML);
+
+
+      console.log('find: ', (trparent.find(".entry-date"))); //doesn't work
+
+
+
+
+      
+      var wt = trparent[0].childNodes[1].innerHTML;
+      var wn = wt.split(' ');
+      var weightNum = wn[0];
+      console.log('just the weight is : ',weightNum);
+
+
+      // console.log($(event.currentTarget).parent().text());
+      debugger;
       showModal ('edit');
 
+      //gotta update the following::::::::::::::::::::::
       var dateField = document.querySelector('#updatedDate');
       dateField.value = userEntryObj.date;
       var weightField = document.querySelector('#updatedWeight');
@@ -533,9 +582,7 @@ function handleEditEntry (userEntryObj) {
       var noteField = document.querySelector('#updatedNote');
       noteField.value = userEntryObj.note;
 
-      // document.getElementsByName('newInputWeight')[0].placeholder = userEntryObj.weight;
-      // document.getElementsByName('newInputNote')[0].placeholder = userEntryObj.note;
-
+      
       if($('#updateButton').click(function() {
             console.log('updatebutton clicked');
             var indexNumToUpdate = arrayOfEntryObjects.indexOf(userEntryObj);
@@ -548,7 +595,7 @@ function handleEditEntry (userEntryObj) {
 
             hideModal ('edit');
 
-            var entryIDToUpdate = arrayOfEntryObjects[indexNumToUpdate].entryID;
+            var entryIDToUpdate = arrayOfEntryObjects[indexNumToUpdate].entryID; //??????????????????????????
             updateDataInServer ( newUserEntryObj, entryIDToUpdate ); 
       }));
 }
