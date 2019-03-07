@@ -568,55 +568,19 @@ function handleDeleteEntry (userEntryObj) {
 
 
 function handleEditEntry (event) {
-
-//which is the best way?
-
-      var target= event.currentTarget;       console.log('target:',target);
-
+      var trparent= event.currentTarget.closest("tr"); //finds the editEntry button's closest 'tr' 
      
-      var ex = document.getElementsByClassName("entry-date")[0];
-      console.log('node ex: ', ex);
-      console.log('node value: ', ex.nodeValue); //not working - why nodeValue not working?
-      console.log('innerHTML: ', ex.innerHTML); //working
-      console.log('textContent: ', ex.textContent); //working ... textContent is faster than innerHTML so textContent?
-      console.log('innerText: ', ex.innerText); //working ... textContent is faster than innerHTML so textContent?
+      var wt = (trparent.childNodes[1].innerText).split(' '); //returns ex) "140 lbs" so parsing just the number (before the space)
+      var weightNum = wt[0]; //wt[1] has "lbs"
 
-
-
-      var parentss = event.currentTarget.parents;  
-      console.log('parentSSSS working?: ', parentss); //doesn't work
-
-
-      var trparent= $(".entry-editBtn").parents("tr");
-      console.log('parentsuntil first child (date): ', trparent[0].firstChild.innerHTML);
-      console.log('parentsuntil 2nd child (weight): ', trparent[0].childNodes[1].innerHTML);
-      console.log('parentsuntil 3rd child (note): ', trparent[0].childNodes[2].innerHTML);
-
-      var cloParent = $(".entry-editBtn").closest("tr");
-      console.log('closest', cloParent);
-
-      console.log('find: ', (trparent.find(".entry-date"))); //doesn't work
-
-
-
-
-      
-      var wt = trparent[0].childNodes[1].innerHTML;
-      var wn = wt.split(' ');
-      var weightNum = wn[0];
-      console.log('just the weight is : ',weightNum);
-
-
-      // console.log($(event.currentTarget).parent().text());
       showModal ('edit');
 
-      //gotta update the following::::::::::::::::::::::
       var dateField = document.querySelector('#updatedDate');
-      dateField.value = userEntryObj.date;
+      dateField.value = trparent.firstChild.innerText;
       var weightField = document.querySelector('#updatedWeight');
-      weightField.value = userEntryObj.weight;
+      weightField.value = weightNum;
       var noteField = document.querySelector('#updatedNote');
-      noteField.value = userEntryObj.note;
+      noteField.value = trparent.childNodes[2].innerText;
 
       
       if($('#updateButton').click(function() {
