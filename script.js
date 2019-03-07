@@ -51,7 +51,12 @@ function initializeApp(){
       var date = new Date();
       date.setMinutes(date.getMinutes() - date.getTimezoneOffset());
       var dateStr = date.toISOString().substring(0, 10);
-      var field = document.querySelector('#today');
+      var windowWidth = window.innerWidth;
+      if(windowWidth<991){ //mobile size
+            var field = document.querySelector('.today-mobile');
+      }else{
+            var field = document.querySelector('.today-desktop');
+      }
       field.value = dateStr;
 
 
@@ -69,8 +74,7 @@ function initializeApp(){
 */
 function addClickHandlersToElements(){
       // $("#goalWeightEnterButton").click(handleGoalWeight); //from edit goal weight modal
-      // $("#addButton-mobile").click(handleAddClicked); //add entry button
-      // $("#addButton-desktop").click(handleAddClicked); //add entry button
+
       $(".add-entry-btn").click(handleAddClicked); //add entry button
 
       // $("#cancelButton-mobile").click(handleCancelClick); //cancel entry button
@@ -80,9 +84,9 @@ function addClickHandlersToElements(){
       // $(".btn-info").click(getDataFromServer); //get data from server button
       $('.goal-weight-display').click(editGoalWeight);
       // $("#updateButton").click(handleUpdateClicked); //update button from editing modal
-      $('#note').keyup(checkRemainingChar);
-      $('#entry-editBtn').click(handleEditEntry);
-      $('#entry-deleteBtn').click(handleDeleteEntry);
+      $('.note').keyup(checkRemainingChar);
+      $('.entry-editBtn').click(handleEditEntry);
+      $('.entry-deleteBtn').click(handleDeleteEntry);
 }
 
 
@@ -119,7 +123,7 @@ function checkRemainingChar(){
             $("#remainingC").html("Remaining characters: " + (maxchar));
       }
 
-      $('#note').focusout(function() {
+      $('.note').focusout(function() {
             $("#remainingC").addClass('hidden');
       });
   
@@ -216,12 +220,20 @@ function editGoalWeight(){
  * @param: {object} event  The event object from the click
  * @return: none
  */
-function handleAddClicked(){
-      var userEntryObj = {};
-      userEntryObj.date = $('#today').val();
-      userEntryObj.weight = $('#weight').val(); //weight is saved as a string
-      userEntryObj.note = $('#note').val();
 
+function handleAddClicked(){
+      var windowWidth = window.innerWidth;
+      var userEntryObj = {};
+      if(windowWidth<991){ //mobile size
+            userEntryObj.date = $('.today-mobile').val();
+            userEntryObj.weight = $('.weight-mobile').val(); //weight is saved as a string
+            userEntryObj.note = $('.note-mobile').val();
+      }else { //desktop size
+            userEntryObj.date = $('.today-desktop').val();
+            userEntryObj.weight = $('.weight-desktop').val(); //weight is saved as a string
+            userEntryObj.note = $('.note-desktop').val();
+      }
+      debugger;
       //removes leading zero(s) from user's weight input if there's any
       if(userEntryObj.weight[0] === '0') {
             var weightWithoutLeadingZeros = userEntryObj.weight;
@@ -263,14 +275,14 @@ function handleAddClicked(){
  */
 function validateWeight (weight) {
       if (!weight) { //if weight field is empty, display alert message
-            $('#edit-weight-alert-desktop').removeClass("hidden");
-            $('#weight').focus(function(){
-                  $('#edit-weight-alert-desktop').addClass('hidden');
+            $('.edit-weight-alert-desktop').removeClass("hidden");
+            $('.weight').focus(function(){
+                  $('.edit-weight-alert-desktop').addClass('hidden');
                   fixWeight();
             });
       }else if (isNaN(Number(weight)) || Number(weight)<2) { //if input for the weight is not a number ex) 'e' or less than 2
-            $('#edit-weight-alert-desktop').removeClass("hidden");
-            $('#edit-weight-alert-mobile').removeClass("hidden");
+            $('.edit-weight-alert-desktop').removeClass("hidden");
+            $('.edit-weight-alert-mobile').removeClass("hidden");
             fixWeight();
       } else {
             return true;
@@ -285,11 +297,22 @@ function validateWeight (weight) {
  * @calls: validateWeight
  */
 function fixWeight() {
-      $('#weight').focus(function(){
-            $('#edit-weight-alert-mobile').addClass("hidden");
-            $('#edit-weight-alert-desktop').addClass("hidden");
+      $('.weight-mobile').focus(function(){
+            $('.edit-weight-alert-mobile').addClass("hidden");
+            $('.edit-weight-alert-desktop').addClass("hidden");
 
-            $('#weight').on('focusout', function(){
+            $('.weight-mobile').on('focusout', function(){
+                  var newWeight = this.value;
+                  if (newWeight.length > 1) {
+                        validateWeight(newWeight);
+                  }
+            });
+      });
+      $('.weight-desktop').focus(function(){
+            $('.edit-weight-alert-mobile').addClass("hidden");
+            $('.edit-weight-alert-desktop').addClass("hidden");
+
+            $('.weight-desktop').on('focusout', function(){
                   var newWeight = this.value;
                   if (newWeight.length > 1) {
                         validateWeight(newWeight);
@@ -355,9 +378,13 @@ function addEntry(userEntryObj){
  * @return none
  */
 function clearAddEntryInputs(){
-      $('#note').val('');
-      $('#today').val('');
-      $('#weight').val('');
+      $('.today-mobile').val('');
+      $('.weight-mobile').val('');
+      $('.note-mobile').val('');
+
+      $('.today-desktop').val('');
+      $('.weight-desktop').val('');
+      $('.note-desktop').val('');
 }
 
 
@@ -378,21 +405,18 @@ function renderEntryOnDom(userEntryObj){
             var newTr = $('<tr>');
             var dateItem = $('<td>', {
                   // class: 'col-lg-1 col-md-1 col-sm-1 col-xs-1 text-center',
-                  // id: 'entry-'+i+'-date', 
                   class: 'text-center entry-date',
                   text: arrayOfEntryObjects[i].date
             });
             var weightItem = $('<td>', {
                   // class: 'col-lg-1 col-md-1 col-sm-1 col-xs-1 text-right', 
-                  id: 'entry-'+i+'-weight', 
-                  class: 'text-right',
+                  class: 'text-right entry-weight',
                   style: 'padding-right: 6%;',
                   text: arrayOfEntryObjects[i].weight + ' lbs'
             });
             
             var noteItem = $('<td>', {
-                  id: 'entry-'+i+'-note', 
-                  class: 'text-center', 
+                  class: 'text-center entry-note', 
                   text: arrayOfEntryObjects[i].note
             });
       
@@ -409,14 +433,13 @@ function renderEntryOnDom(userEntryObj){
                   
                   var lostWeightItem = $('<td>', {
                         id: 'entry-'+i+'-diff', 
-                        class: 'text-left', 
+                        class: 'text-left entry-diff', 
                         style: 'font-size:14px; color: green; padding-left: 7%;',
                         html: '&#9660; ' + (prev-curr)
 
                   });
                   var gainedWeightItem = $('<td>', {
-                        id: 'entry-'+i+'-diff', 
-                        class: 'text-left', 
+                        class: 'text-left entry-diff', 
                         style: 'font-size:14px; color: red; padding-left: 7%;',
                         html: '&#9650; ' + (curr-prev)
                   });
@@ -535,12 +558,7 @@ function handleEditEntry (event) {
 
       var target= event.currentTarget;       console.log('target:',target);
 
-      var parent = target.parentElement; 
-      console.log('parents parents first child :',parent.parentElement.firstChild);
-      console.log('parents parents first child nodevalue :', (parent.parentElement.firstChild).nodeValue);   //nodeValue not working
-      console.log('parents parents first child innerHTML :', ((parent.parentElement.firstChild).innerHTML)); //works
-
-
+     
       var ex = document.getElementsByClassName("entry-date")[0];
       console.log('node ex: ', ex);
       console.log('node value: ', ex.nodeValue); //not working - why nodeValue not working?
