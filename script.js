@@ -36,14 +36,13 @@ function initializeApp(){
             uniqueBrowserID = localStorage.setItem('uniqueBrowserID', randomGeneratedID);
       }
 
-      //show modal to ask for goal weight for very first time the user uses this app only
-      //not working thoooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo
+      
       targetWeight = localStorage.getItem('targetWeight');
 
       if(targetWeight === undefined){
             showModal('goalWeightInput');
             renderGoalWeight(targetWeight);
-      }else{ console.log('helllllooooo');
+      }else{ 
             renderGoalWeight(targetWeight);
       }
 
@@ -84,7 +83,9 @@ function addClickHandlersToElements(){
       // $(".btn-info").click(getDataFromServer); //get data from server button
       $('.goal-weight-display').click(editGoalWeight);
       // $("#updateButton").click(handleUpdateClicked); //update button from editing modal
-      $('.note').keyup(checkRemainingChar);
+      $('.note-mobile').keyup(checkRemainingChar);
+      $('.note-desktop').keyup(checkRemainingChar);
+
       $('.entry-editBtn').click(handleEditEntry);
       $('.entry-deleteBtn').click(handleDeleteEntry);
 }
@@ -123,9 +124,16 @@ function checkRemainingChar(){
             $("#remainingC").html("Remaining characters: " + (maxchar));
       }
 
-      $('.note').focusout(function() {
-            $("#remainingC").addClass('hidden');
-      });
+      var windowWidth = window.innerWidth;
+      if(windowWidth<991){ //mobile size
+            $('.note-mobile').focusout(function() {
+                  $("#remainingC").addClass('hidden');
+            });
+      }else {
+            $('.note-desktop').focusout(function() {
+                  $("#remainingC").addClass('hidden');
+            });
+      }
   
 }
 
@@ -233,7 +241,7 @@ function handleAddClicked(){
             userEntryObj.weight = $('.weight-desktop').val(); //weight is saved as a string
             userEntryObj.note = $('.note-desktop').val();
       }
-      debugger;
+
       //removes leading zero(s) from user's weight input if there's any
       if(userEntryObj.weight[0] === '0') {
             var weightWithoutLeadingZeros = userEntryObj.weight;
@@ -276,10 +284,18 @@ function handleAddClicked(){
 function validateWeight (weight) {
       if (!weight) { //if weight field is empty, display alert message
             $('.edit-weight-alert-desktop').removeClass("hidden");
-            $('.weight').focus(function(){
-                  $('.edit-weight-alert-desktop').addClass('hidden');
-                  fixWeight();
-            });
+            var windowWidth = window.innerWidth;
+            if(windowWidth<991){ //mobile size
+                  $('.weight-mobile').focus(function(){
+                        $('.edit-weight-alert-desktop').addClass('hidden');
+                        fixWeight();
+                  });
+            }else{
+                  $('.weight-desktop').focus(function(){
+                        $('.edit-weight-alert-desktop').addClass('hidden');
+                        fixWeight();
+                  });
+            }
       }else if (isNaN(Number(weight)) || Number(weight)<2) { //if input for the weight is not a number ex) 'e' or less than 2
             $('.edit-weight-alert-desktop').removeClass("hidden");
             $('.edit-weight-alert-mobile').removeClass("hidden");
@@ -428,11 +444,10 @@ function renderEntryOnDom(userEntryObj){
             if(i == 0){    
                   newTr.append('<td class="text-left" style="font-size:18px; color:black; padding-left: 8%;">-');
             }else if (i !== 0) {
-                  var prev = arrayOfEntryObjects[i-1].weight;
-                  var curr = arrayOfEntryObjects[i].weight;
-                  
+                  var prev = Number(arrayOfEntryObjects[i-1].weight);
+                  var curr = Number(arrayOfEntryObjects[i].weight);
+
                   var lostWeightItem = $('<td>', {
-                        id: 'entry-'+i+'-diff', 
                         class: 'text-left entry-diff', 
                         style: 'font-size:14px; color: green; padding-left: 7%;',
                         html: '&#9660; ' + (prev-curr)
@@ -447,13 +462,13 @@ function renderEntryOnDom(userEntryObj){
                   if(prev === curr) { //if weight did not change
                         newTr.append('<td class="text-left" style="font-size:18px; color: blue; padding-left: 8%;">-');
                   }else if (prev > curr){ //if lost weight
-                        newTr.append(lostWeightItem);
+                        newTr.append(lostWeightItem); 
                   }else { //if gained weight
                         newTr.append(gainedWeightItem);
                   }
             }
 
-            var editDelButtons = $('<td>', {
+            var editAndDelButtons = $('<td>', {
                   class: 'text-center'
             });
             var editBtn = $('<button>', {
@@ -467,8 +482,8 @@ function renderEntryOnDom(userEntryObj){
                   style: 'padding: 3px 5px; width: 30px;'
             }, );
       
-            editDelButtons.append(editBtn, deleteBtn);
-            newTr.append(editDelButtons);
+            editAndDelButtons.append(editBtn, deleteBtn);
+            newTr.append(editAndDelButtons);
       
             $('.entry-editBtn').click(handleEditEntry);
             $('.entry-deleteBtn').click(handleDeleteEntry);
@@ -577,6 +592,8 @@ function handleEditEntry (event) {
       console.log('parentsuntil 2nd child (weight): ', trparent[0].childNodes[1].innerHTML);
       console.log('parentsuntil 3rd child (note): ', trparent[0].childNodes[2].innerHTML);
 
+      var cloParent = $(".entry-editBtn").closest("tr");
+      console.log('closest', cloParent);
 
       console.log('find: ', (trparent.find(".entry-date"))); //doesn't work
 
