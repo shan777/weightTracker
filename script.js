@@ -18,6 +18,7 @@ $(document).ready(initializeApp);
 var arrayOfEntryObjects = [];
 var counter = 0;
 var targetWeight; 
+var entryIDNum = 1;
 
 /***************************************************************************************************
 * initializeApp - initializes the application, including adding click handlers and pulling in any data from the server
@@ -30,19 +31,19 @@ function initializeApp(){
       $('.lbs-text').addClass('hidden');
 
       //assigns unique user browser id so displays only the user's own data on user's browser
-      var uniqueBrowserID = localStorage.getItem('uniqueBrowserID');
+      var uniqueBrowserID = localStorage.getItem('uniqueBrowserID'); //uniqueBrowserID type is a string
       if (!uniqueBrowserID) { //if it doesn't have one existed already, assign a new id
             var randomGeneratedID = Math.floor(Math.random() * new Date(10000000000)); //random integer (up to 10 digit)
             uniqueBrowserID = localStorage.setItem('uniqueBrowserID', randomGeneratedID);
       }
 
-      //show modal to ask for goal weight for very first time the user uses this app only
-      //not working thoooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo
+      
+      targetWeight = localStorage.getItem('targetWeight');
+
       if(targetWeight === undefined){
             showModal('goalWeightInput');
             renderGoalWeight(targetWeight);
-      }else{ console.log('helllllooooo');
-            targetWeight = localStorage.getItem('targetWeight');
+      }else{ 
             renderGoalWeight(targetWeight);
       }
 
@@ -50,7 +51,12 @@ function initializeApp(){
       var date = new Date();
       date.setMinutes(date.getMinutes() - date.getTimezoneOffset());
       var dateStr = date.toISOString().substring(0, 10);
-      var field = document.querySelector('#today');
+      var windowWidth = window.innerWidth;
+      if(windowWidth<991){ //mobile size
+            var field = document.querySelector('.today-mobile');
+      }else{
+            var field = document.querySelector('.today-desktop');
+      }
       field.value = dateStr;
 
 
@@ -68,8 +74,7 @@ function initializeApp(){
 */
 function addClickHandlersToElements(){
       // $("#goalWeightEnterButton").click(handleGoalWeight); //from edit goal weight modal
-      // $("#addButton-mobile").click(handleAddClicked); //add entry button
-      // $("#addButton-desktop").click(handleAddClicked); //add entry button
+
       $(".add-entry-btn").click(handleAddClicked); //add entry button
 
       // $("#cancelButton-mobile").click(handleCancelClick); //cancel entry button
@@ -79,9 +84,11 @@ function addClickHandlersToElements(){
       // $(".btn-info").click(getDataFromServer); //get data from server button
       $('.goal-weight-display').click(editGoalWeight);
       // $("#updateButton").click(handleUpdateClicked); //update button from editing modal
-      $('#note').keyup(checkRemainingChar);
-      $('#entry-editBtn').click(handleEditEntry);
-      $('#entry-deleteBtn').click(handleDeleteEntry);
+      $('.note-mobile').keyup(checkRemainingChar);
+      $('.note-desktop').keyup(checkRemainingChar);
+
+      $('.entry-editBtn').click(handleEditEntry);
+      $('.entry-deleteBtn').click(handleDeleteEntry);
 }
 
 
@@ -118,9 +125,16 @@ function checkRemainingChar(){
             $("#remainingC").html("Remaining characters: " + (maxchar));
       }
 
-      $('#note').focusout(function() {
-            $("#remainingC").addClass('hidden');
-      });
+      var windowWidth = window.innerWidth;
+      if(windowWidth<991){ //mobile size
+            $('.note-mobile').focusout(function() {
+                  $("#remainingC").addClass('hidden');
+            });
+      }else {
+            $('.note-desktop').focusout(function() {
+                  $("#remainingC").addClass('hidden');
+            });
+      }
   
 }
 
@@ -215,11 +229,22 @@ function editGoalWeight(){
  * @param: {object} event  The event object from the click
  * @return: none
  */
+
 function handleAddClicked(){
+      var windowWidth = window.innerWidth;
       var userEntryObj = {};
-      userEntryObj.date = $('#today').val();
-      userEntryObj.weight = $('#weight').val(); //weight is saved as a string
-      userEntryObj.note = $('#note').val();
+      userEntryObj.entryID = entryIDNum;
+      entryIDNum++;
+
+      if(windowWidth < 991){ //mobile size
+            userEntryObj.date = $('.today-mobile').val();
+            userEntryObj.weight = $('.weight-mobile').val(); //weight is saved as a string
+            userEntryObj.note = $('.note-mobile').val();
+      }else { //desktop size
+            userEntryObj.date = $('.today-desktop').val();
+            userEntryObj.weight = $('.weight-desktop').val(); //weight is saved as a string
+            userEntryObj.note = $('.note-desktop').val();
+      }
 
       //removes leading zero(s) from user's weight input if there's any
       if(userEntryObj.weight[0] === '0') {
@@ -229,7 +254,7 @@ function handleAddClicked(){
             }
             userEntryObj.weight = weightWithoutLeadingZeros;
       }
-      
+
       if (!userEntryObj.date) { //if date field is left blank, default date value is set to today's date in local time
             var fullDate = new Date();
             var yr = fullDate.getFullYear();
@@ -241,12 +266,15 @@ function handleAddClicked(){
                   dt = "0" + dt;
             userEntryObj.date = (yr+"-"+mo+"-"+dt).toString();
       }
+
     
       if (!userEntryObj.note) { //if note is left blank, note value is set to "N/A"
             userEntryObj.note = "N/A";
       }
-      
+
+
       if(validateWeight(userEntryObj.weight)){
+            // userEntryObj.weight = Number(userEntryObj.weight); //converting the string type weight to the number
             addEntry(userEntryObj);
             clearAddEntryInputs();
             sendDataToServer(userEntryObj);
@@ -262,14 +290,22 @@ function handleAddClicked(){
  */
 function validateWeight (weight) {
       if (!weight) { //if weight field is empty, display alert message
-            $('#edit-weight-alert-desktop').removeClass("hidden");
-            $('#weight').focus(function(){
-                  $('#edit-weight-alert-desktop').addClass('hidden');
-                  fixWeight();
-            });
+            $('.edit-weight-alert-desktop').removeClass("hidden");
+            var windowWidth = window.innerWidth;
+            if(windowWidth<991){ //mobile size
+                  $('.weight-mobile').focus(function(){
+                        $('.edit-weight-alert-desktop').addClass('hidden');
+                        fixWeight();
+                  });
+            }else{
+                  $('.weight-desktop').focus(function(){
+                        $('.edit-weight-alert-desktop').addClass('hidden');
+                        fixWeight();
+                  });
+            }
       }else if (isNaN(Number(weight)) || Number(weight)<2) { //if input for the weight is not a number ex) 'e' or less than 2
-            $('#edit-weight-alert-desktop').removeClass("hidden");
-            $('#edit-weight-alert-mobile').removeClass("hidden");
+            $('.edit-weight-alert-desktop').removeClass("hidden");
+            $('.edit-weight-alert-mobile').removeClass("hidden");
             fixWeight();
       } else {
             return true;
@@ -284,11 +320,20 @@ function validateWeight (weight) {
  * @calls: validateWeight
  */
 function fixWeight() {
-      $('#weight').focus(function(){
-            $('#edit-weight-alert-mobile').addClass("hidden");
-            $('#edit-weight-alert-desktop').addClass("hidden");
+      $('.weight-mobile').focus(function(){
+            $('.edit-weight-alert-mobile').addClass("hidden");
 
-            $('#weight').on('focusout', function(){
+            $('.weight-mobile').on('focusout', function(){
+                  var newWeight = this.value;
+                  if (newWeight.length > 1) {
+                        validateWeight(newWeight);
+                  }
+            });
+      });
+      $('.weight-desktop').focus(function(){
+            $('.edit-weight-alert-desktop').addClass("hidden");
+
+            $('.weight-desktop').on('focusout', function(){
                   var newWeight = this.value;
                   if (newWeight.length > 1) {
                         validateWeight(newWeight);
@@ -336,9 +381,10 @@ function compare(a, b) {
  * @calls renderEntryOnDom
  */
 function addEntry(userEntryObj){
+      //add to the array
       arrayOfEntryObjects.push(userEntryObj); 
       
-      //sorting the entries by order of the date (ascending - old on top and recent on the bottom)
+      //then sort the entries by order of the date (ascending - old on top and recent on the bottom)
       arrayOfEntryObjects.sort(compare);
           
       // counter++;
@@ -354,9 +400,13 @@ function addEntry(userEntryObj){
  * @return none
  */
 function clearAddEntryInputs(){
-      $('#note').val('');
-      $('#today').val('');
-      $('#weight').val('');
+      $('.today-mobile').val('');
+      $('.weight-mobile').val('');
+      $('.note-mobile').val('');
+
+      $('.today-desktop').val('');
+      $('.weight-desktop').val('');
+      $('.note-desktop').val('');
 }
 
 
@@ -377,21 +427,18 @@ function renderEntryOnDom(userEntryObj){
             var newTr = $('<tr>');
             var dateItem = $('<td>', {
                   // class: 'col-lg-1 col-md-1 col-sm-1 col-xs-1 text-center',
-                  // id: 'entry-'+i+'-date', 
                   class: 'text-center entry-date',
                   text: arrayOfEntryObjects[i].date
             });
             var weightItem = $('<td>', {
                   // class: 'col-lg-1 col-md-1 col-sm-1 col-xs-1 text-right', 
-                  id: 'entry-'+i+'-weight', 
-                  class: 'text-right',
+                  class: 'text-right entry-weight',
                   style: 'padding-right: 6%;',
                   text: arrayOfEntryObjects[i].weight + ' lbs'
             });
             
             var noteItem = $('<td>', {
-                  id: 'entry-'+i+'-note', 
-                  class: 'text-center', 
+                  class: 'text-center entry-note', 
                   text: arrayOfEntryObjects[i].note
             });
       
@@ -403,19 +450,17 @@ function renderEntryOnDom(userEntryObj){
             if(i == 0){    
                   newTr.append('<td class="text-left" style="font-size:18px; color:black; padding-left: 8%;">-');
             }else if (i !== 0) {
-                  var prev = arrayOfEntryObjects[i-1].weight;
-                  var curr = arrayOfEntryObjects[i].weight;
-                  
+                  var prev = Number(arrayOfEntryObjects[i-1].weight);
+                  var curr = Number(arrayOfEntryObjects[i].weight);
+
                   var lostWeightItem = $('<td>', {
-                        id: 'entry-'+i+'-diff', 
-                        class: 'text-left', 
+                        class: 'text-left entry-diff', 
                         style: 'font-size:14px; color: green; padding-left: 7%;',
                         html: '&#9660; ' + (prev-curr)
 
                   });
                   var gainedWeightItem = $('<td>', {
-                        id: 'entry-'+i+'-diff', 
-                        class: 'text-left', 
+                        class: 'text-left entry-diff', 
                         style: 'font-size:14px; color: red; padding-left: 7%;',
                         html: '&#9650; ' + (curr-prev)
                   });
@@ -423,13 +468,13 @@ function renderEntryOnDom(userEntryObj){
                   if(prev === curr) { //if weight did not change
                         newTr.append('<td class="text-left" style="font-size:18px; color: blue; padding-left: 8%;">-');
                   }else if (prev > curr){ //if lost weight
-                        newTr.append(lostWeightItem);
+                        newTr.append(lostWeightItem); 
                   }else { //if gained weight
                         newTr.append(gainedWeightItem);
                   }
             }
 
-            var editDelButtons = $('<td>', {
+            var editAndDelButtons = $('<td>', {
                   class: 'text-center'
             });
             var editBtn = $('<button>', {
@@ -443,8 +488,8 @@ function renderEntryOnDom(userEntryObj){
                   style: 'padding: 3px 5px; width: 30px;'
             }, );
       
-            editDelButtons.append(editBtn, deleteBtn);
-            newTr.append(editDelButtons);
+            editAndDelButtons.append(editBtn, deleteBtn);
+            newTr.append(editAndDelButtons);
       
             $('.entry-editBtn').click(handleEditEntry);
             $('.entry-deleteBtn').click(handleDeleteEntry);
@@ -529,58 +574,19 @@ function handleDeleteEntry (userEntryObj) {
 
 
 function handleEditEntry (event) {
+      var trparent= event.currentTarget.closest("tr"); //finds the editEntry button's closest 'tr' 
+     
+      var wt = (trparent.childNodes[1].innerText).split(' '); //returns ex) "140 lbs" so parsing just the number (before the space)
+      var weightNum = wt[0]; //wt[1] has "lbs"
 
-//which is the best way?
-
-      var target= event.currentTarget;       console.log('target:',target);
-
-      var parent = target.parentElement; 
-      console.log('parents parents first child :',parent.parentElement.firstChild);
-      console.log('parents parents first child nodevalue :', (parent.parentElement.firstChild).nodeValue);   //nodeValue not working
-      console.log('parents parents first child innerHTML :', ((parent.parentElement.firstChild).innerHTML)); //works
-
-
-      var ex = document.getElementsByClassName("entry-date")[0];
-      console.log('node ex: ', ex);
-      console.log('node value: ', ex.nodeValue); //not working - why nodeValue not working?
-      console.log('innerHTML: ', ex.innerHTML); //working
-      console.log('textContent: ', ex.textContent); //working ... textContent is faster than innerHTML so textContent?
-
-
-
-      var parentss = event.currentTarget.parents;  
-      console.log('parentSSSS working?: ', parentss); //doesn't work
-
-
-      var trparent= $(".entry-editBtn").parents("tr");
-      console.log('parentsuntil first child (date): ', trparent[0].firstChild.innerHTML);
-      console.log('parentsuntil 2nd child (weight): ', trparent[0].childNodes[1].innerHTML);
-      console.log('parentsuntil 3rd child (note): ', trparent[0].childNodes[2].innerHTML);
-
-
-      console.log('find: ', (trparent.find(".entry-date"))); //doesn't work
-
-
-
-
-      
-      var wt = trparent[0].childNodes[1].innerHTML;
-      var wn = wt.split(' ');
-      var weightNum = wn[0];
-      console.log('just the weight is : ',weightNum);
-
-
-      // console.log($(event.currentTarget).parent().text());
-      debugger;
       showModal ('edit');
 
-      //gotta update the following::::::::::::::::::::::
       var dateField = document.querySelector('#updatedDate');
-      dateField.value = userEntryObj.date;
+      dateField.value = trparent.firstChild.innerText;
       var weightField = document.querySelector('#updatedWeight');
-      weightField.value = userEntryObj.weight;
+      weightField.value = weightNum;
       var noteField = document.querySelector('#updatedNote');
-      noteField.value = userEntryObj.note;
+      noteField.value = trparent.childNodes[2].innerText;
 
       
       if($('#updateButton').click(function() {
@@ -661,7 +667,7 @@ function updateDataInServer (newEntryObj, entryIDToUpdate) {
 
 
 function sendDataToServer ( userEntryObj ) {
-      console.log('sendDataToServer function called');
+      console.log('inside sendDataToServer function');
       var ajaxConfg = {
             dataType: 'json',
             method: 'post',
@@ -670,6 +676,7 @@ function sendDataToServer ( userEntryObj ) {
                   entryNote: userEntryObj.note,
                   entryDate: userEntryObj.date,  
                   entryWeight: userEntryObj.weight,
+                  browserID: localStorage.getItem('uniqueBrowserID'),
                   action: 'insert'
             },
             success: function (serverResponse) {
@@ -677,9 +684,7 @@ function sendDataToServer ( userEntryObj ) {
                   
             },
             error: function (serverResponse) {
-                  console.log("adding is NOT successful");
-
-                  $(".add-item-error").removeClass('hidden')
+                  console.log("adding is NOT successful", serverResponse);
             }
       }
       $.ajax(ajaxConfg);

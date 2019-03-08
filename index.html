@@ -198,7 +198,6 @@
                         <div>
                             <textarea rows="2" type="text" class="form-control note-text" name="newInputNote" id="updatedNote"></textarea>
                         </div>
-                        <span id="remaining-char"></span>
                     </div>
                     <div class="alert alert-danger hidden" id="edit-modal-note-alert" role="alert" style="padding: 5px 15px">
                             <span class="glyphicon glyphicon-exclamation-sign"></span>
@@ -254,17 +253,17 @@
                 <span class="input-group-addon">
                     <span class="glyphicon glyphicon-calendar"></span>
                 </span>
-                <input type="date" class="form-control" name="todaysDate" id="today">
+                <input type="date" class="form-control today-desktop" name="todaysDate">
             </div>
 
             <div class="input-group form-group">
                     <span class="input-group-addon">
                         <span class="glyphicon glyphicon-scale"></span>
                     </span>
-                    <input type="number" class="form-control" name="studentName" id="weight" placeholder="Weight">
+                    <input type="number" class="form-control weight-desktop" name="studentName" placeholder="Weight">
                         <span class="input-group-addon">lbs</span>
             </div>
-            <div class="alert alert-danger hidden" id="edit-weight-alert-desktop" role="alert" style="padding: 5px 15px">
+            <div class="alert alert-danger hidden edit-weight-alert-desktop" role="alert" style="padding: 5px 15px">
                     <span class="glyphicon glyphicon-exclamation-sign"></span>
                     Valid Weight is required.
             </div>
@@ -273,13 +272,13 @@
                 <span class="input-group-addon">
                     <span class="glyphicon glyphicon-comment"></span>
                 </span>
-                <textarea rows="2" type="text" class="form-control" name="note" id="note" maxlength="80" placeholder="Add a note (0 to 80 characters)"></textarea>
+                <textarea rows="2" type="text" class="form-control note-desktop" name="note" maxlength="80" placeholder="Add a note (0 to 80 characters)"></textarea>
             </div>
             <span id="remainingC" class="" style="padding-left: 45px; font-style: italic; color: gray;"></span>
 
             <div style="margin-top: 40px;">
-                <button type="button" class="btn btn-success add-entry-btn" id="addButton">Add</button>
-                <button type="button" class="btn btn-default" id="cancelButton">Cancel</button>
+                <button type="button" class="btn btn-success add-entry-btn">Add</button>
+                <button type="button" class="btn btn-default cancelButton">Cancel</button>
                 <!-- <button type="button" class="btn-info">Get data From Server</button> -->
             </div>
         </div>
@@ -292,17 +291,17 @@
                 <span class="input-group-addon">
                     <span class="glyphicon glyphicon-calendar"></span>
                 </span>
-                <input type="date" class="form-control" name="todaysDate" id="today">
+                <input type="date" class="form-control today-mobile" name="todaysDate">
             </div>
 
             <div class="input-group form-group">
                 <span class="input-group-addon">
                     <span class="glyphicon glyphicon-scale"></span>
                 </span>
-                <input type="number" class="form-control" name="studentName" id="weight" placeholder="Weight">
+                <input type="number" class="form-control weight-mobile" name="studentName" placeholder="Weight">
                     <span class="input-group-addon">lbs</span>
             </div>
-            <div class="alert alert-danger hidden" id="edit-weight-alert-mobile" role="alert" style="padding: 5px 15px">
+            <div class="alert alert-danger hidden edit-weight-alert-mobile" role="alert" style="padding: 5px 15px">
                     <span class="glyphicon glyphicon-exclamation-sign"></span>
                     Valid Weight is required.
             </div>
@@ -311,12 +310,12 @@
                 <span class="input-group-addon">
                     <span class="glyphicon glyphicon-comment"></span>
                 </span>
-                <input type="text" class="form-control" name="note" id="note" placeholder="Add a note (0 to 80 characters)">
+                <input type="text" class="form-control note-mobile" name="note" placeholder="Add a note (0 to 80 characters)">
             </div>
             
             <div style="margin-bottom: 20px;">
-                <button type="button" class="btn btn-success add-entry-btn" id="addButton">Add</button>
-                <button type="button" class="btn btn-default" id="cancelButton">Cancel</button>
+                <button type="button" class="btn btn-success add-entry-btn">Add</button>
+                <button type="button" class="btn btn-default cancelButton">Cancel</button>
             </div>
             <!-- <button type="button" class="btn-info">Get data From Server</button> -->
         </div>
@@ -346,14 +345,5 @@
             </table>
         </div>
     </div>
-    <script>
-    $('.note-text').keypress(function(){
-
-if(this.value.length > 10){
-    return false;
-}
-$("#remainingC").html("Remaining characters : " +(10 - this.value.length));
-});
-    </script>
 </body>
 </html>
