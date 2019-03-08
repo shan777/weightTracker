@@ -18,6 +18,7 @@ $(document).ready(initializeApp);
 var arrayOfEntryObjects = [];
 var counter = 0;
 var targetWeight; 
+var entryIDNum = 1;
 
 /***************************************************************************************************
 * initializeApp - initializes the application, including adding click handlers and pulling in any data from the server
@@ -30,7 +31,7 @@ function initializeApp(){
       $('.lbs-text').addClass('hidden');
 
       //assigns unique user browser id so displays only the user's own data on user's browser
-      var uniqueBrowserID = localStorage.getItem('uniqueBrowserID');
+      var uniqueBrowserID = localStorage.getItem('uniqueBrowserID'); //uniqueBrowserID type is a string
       if (!uniqueBrowserID) { //if it doesn't have one existed already, assign a new id
             var randomGeneratedID = Math.floor(Math.random() * new Date(10000000000)); //random integer (up to 10 digit)
             uniqueBrowserID = localStorage.setItem('uniqueBrowserID', randomGeneratedID);
@@ -232,7 +233,10 @@ function editGoalWeight(){
 function handleAddClicked(){
       var windowWidth = window.innerWidth;
       var userEntryObj = {};
-      if(windowWidth<991){ //mobile size
+      userEntryObj.entryID = entryIDNum;
+      entryIDNum++;
+
+      if(windowWidth < 991){ //mobile size
             userEntryObj.date = $('.today-mobile').val();
             userEntryObj.weight = $('.weight-mobile').val(); //weight is saved as a string
             userEntryObj.note = $('.note-mobile').val();
@@ -250,7 +254,7 @@ function handleAddClicked(){
             }
             userEntryObj.weight = weightWithoutLeadingZeros;
       }
-      
+
       if (!userEntryObj.date) { //if date field is left blank, default date value is set to today's date in local time
             var fullDate = new Date();
             var yr = fullDate.getFullYear();
@@ -262,12 +266,15 @@ function handleAddClicked(){
                   dt = "0" + dt;
             userEntryObj.date = (yr+"-"+mo+"-"+dt).toString();
       }
+
     
       if (!userEntryObj.note) { //if note is left blank, note value is set to "N/A"
             userEntryObj.note = "N/A";
       }
-      
+
+
       if(validateWeight(userEntryObj.weight)){
+            // userEntryObj.weight = Number(userEntryObj.weight); //converting the string type weight to the number
             addEntry(userEntryObj);
             clearAddEntryInputs();
             sendDataToServer(userEntryObj);
@@ -315,7 +322,6 @@ function validateWeight (weight) {
 function fixWeight() {
       $('.weight-mobile').focus(function(){
             $('.edit-weight-alert-mobile').addClass("hidden");
-            $('.edit-weight-alert-desktop').addClass("hidden");
 
             $('.weight-mobile').on('focusout', function(){
                   var newWeight = this.value;
@@ -325,7 +331,6 @@ function fixWeight() {
             });
       });
       $('.weight-desktop').focus(function(){
-            $('.edit-weight-alert-mobile').addClass("hidden");
             $('.edit-weight-alert-desktop').addClass("hidden");
 
             $('.weight-desktop').on('focusout', function(){
@@ -376,9 +381,10 @@ function compare(a, b) {
  * @calls renderEntryOnDom
  */
 function addEntry(userEntryObj){
+      //add to the array
       arrayOfEntryObjects.push(userEntryObj); 
       
-      //sorting the entries by order of the date (ascending - old on top and recent on the bottom)
+      //then sort the entries by order of the date (ascending - old on top and recent on the bottom)
       arrayOfEntryObjects.sort(compare);
           
       // counter++;
@@ -661,7 +667,7 @@ function updateDataInServer (newEntryObj, entryIDToUpdate) {
 
 
 function sendDataToServer ( userEntryObj ) {
-      console.log('sendDataToServer function called');
+      console.log('inside sendDataToServer function');
       var ajaxConfg = {
             dataType: 'json',
             method: 'post',
@@ -678,9 +684,7 @@ function sendDataToServer ( userEntryObj ) {
                   
             },
             error: function (serverResponse) {
-                  console.log("adding is NOT successful");
-
-                  $(".add-item-error").removeClass('hidden')
+                  console.log("adding is NOT successful", serverResponse);
             }
       }
       $.ajax(ajaxConfg);
