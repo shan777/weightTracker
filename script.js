@@ -669,7 +669,7 @@ function updateDataInServer (newEntryObj, entryIDToUpdate) {
 function sendDataToServer ( userEntryObj ) {
       console.log('inside sendDataToServer function');
       var ajaxConfg = {
-            dataType: 'json',
+            // dataType: 'json',
             method: 'post',
             url: 'dataApi/add_entry.php',
             data: {
