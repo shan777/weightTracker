@@ -220,6 +220,8 @@ function editGoalWeight(){
       }));
       
       //updateEntryList( userEntryObj ); //To Goal messages should be updated based on updated goal weight
+      //renderEntryOnDom(userEntryObj); or just render the motiv msg again based on new goal weight???
+
 }
 
 
@@ -275,7 +277,6 @@ function handleAddClicked(){
 
       if(validateWeight(userEntryObj.weight)){
             // userEntryObj.weight = Number(userEntryObj.weight); //converting the string type weight to the number
-            addEntry(userEntryObj);
             clearAddEntryInputs();
             sendDataToServer(userEntryObj);
       }
@@ -389,7 +390,7 @@ function addEntry(userEntryObj){
           
       // counter++;
       renderEntryOnDom(userEntryObj);
-      // updateEntryList( userEntryObj );
+      // updateEntryList( userEntryObj ); this is not needed if renderEntryOnDom is there... i think
       // clearAddEntryInputs();
 }
 
@@ -418,7 +419,9 @@ function clearAddEntryInputs(){
 function renderEntryOnDom(userEntryObj){
       //remove all children of the weight table before rendering sorted array of entry objects
       var weightTable = document.getElementById("weightTable");
-      while (weightTable.firstChild) { //while there's any child left, remove - basically removes all children
+      //while there's any child left, remove - basically removes all children
+      //this is cleaning up the weight table before updating w/ the updated table
+      while (weightTable.firstChild) { 
             weightTable.removeChild(weightTable.firstChild);
       }
 
@@ -560,13 +563,18 @@ function handleDeleteEntry (userEntryObj) {
       showModal ('delete');
       
       if($('#delete-entry-button').click(function() {
-            //gotta call updateEntryList function here to render the updated list on dom 
+            var entryIDToDelete = userEntryObj.entryID;
             var indexNumToDelete = arrayOfEntryObjects.indexOf(userEntryObj);
-            arrayOfEntryObjects.splice(indexNumToDelete, 1); // check again!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-            $(event.currentTarget).parent().remove(); //not sure what this is doing
-            hideModal ('delete');
+console.log('index of entry to delete: ', indexNumToDelete);
+console.log('entryID to delete: ', entryIDToDelete);
 
-            deleteDataFromServer ( userEntryObj );
+            arrayOfEntryObjects.splice(indexNumToDelete, 1); //remove the entry from the global arrayOfEntryObjects
+            $(event.currentTarget).parent().parenet().remove(); //remove the entry by removing its parent node
+
+            hideModal ('delete');
+            //gotta call updateEntryList function here to render the updated list on dom - or the below instead? let's check later
+            renderEntryOnDom(userEntryObj);
+            deleteDataFromServer ( entryIDToDelete );
       }));
       
 }
@@ -626,6 +634,8 @@ function getDataFromServer() {
                         for (var i = 0; i < result.data.length; i++) {
                               arrayOfEntryObjects.push(result.data[i]);
                               updateEntryList();
+                              //            renderEntryOnDom(userEntryObj); let's come back here
+
                         };
                   };
             },
@@ -655,6 +665,8 @@ function updateDataInServer (newEntryObj, entryIDToUpdate) {
                         for (var i = 0; i < result.data.length; i++) {
                               arrayOfEntryObjects.push(result.data[i]);
                               updateEntryList();
+                              //            renderEntryOnDom(userEntryObj);
+
                         };
                   };
             },
@@ -670,6 +682,7 @@ function sendDataToServer ( userEntryObj ) {
       console.log('inside sendDataToServer function');
       var ajaxConfg = {
             // dataType: 'json',
+            data: JSON,
             method: 'post',
             url: 'dataApi/add_entry.php',
             data: {
@@ -680,9 +693,24 @@ function sendDataToServer ( userEntryObj ) {
                   action: 'insert'
             },
             success: function (serverResponse) {
-                  console.log("adding is successful");
-                  
+                  addEntry(userEntryObj);
+                  console.log("sending data to server is successful");
+                  var result = {};
+                  result = serverResponse;
+                  if (result.success) {
+                        for (var i = 0; i < result.data.length; i++) {
+                              arrayOfEntryObjects.push(result.data[i]);
+                              console.log('result.data[0]', result.data[i]);
+                              // updateEntryList();
+                              renderEntryOnDom(userEntryObj);
+
+                        };
+                  };
             },
+            //function (serverResponse) {
+            //       console.log("adding is successful");
+                  
+            // },
             error: function (serverResponse) {
                   console.log("adding is NOT successful", serverResponse);
             }
@@ -693,19 +721,21 @@ function sendDataToServer ( userEntryObj ) {
 
 
 
-function deleteDataFromServer ( userEntryObj ) {
+function deleteDataFromServer ( entryIDToDelete ) {
       var ajaxConfg = {
-            dataType: 'json',
+            data: JSON,
             method: 'post',
             url: 'dataApi/delete_entry.php',
             data: {
                   browserID: localStorage.getItem('uniqueBrowserID'),
-                  entryID: userEntryObj.entryID //tell DB the id you want to delete
+                  entryID: entryIDToDelete //tell DB the entryID to delete from the server
             },
             success: function() {
-                  console.log('You have successfully deleted the data');
+                  console.log('You have successfully deleted the data.');
             },
-            error: displayError
+            error: function() {
+                  console.log('Error deleting the data.');
+            }
       }
       $.ajax(ajaxConfg);
 }
