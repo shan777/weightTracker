@@ -9,7 +9,7 @@ $browser_id = $_POST['browserID'];
 if (mysqli_connect_errno()){
     echo "Failed to connect to MySQL: " . mysqli_connect_error();
 }else{
-    echo "Successfully connected to MYSQL.";
+    echo "Successfully connected to MySQL.";
 }
 
 $addEntryQuery = "INSERT INTO `weight_entry`

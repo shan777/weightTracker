@@ -79,7 +79,7 @@ function addClickHandlersToElements(){
 
       // $("#cancelButton-mobile").click(handleCancelClick); //cancel entry button
       // $("#cancelButton-desktop").click(handleCancelClick); //cancel entry button
-      $("#cancelButton").click(handleCancelClick); //cancel entry button
+      $(".cancel-button").click(handleCancelClick); //cancel entry button
 
       // $(".btn-info").click(getDataFromServer); //get data from server button
       $('.goal-weight-display').click(editGoalWeight);
@@ -87,8 +87,8 @@ function addClickHandlersToElements(){
       $('.note-mobile').keyup(checkRemainingChar);
       $('.note-desktop').keyup(checkRemainingChar);
 
-      $('.entry-editBtn').click(handleEditEntry);
-      $('.entry-deleteBtn').click(handleDeleteEntry);
+      // $('.entry-editBtn').click(handleEditEntry);
+      // $('.entry-deleteBtn').click(handleDeleteEntry);
 }
 
 
@@ -494,8 +494,13 @@ function renderEntryOnDom(userEntryObj){
             editAndDelButtons.append(editBtn, deleteBtn);
             newTr.append(editAndDelButtons);
       
-            $('.entry-editBtn').click(handleEditEntry);
-            $('.entry-deleteBtn').click(handleDeleteEntry);
+            $('.entry-editBtn').off("click").click(function() {
+                  handleEditEntry(userEntryObj)
+            });
+            
+            $('.entry-deleteBtn').off("click").click(function() {
+                  handleDeleteEntry(userEntryObj)
+            });
             
       }
      
@@ -581,7 +586,9 @@ console.log('entryID to delete: ', entryIDToDelete);
 
 
 
-function handleEditEntry (event) {
+function handleEditEntry (userEntryObj) {
+      console.log('inside handleEditEntry, userEntryObj: ', userEntryObj);
+
       var trparent= event.currentTarget.closest("tr"); //finds the editEntry button's closest 'tr' 
      
       var wt = (trparent.childNodes[1].innerText).split(' '); //returns ex) "140 lbs" so parsing just the number (before the space)
@@ -597,20 +604,25 @@ function handleEditEntry (event) {
       noteField.value = trparent.childNodes[2].innerText;
 
       
-      if($('#updateButton').click(function() {
-            console.log('updatebutton clicked');
+      if($('.update-button').click(function() {
             var indexNumToUpdate = arrayOfEntryObjects.indexOf(userEntryObj);
+
+            console.log('indexNumToUpdate: ', indexNumToUpdate);
+            console.log(' and entryID for '+indexNumToUpdate+' is: ', userEntryObj.entryID);
+
+            console.log('weight to be updated: ', userEntryObj.weight);
 
             var newUserEntryObj = {};
             newUserEntryObj.date = $('#updatedDate').val();
             newUserEntryObj.weight = $('#updatedWeight').val();
             newUserEntryObj.note = $('#updatedNote').val();
+            newUserEntryObj.entryID = userEntryObj.entryID;
+
             arrayOfEntryObjects[indexNumToUpdate] = newUserEntryObj;
+            console.log('new weight: ', newUserEntryObj.weight);
 
             hideModal ('edit');
-
-            var entryIDToUpdate = arrayOfEntryObjects[indexNumToUpdate].entryID; //??????????????????????????
-            updateDataInServer ( newUserEntryObj, entryIDToUpdate ); 
+            updateDataInServer ( newUserEntryObj ); 
       }));
 }
 
@@ -646,17 +658,20 @@ function getDataFromServer() {
 
 
 
-function updateDataInServer (newEntryObj, entryIDToUpdate) {
+function updateDataInServer ( newEntryObj ) {
+      console.log('sending data from updateDataInServer: ', newEntryObj);
+
       var ajaxConfig = {
-            dataType: 'json',
+            // dataType: 'json',
+            data: JSON,
             method: 'post',
             url: 'dataApi/update_entry.php',
             data: {
                   browserID: localStorage.getItem('uniqueBrowserID'),
-                  entry_id: entryIDToUpdate,
-                  entry_date: newEntryObj.date,
-                  entry_weight: newEntryObj.weight,
-                  entry_note: newEntryObj.note
+                  entryID: newEntryObj.entryID,
+                  entryDate: newEntryObj.date,
+                  entryWeight: newEntryObj.weight,
+                  entryNote: newEntryObj.note
             },
             success: function (serverResponse) {
                   var result = {};
@@ -664,13 +679,16 @@ function updateDataInServer (newEntryObj, entryIDToUpdate) {
                   if (result.success) {
                         for (var i = 0; i < result.data.length; i++) {
                               arrayOfEntryObjects.push(result.data[i]);
-                              updateEntryList();
-                              //            renderEntryOnDom(userEntryObj);
+                              // updateEntryList();
+                              renderEntryOnDom(newEntryObj);
 
                         };
                   };
+                  console.log("Updating in server successful.");
             },
-            error: displayError,
+            function (serverResponse) {
+                  console.log("Error updating in server.");
+            }
       }
       $.ajax(ajaxConfig);
 }
@@ -712,7 +730,7 @@ function sendDataToServer ( userEntryObj ) {
                   
             // },
             error: function (serverResponse) {
-                  console.log("adding is NOT successful", serverResponse);
+                  console.log("adding is NOT successful");
             }
       }
       $.ajax(ajaxConfg);
