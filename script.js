@@ -87,8 +87,8 @@ function addClickHandlersToElements(){
       $('.note-mobile').keyup(checkRemainingChar);
       $('.note-desktop').keyup(checkRemainingChar);
 
-      $('.entry-editBtn').click(handleEditEntry);
-      $('.entry-deleteBtn').click(handleDeleteEntry);
+      // $('.entry-editBtn').click(handleEditEntry);
+      // $('.entry-deleteBtn').click(handleDeleteEntry);
 }
 
 
@@ -494,11 +494,11 @@ function renderEntryOnDom(userEntryObj){
             editAndDelButtons.append(editBtn, deleteBtn);
             newTr.append(editAndDelButtons);
       
-            $('.entry-editBtn').click(function() {
+            $('.entry-editBtn').off("click").click(function() {
                   handleEditEntry(userEntryObj)
             });
             
-            $('.entry-deleteBtn').click(function() {
+            $('.entry-deleteBtn').off("click").click(function() {
                   handleDeleteEntry(userEntryObj)
             });
             
@@ -587,6 +587,8 @@ console.log('entryID to delete: ', entryIDToDelete);
 
 
 function handleEditEntry (userEntryObj) {
+      console.log('inside handleEditEntry, userEntryObj: ', userEntryObj);
+
       var trparent= event.currentTarget.closest("tr"); //finds the editEntry button's closest 'tr' 
      
       var wt = (trparent.childNodes[1].innerText).split(' '); //returns ex) "140 lbs" so parsing just the number (before the space)
@@ -604,6 +606,10 @@ function handleEditEntry (userEntryObj) {
       
       if($('.update-button').click(function() {
             var indexNumToUpdate = arrayOfEntryObjects.indexOf(userEntryObj);
+
+            console.log('indexNumToUpdate: ', indexNumToUpdate);
+            console.log(' and entryID for '+indexNumToUpdate+' is: ', userEntryObj.entryID);
+
             console.log('weight to be updated: ', userEntryObj.weight);
 
             var newUserEntryObj = {};
@@ -668,16 +674,16 @@ function updateDataInServer ( newEntryObj ) {
                   entryNote: newEntryObj.note
             },
             success: function (serverResponse) {
-                  // var result = {};
-                  // result = serverResponse;
-                  // if (result.success) {
-                  //       for (var i = 0; i < result.data.length; i++) {
-                  //             arrayOfEntryObjects.push(result.data[i]);
+                  var result = {};
+                  result = serverResponse;
+                  if (result.success) {
+                        for (var i = 0; i < result.data.length; i++) {
+                              arrayOfEntryObjects.push(result.data[i]);
                               // updateEntryList();
                               renderEntryOnDom(newEntryObj);
 
-                  //       };
-                  // };
+                        };
+                  };
                   console.log("Updating in server successful.");
             },
             function (serverResponse) {

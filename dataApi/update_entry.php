@@ -18,24 +18,24 @@ $updateEntryQuery = "UPDATE `weight_entry`
 
 mysqli_query($conn, $updateEntryQuery);
 
-// $query = "SELECT DISTINCT * 
-//           FROM weight_entry 
-//           WHERE entryID = $entry_id
-//           AND entryDate = '$entry_date'
-//           AND entryWeight = '$entry_weight'
-//           AND entryNote = '$entry_note'
-//           AND browserID = '$browser_id'
-//           ";
+$query = "SELECT DISTINCT * 
+          FROM weight_entry 
+          WHERE entryID = $entry_id
+          AND entryDate = '$entry_date'
+          AND entryWeight = '$entry_weight'
+          AND entryNote = '$entry_note'
+          AND browserID = '$browser_id'
+          ";
 
-// $result = mysqli_query($conn, $query);
-// $output=[];
+$result = mysqli_query($conn, $query);
+$output=[];
 
-// if(mysqli_num_rows($result) > 0) {
-//     $output['success'] = true;
-//     $output['message'] = 'Data was updated successfully';
-// } else {
-//     $output['success'] = false;
-//     $output['message'] = 'There was an error trying to update the data. Please try again';
-// }
-// $output = json_encode($output);
+if(mysqli_num_rows($result) > 0) {
+    $output['success'] = true;
+    $output['message'] = 'Data was updated successfully';
+} else {
+    $output['success'] = false;
+    $output['message'] = 'There was an error trying to update the data. Please try again';
+}
+$output = json_encode($output);
 ?>
