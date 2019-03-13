@@ -495,11 +495,14 @@ function renderEntryOnDom(userEntryObj){
             newTr.append(editAndDelButtons);
       
             $('.entry-editBtn').off("click").click(function() {
-                  handleEditEntry(userEntryObj)
+                  console.log('$(this): current html element: ', $(this));
+//should be <button class='btn btn-info fa fa-pencil-square-o entry-editBtn'></button>
+
+                  handleEditEntry($(this).userEntryObj)
             });
             
             $('.entry-deleteBtn').off("click").click(function() {
-                  handleDeleteEntry(userEntryObj)
+                  handleDeleteEntry($(this).userEntryObj)
             });
             
       }
