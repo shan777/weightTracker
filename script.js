@@ -431,6 +431,9 @@ function renderEntryOnDom(userEntryObj){
             var newTr = $('<tr>',{
                   class: 'test'
             });
+            var entryIDItem = $('<td>', {
+                  text: arrayOfEntryObjects[i].entryID
+            });
             var dateItem = $('<td>', {
                   // class: 'col-lg-1 col-md-1 col-sm-1 col-xs-1 text-center',
                   class: 'text-center entry-date',
@@ -449,9 +452,9 @@ function renderEntryOnDom(userEntryObj){
             });
       
             $('.weight-list tbody').append(newTr);
-            newTr.append(dateItem); 
-            newTr.append(weightItem);
-            newTr.append(noteItem);
+            newTr.append(entryIDItem, dateItem, weightItem, noteItem); 
+            entryIDItem.hide();
+
 
             if(i == 0){    
                   newTr.append('<td class="text-left" style="font-size:18px; color:black; padding-left: 8%;">-');
@@ -505,11 +508,11 @@ function renderEntryOnDom(userEntryObj){
       $('.entry-editBtn').click(function() {
             var editEntryObj = {};;
       console.log('tr[0]: ',($(this).parents("tr"))[0]);
-            editEntryObj.entryID = userEntryObj.entryID;
-            editEntryObj.date = ($(this).parents("tr"))[0].children[0].innerText;
-            var wt = (($(this).parents("tr"))[0].children[1].innerText).split(' ');
+            editEntryObj.entryID = ($(this).parents("tr"))[0].children[0].innerText;
+            editEntryObj.date = ($(this).parents("tr"))[0].children[1].innerText;
+            var wt = (($(this).parents("tr"))[0].children[2].innerText).split(' ');
             editEntryObj.weight = wt[0]; //weight without the string 'lbs'
-            editEntryObj.note = ($(this).parents("tr"))[0].children[2].innerText;
+            editEntryObj.note = ($(this).parents("tr"))[0].children[3].innerText;
 
             handleEditEntry(editEntryObj);
             
@@ -533,10 +536,10 @@ function renderEntryOnDom(userEntryObj){
 
       $('.entry-deleteBtn').off("click").click(function() {
             var deleteEntryObj = {};
-            deleteEntryObj.entryID = userEntryObj.entryID;
-            deleteEntryObj.date = ($(this).parents("tr"))[0].children[0].innerText;
-            deleteEntryObj.weight = ($(this).parents("tr"))[0].children[1].innerText;
-            deleteEntryObj.note = ($(this).parents("tr"))[0].children[2].innerText;
+            deleteEntryObj.entryID = ($(this).parents("tr"))[0].children[0].innerText;
+            deleteEntryObj.date = ($(this).parents("tr"))[0].children[1].innerText;
+            deleteEntryObj.weight = ($(this).parents("tr"))[0].children[2].innerText;
+            deleteEntryObj.note = ($(this).parents("tr"))[0].children[3].innerText;
 
             handleDeleteEntry(deleteEntryObj);
       });
@@ -636,27 +639,47 @@ function handleEditEntry (editEntryObj) {
 
       var trparent= event.currentTarget.closest("tr"); //finds the editEntry button's closest 'tr' 
      
-      var wt = (trparent.childNodes[1].innerText).split(' '); //returns ex) "140 lbs" so parsing just the number (before the space)
+      var wt = (trparent.childNodes[2].innerText).split(' '); //returns ex) "140 lbs" so parsing just the number (before the space)
       var weightNum = wt[0]; //wt[1] has "lbs"
 
       showModal ('edit');
 
       var dateField = document.querySelector('#updatedDate');
-      dateField.value = trparent.firstChild.innerText;
+      dateField.value = trparent.childNodes[1].innerText;
       var weightField = document.querySelector('#updatedWeight');
       weightField.value = weightNum;
       var noteField = document.querySelector('#updatedNote');
-      noteField.value = trparent.childNodes[2].innerText;
+      noteField.value = trparent.childNodes[3].innerText;
 
       
       if($('.update-button').click(function() {
-            var indexNumToUpdate = arrayOfEntryObjects.findIndex(function(weightEntry){
-                  return weightEntry.entryID === editEntryObj.entryID;
-            });
+            //findIndex - Returns the index of the first element in the array where predicate is true, and -1 otherwise.
+            // var indexNumToUpdate = arrayOfEntryObjects.findIndex(function(weightEntry){ 
+            //       console.log('weightEntry:', weightEntry);
+            //       console.log('weightEntry.entryID: ', weightEntry.entryID);
+            //       console.log('editEntry.entryID: ', editEntryObj.entryID);
+
+            //       console.log('value: ',weightEntry.entryID === editEntryObj.entryID);
+            //       if( weightEntry.entryID === editEntryObj.entryID)
+            //             return  weightEntry.entryID - 1;
+            //       else
+            //             return -1;
+            // });
+
+            var indexNumToUpdate;
+            for(var i=0; i<arrayOfEntryObjects.length; i++){
+                  console.log(i+' arrayOfEntryObjects[i].entryID: ', arrayOfEntryObjects[i].entryID);
+                  console.log(typeof arrayOfEntryObjects[i].entryID);
+                  console.log(typeof editEntryObj.entryID);
+
+                  if(arrayOfEntryObjects[i].entryID == editEntryObj.entryID){
+                        indexNumToUpdate = i;
+                        console.log('indexNumToUpdate: '), indexNumToUpdate;
+                        // return;
+                  }
+            }
             console.log('index of entry to edit: ', indexNumToUpdate);
-
             console.log(' and entryID for '+indexNumToUpdate+' is: ', editEntryObj.entryID);
-
             console.log('weight to be updated: ', editEntryObj.weight);
 
             var newUserEntryObj = {};
@@ -724,19 +747,21 @@ function updateDataInServer ( newEntryObj ) {
                   entryNote: newEntryObj.note
             },
             success: function (serverResponse) {
-                  var result = {};
-                  result = serverResponse;
-                  if (result.success) {
-                        for (var i = 0; i < result.data.length; i++) {
-                              arrayOfEntryObjects.push(result.data[i]);
-                              // updateEntryList();
-                              renderEntryOnDom(newEntryObj);
+                  renderEntryOnDom(newEntryObj);
+                  // var result = {};
+                  // result = serverResponse;
+                  // if (result.success) {
+                  //       for (var i = 0; i < result.data.length; i++) {
+                  //             arrayOfEntryObjects.push(result.data[i]);
+                  //             // updateEntryList();
+                  //             renderEntryOnDom(newEntryObj);
 
-                        };
-                  };
+                  //       };
+                  // };
                   console.log("Updating in server successful.");
+
             },
-            function (serverResponse) {
+            error: function (serverResponse) {
                   console.log("Error updating in server.");
             }
       }
