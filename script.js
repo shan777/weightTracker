@@ -417,6 +417,7 @@ function clearAddEntryInputs(){
  * @param {object} userEntryObj a single student object with course, name, and weight inside
  */
 function renderEntryOnDom(userEntryObj){
+      console.log('inside renderEntryOnDom userEntryObj: ', userEntryObj);
       //remove all children of the weight table before rendering sorted array of entry objects
       var weightTable = document.getElementById("weightTable");
       //while there's any child left, remove - basically removes all children
@@ -425,9 +426,14 @@ function renderEntryOnDom(userEntryObj){
             weightTable.removeChild(weightTable.firstChild);
       }
 
-      //rendering onto dom from already sorted arrayOfEntryObjects
+      //rendering onto dom from already sorted array from addEntry function, arrayOfEntryObjects
       for (var i=0; i<arrayOfEntryObjects.length; i++){
-            var newTr = $('<tr>');
+            var newTr = $('<tr>',{
+                  class: 'test'
+            });
+            var entryIDItem = $('<td>', {
+                  text: arrayOfEntryObjects[i].entryID
+            });
             var dateItem = $('<td>', {
                   // class: 'col-lg-1 col-md-1 col-sm-1 col-xs-1 text-center',
                   class: 'text-center entry-date',
@@ -445,10 +451,10 @@ function renderEntryOnDom(userEntryObj){
                   text: arrayOfEntryObjects[i].note
             });
       
-            $('.student-list tbody').append(newTr);
-            newTr.append(dateItem); 
-            newTr.append(weightItem);
-            newTr.append(noteItem);
+            $('.weight-list tbody').append(newTr);
+            newTr.append(entryIDItem, dateItem, weightItem, noteItem); 
+            entryIDItem.hide();
+
 
             if(i == 0){    
                   newTr.append('<td class="text-left" style="font-size:18px; color:black; padding-left: 8%;">-');
@@ -494,17 +500,58 @@ function renderEntryOnDom(userEntryObj){
             editAndDelButtons.append(editBtn, deleteBtn);
             newTr.append(editAndDelButtons);
       
-            $('.entry-editBtn').off("click").click(function() {
-                  handleEditEntry(userEntryObj)
-            });
-            
-            $('.entry-deleteBtn').off("click").click(function() {
-                  handleDeleteEntry(userEntryObj)
-            });
-            
       }
      
+     
 
+// problem: .entry-editBtn is grabbing the very last edit btn
+      $('.entry-editBtn').click(function() {
+            var editEntryObj = {};;
+      console.log('tr[0]: ',($(this).parents("tr"))[0]);
+            editEntryObj.entryID = ($(this).parents("tr"))[0].children[0].innerText;
+            editEntryObj.date = ($(this).parents("tr"))[0].children[1].innerText;
+            var wt = (($(this).parents("tr"))[0].children[2].innerText).split(' ');
+            editEntryObj.weight = wt[0]; //weight without the string 'lbs'
+            editEntryObj.note = ($(this).parents("tr"))[0].children[3].innerText;
+
+            handleEditEntry(editEntryObj);
+            
+      });
+      
+
+ /* assigning a click handler for each entry-editBtn - below is needed?????????????????
+ var clickedBtnObj = {};
+ var editButtons = document.getElementsByClassName('entry-editBtn'); //editButtons is an array with all the buttons w/ the class entry-editBtn
+ console.log('closest: ',($(this).closest("tr")));
+ for ( var i in Object.keys( editButtons ) ) {
+       editButtons[i].onclick = function() {
+             clickedBtnObj.date = ($(this).closest("tr")).childNodes[0].innerText;
+             clickedBtnObj.weight = ($(this).closest("tr"))[0].childNodes[1].innerText;
+             clickedBtnObj.note = $(this).closest("tr").childNodes[2].innerText;
+
+
+       };
+ } */
+
+
+      $('.entry-deleteBtn').off("click").click(function() {
+            var deleteEntryObj = {};
+            deleteEntryObj.entryID = ($(this).parents("tr"))[0].children[0].innerText;
+            deleteEntryObj.date = ($(this).parents("tr"))[0].children[1].innerText;
+            deleteEntryObj.weight = ($(this).parents("tr"))[0].children[2].innerText;
+            deleteEntryObj.note = ($(this).parents("tr"))[0].children[3].innerText;
+
+            handleDeleteEntry(deleteEntryObj);
+      });
+      
+
+      displayMotivMsg (userEntryObj);
+    
+      
+}
+
+
+function displayMotivMsg (userEntryObj){
       var moreToLose = userEntryObj.weight - targetWeight;
 
       //display motivational quotes to lose weight/cheer up
@@ -525,8 +572,8 @@ function renderEntryOnDom(userEntryObj){
             $('#motiv-msg').html(more[randomNum] + ' <span style="color: orangered">' +  (moreToLose.toFixed(1) + '</span> lbs left!'));
   
       }
-      
 }
+
 
 
 
@@ -564,12 +611,12 @@ function calculateGradeAverage(){
 
 
 
-function handleDeleteEntry (userEntryObj) {
+function handleDeleteEntry ( deleteEntryObj ) {
       showModal ('delete');
       
       if($('#delete-entry-button').click(function() {
-            var entryIDToDelete = userEntryObj.entryID;
-            var indexNumToDelete = arrayOfEntryObjects.indexOf(userEntryObj);
+            var entryIDToDelete = deleteEntryObj.entryID;
+            var indexNumToDelete = arrayOfEntryObjects.indexOf(deleteEntryObj);
 console.log('index of entry to delete: ', indexNumToDelete);
 console.log('entryID to delete: ', entryIDToDelete);
 
@@ -578,7 +625,7 @@ console.log('entryID to delete: ', entryIDToDelete);
 
             hideModal ('delete');
             //gotta call updateEntryList function here to render the updated list on dom - or the below instead? let's check later
-            renderEntryOnDom(userEntryObj);
+            renderEntryOnDom(deleteEntryObj);
             deleteDataFromServer ( entryIDToDelete );
       }));
       
@@ -586,43 +633,69 @@ console.log('entryID to delete: ', entryIDToDelete);
 
 
 
-function handleEditEntry (userEntryObj) {
-      console.log('inside handleEditEntry, userEntryObj: ', userEntryObj);
+function handleEditEntry (editEntryObj) {
+      console.log('inside handleEditEntry, userEntryObj: ', editEntryObj);
+      console.log('arrayOfEntryObjects: ', arrayOfEntryObjects);
 
       var trparent= event.currentTarget.closest("tr"); //finds the editEntry button's closest 'tr' 
      
-      var wt = (trparent.childNodes[1].innerText).split(' '); //returns ex) "140 lbs" so parsing just the number (before the space)
+      var wt = (trparent.childNodes[2].innerText).split(' '); //returns ex) "140 lbs" so parsing just the number (before the space)
       var weightNum = wt[0]; //wt[1] has "lbs"
 
       showModal ('edit');
 
       var dateField = document.querySelector('#updatedDate');
-      dateField.value = trparent.firstChild.innerText;
+      dateField.value = trparent.childNodes[1].innerText;
       var weightField = document.querySelector('#updatedWeight');
       weightField.value = weightNum;
       var noteField = document.querySelector('#updatedNote');
-      noteField.value = trparent.childNodes[2].innerText;
+      noteField.value = trparent.childNodes[3].innerText;
 
       
       if($('.update-button').click(function() {
-            var indexNumToUpdate = arrayOfEntryObjects.indexOf(userEntryObj);
+            //findIndex - Returns the index of the first element in the array where predicate is true, and -1 otherwise.
+            // var indexNumToUpdate = arrayOfEntryObjects.findIndex(function(weightEntry){ 
+            //       console.log('weightEntry:', weightEntry);
+            //       console.log('weightEntry.entryID: ', weightEntry.entryID);
+            //       console.log('editEntry.entryID: ', editEntryObj.entryID);
 
-            console.log('indexNumToUpdate: ', indexNumToUpdate);
-            console.log(' and entryID for '+indexNumToUpdate+' is: ', userEntryObj.entryID);
+            //       console.log('value: ',weightEntry.entryID === editEntryObj.entryID);
+            //       if( weightEntry.entryID === editEntryObj.entryID)
+            //             return  weightEntry.entryID - 1;
+            //       else
+            //             return -1;
+            // });
 
-            console.log('weight to be updated: ', userEntryObj.weight);
+            var indexNumToUpdate;
+            for(var i=0; i<arrayOfEntryObjects.length; i++){
+                  console.log(i+' arrayOfEntryObjects[i].entryID: ', arrayOfEntryObjects[i].entryID);
+                  console.log(typeof arrayOfEntryObjects[i].entryID);
+                  console.log(typeof editEntryObj.entryID);
+
+                  if(arrayOfEntryObjects[i].entryID == editEntryObj.entryID){
+                        indexNumToUpdate = i;
+                        console.log('indexNumToUpdate: '), indexNumToUpdate;
+                        // return;
+                  }
+            }
+            console.log('index of entry to edit: ', indexNumToUpdate);
+            console.log(' and entryID for '+indexNumToUpdate+' is: ', editEntryObj.entryID);
+            console.log('weight to be updated: ', editEntryObj.weight);
 
             var newUserEntryObj = {};
             newUserEntryObj.date = $('#updatedDate').val();
             newUserEntryObj.weight = $('#updatedWeight').val();
             newUserEntryObj.note = $('#updatedNote').val();
-            newUserEntryObj.entryID = userEntryObj.entryID;
+            newUserEntryObj.entryID = editEntryObj.entryID;
+            if(indexNumToUpdate > -1){
+                  arrayOfEntryObjects[indexNumToUpdate] = newUserEntryObj;
+                  console.log('new weight: ', newUserEntryObj.weight);
 
-            arrayOfEntryObjects[indexNumToUpdate] = newUserEntryObj;
-            console.log('new weight: ', newUserEntryObj.weight);
-
-            hideModal ('edit');
-            updateDataInServer ( newUserEntryObj ); 
+                  hideModal ('edit');
+                  updateDataInServer ( newUserEntryObj ); 
+            }else{ //when indexNumToUpdate = -1, meaning no match (not found)
+                  console.log('entry trying to edit not found.');
+            }
       }));
 }
 
@@ -674,19 +747,21 @@ function updateDataInServer ( newEntryObj ) {
                   entryNote: newEntryObj.note
             },
             success: function (serverResponse) {
-                  var result = {};
-                  result = serverResponse;
-                  if (result.success) {
-                        for (var i = 0; i < result.data.length; i++) {
-                              arrayOfEntryObjects.push(result.data[i]);
-                              // updateEntryList();
-                              renderEntryOnDom(newEntryObj);
+                  renderEntryOnDom(newEntryObj);
+                  // var result = {};
+                  // result = serverResponse;
+                  // if (result.success) {
+                  //       for (var i = 0; i < result.data.length; i++) {
+                  //             arrayOfEntryObjects.push(result.data[i]);
+                  //             // updateEntryList();
+                  //             renderEntryOnDom(newEntryObj);
 
-                        };
-                  };
+                  //       };
+                  // };
                   console.log("Updating in server successful.");
+
             },
-            function (serverResponse) {
+            error: function (serverResponse) {
                   console.log("Error updating in server.");
             }
       }
@@ -713,6 +788,8 @@ function sendDataToServer ( userEntryObj ) {
             success: function (serverResponse) {
                   addEntry(userEntryObj);
                   console.log("sending data to server is successful");
+
+                  // check!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
                   var result = {};
                   result = serverResponse;
                   if (result.success) {
