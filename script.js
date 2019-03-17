@@ -561,19 +561,22 @@ function handleDeleteEntry () { //called when entry-deleteBtn was clicked
       });
 
       //unbind and then bind the cfm-delete-entry-button to the function
-      $('#cfm-delete-entry-button').off('click').click(function(){           
-            var entryIDToDelete = deleteEntryObj.entryID;
-            console.log('deleteEntryObj: ', deleteEntryObj);
-            console.log('array: ', arrayOfEntryObjects);
-            var indexNumToDelete = arrayOfEntryObjects.indexOf(deleteEntryObj);
-      
-            console.log('index of entry to delete: ', indexNumToDelete+' VS. entryID to delete: ', entryIDToDelete);
-
-            arrayOfEntryObjects.splice(indexNumToDelete, 1); //remove the entry from the global arrayOfEntryObjects
-            console.log('array: ', arrayOfEntryObjects);
+      $('#cfm-delete-entry-button').off('click').click(function(){     
+            //find index of the deleteObj in the array
+            var i=0, notFound=true, indexNumToDelete;
+            while(i < arrayOfEntryObjects.length && notFound){
+                  if(arrayOfEntryObjects[i].entryID === deleteEntryObj.entryID) {
+                        indexNumToDelete = i;
+                        notFound = false;
+                  }else { 
+                        i++;
+                  }
+            }
+            //remove the entry from the global arrayOfEntryObjects
+            arrayOfEntryObjects.splice(indexNumToDelete, 1); 
 
             hideModal ('delete');
-            deleteDataFromServer (entryIDToDelete);
+            deleteDataFromServer (deleteEntryObj.entryID);
       });
       
       
