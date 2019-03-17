@@ -65,9 +65,10 @@ function initializeApp(){
 */
 function addClickHandlersToElements(){
       $(".add-entry-btn").click(handleAddClicked); //add entry button
-      $(".cancel-button").click(handleCancelClick); //cancel entry button
+      $(".cancel-entry-btn").click(handleCancelEntry); //cancel entry button
 
-      // $(".btn-info").click(getDataFromServer); //get data from server button
+      $(".edit-cancel-button").click(handleCancelEdit); //cancel edit button
+
       $('.goal-weight-display').click(editGoalWeight);
    
       $('.note-mobile').keyup(checkRemainingChar);
@@ -326,17 +327,43 @@ function fixWeight() {
       });
 }
 
-
 /***************************************************************************************************
- * handleCancelClicked - Event Handler when user clicks the cancel button, should clear out student form
+ * handleCancelEntry - when user clicks the cancel button, clears out the input fields in the form 
  * @param: {undefined} none
  * @returns: {undefined} none
  * @calls: clearAddEntryInputs
  */
-function handleCancelClick(){
+function handleCancelEntry(){
       clearAddEntryInputs();
 }
 
+
+/***************************************************************************************************
+ * handleCancelEdit - when user clicks the cancel button, clears out the form and closes modal
+ * @param: {undefined} none
+ * @returns: {undefined} none
+ * @calls: hideModal
+ */
+function handleCancelEdit(){
+      hideModal('edit');
+}
+
+
+/***************************************************************************************************
+ * clearAddEntryInputs - clears out the form values 
+ * @param none
+ * @return none
+ * @calls  none
+ */
+function clearAddEntryInputs(){
+      $('.today-mobile').val('');
+      $('.weight-mobile').val('');
+      $('.note-mobile').val('');
+
+      $('.today-desktop').val('');
+      $('.weight-desktop').val('');
+      $('.note-desktop').val('');
+}
 
 
 /***************************************************************************************************
@@ -359,42 +386,23 @@ function compareTwoVars(a, b) {
 
 
 /***************************************************************************************************
- * addEntry - creates a student objects based on input fields in the form and adds the object to global student array
+ * addEntry - add the new entry object to the arrayOfEntryObjects array and render (refresh) data onto DOM
  * @param {object} userEntryObj
  * @return undefined
  * @calls renderEntryOnDom
  */
 function addEntry(userEntryObj){
-      //add to the array
       arrayOfEntryObjects.push(userEntryObj); 
-      console.log('inside addEntry (just pushed): ', arrayOfEntryObjects);
-          
       renderEntryOnDom(userEntryObj);
-      // updateEntryList( userEntryObj ); this is not needed if renderEntryOnDom is there... i think
-      // clearAddEntryInputs();
 }
 
 
+
 /***************************************************************************************************
- * clearAddStudentForm - clears out the form values based on inputIds variable
- * @param none
+ * renderEntryOnDom - sort the array in ascending order then render data onto the DOM
+ * @param {object} userEntryObj a single weight entry object with entryID, date, weight, and note 
  * @return none
- */
-function clearAddEntryInputs(){
-      $('.today-mobile').val('');
-      $('.weight-mobile').val('');
-      $('.note-mobile').val('');
-
-      $('.today-desktop').val('');
-      $('.weight-desktop').val('');
-      $('.note-desktop').val('');
-}
-
-
-/***************************************************************************************************
- * renderEntryOnDom - take in a student object, create html elements from the values and then append the elements
- * into the .student_list tbody
- * @param {object} userEntryObj a single student object with course, name, and weight inside
+ * @calls  none
  */
 function renderEntryOnDom(userEntryObj){
       //sort the entries by the ascending order of the date (old on top and recent on the bottom)
@@ -471,12 +479,10 @@ function renderEntryOnDom(userEntryObj){
             });
             var editBtn = $('<button>', {
                   class: 'btn btn-info fa fa-pencil-square-o entry-editBtn',
-                  // html: '<i class="fa fa-pencil-square-o">',
                   style: 'margin-right: 5px; padding: 3px 5px; width: 30px;'
             });
             var deleteBtn = $('<button>', {
                   class: 'btn btn-danger fa fa-trash entry-deleteBtn',
-                  // html: '<i class="fa fa-trash">',
                   style: 'padding: 3px 5px; width: 30px;'
             }, );
       
@@ -496,16 +502,18 @@ function renderEntryOnDom(userEntryObj){
             });
       }
       
-
-      
-      displayMotivMsg (userEntryObj);
-    
-      
+      displayMotivMsg (userEntryObj.weight);
 }
 
 
-function displayMotivMsg (userEntryObj){
-      var moreToLose = userEntryObj.weight - targetWeight;
+/***************************************************************************************************
+ * displayMotivMsg - depending on whether user lost or gained weight, displays motivational quote 
+ * @param {object} weightEntered weight entered by user
+ * @return none
+ * @calls  none
+ */
+function displayMotivMsg (weightEntered){
+      var moreToLose = weightEntered - targetWeight;
 
       //display motivational quotes to lose weight/cheer up
       var equal = ['Yayy &#127930; &#127930; &#127930; You have reached the goal!', '&#127881; &#127881; &#127881; You did it!!!', '&#128077; You rock! &#10071;', 
@@ -533,8 +541,8 @@ function displayMotivMsg (userEntryObj){
 /*************************************************************************************************** 
  * deleteEntryFromTable - remove the TR with the indexNumToDelete from the weight table
  * @param indexNumToDelete
- * @returns {undefined} none
- * @calls renderEntryOnDom
+ * @returns none
+ * @calls none
  */
 function deleteEntryFromTable(indexNumToDelete){
       var trs = $('#weightTable').find('tr');
@@ -543,6 +551,14 @@ function deleteEntryFromTable(indexNumToDelete){
 
 
 
+/*************************************************************************************************** 
+ * handleDeleteEntry - gets called when the entry-deleteBtn is clicked and then finds the object to 
+ * be deleted then once 'delete' button is clicked, removes entry from the global array and calls 
+ * backend to delete data from the database.
+ * @param none
+ * @returns none
+ * @calls showModal, hideModal, deleteDataFromServer
+ */
 function handleDeleteEntry () { //called when entry-deleteBtn was clicked
       showModal ('delete');
       var tr = event.currentTarget.closest("tr"); //finds the entry-deleteBtn 's closest <tr> that's the grandparent 
@@ -581,22 +597,22 @@ function handleDeleteEntry () { //called when entry-deleteBtn was clicked
 
 
 
+/*************************************************************************************************** 
+ * handleEditEntry - gets called when the entry-editBtn is clicked and then finds the object to 
+ * be edited then once 'update' button is clicked, updates the old entry with the new from the 
+ * global array. Then calls handleUpdate function.
+ * @param none
+ * @returns none
+ * @calls showModal, hideModal, handleUpdate
+ */
 function handleEditEntry () {
-
-      console.log('handleEditEntry called');
-
       var editEntryObj = {};;
       var tr = event.currentTarget.closest("tr"); //finds the editEntry button's closest <tr> that's the grandparent 
       editEntryObj.entryID = parseInt(tr.children[0].innerText);
-      
-      console.log('THE entryID inside handleEditEntry: ', editEntryObj.entryID);
-
       editEntryObj.date = tr.children[1].innerText;
       var wt = (tr.children[2].innerText).split(' ');
       editEntryObj.weight = wt[0]; //weight without the string 'lbs' (wt[1] has "lbs")
       editEntryObj.note = tr.children[3].innerText;
-
-      console.log('editEntryObj INSIDE handleEditEntry: ', editEntryObj);
 
       showModal ('edit');
 
@@ -610,46 +626,43 @@ function handleEditEntry () {
       
       $('.update-button').off('click');
       $('.update-button').on('click', function(){
-            // handleUpdate($(this).editEntryObj);
             handleUpdate(editEntryObj);
 
       });
-                    
-
-
 }
 
 
+/*************************************************************************************************** 
+ * handleUpdate - finds the index number to edit, updates the global array, then calls backend
+ * to update the database in the server. 
+ * @param none
+ * @returns none
+ * @calls showModal, hideModal, updateDataInServer
+ */
 function handleUpdate(editEntryObj){
-      console.log('update btn clicked, editEntryObj.entryID: ', editEntryObj.entryID);
-            var indexNumToUpdate = -1;
-            var notFound = true, i = 0;
-      
-            while(notFound && i < arrayOfEntryObjects.length){
-                  if(arrayOfEntryObjects[i].entryID === editEntryObj.entryID){ //look for the entry to edit using the entryID
-                        indexNumToUpdate = i;
-                        notFound = false; // =found it
-                  }else{
-                        i++;
-                  }
-            }
-      
-            var newUserEntryObj = {};
-            newUserEntryObj.entryID = editEntryObj.entryID;
-            newUserEntryObj.date = $('#updatedDate').val();
-            newUserEntryObj.weight = $('#updatedWeight').val();
-            newUserEntryObj.note = $('#updatedNote').val();
-    
-            if(indexNumToUpdate > -1){ //if entry trying to edit was found in the array
-                  arrayOfEntryObjects[indexNumToUpdate] = newUserEntryObj; //update the old with the new
-    
-                  hideModal ('edit');
-      
-                  updateDataInServer ( newUserEntryObj ); 
-            }else{ //when indexNumToUpdate = -1, meaning entry trying to edit has no match (not found)
-                  console.log('entry trying to edit not found.');
-            }
+      var indexNumToUpdate = -1;
+      var notFound = true, i = 0;
 
+      while(notFound && i < arrayOfEntryObjects.length){
+            if(arrayOfEntryObjects[i].entryID === editEntryObj.entryID){ //look for the entry to edit using the entryID
+                  indexNumToUpdate = i;
+                  notFound = false; // =found it
+            }else{
+                  i++;
+            }
+      }
+
+      var newUserEntryObj = {};
+      newUserEntryObj.entryID = editEntryObj.entryID;
+      newUserEntryObj.date = $('#updatedDate').val();
+      newUserEntryObj.weight = $('#updatedWeight').val();
+      newUserEntryObj.note = $('#updatedNote').val();
+
+      if(indexNumToUpdate > -1){ //if entry trying to edit was found in the array
+            arrayOfEntryObjects[indexNumToUpdate] = newUserEntryObj; //update the old with the new
+            hideModal ('edit');
+            updateDataInServer ( newUserEntryObj ); 
+      }
 }
 
 
@@ -683,9 +696,13 @@ function getDataFromServer() {
 
 
 
-
+/*************************************************************************************************** 
+ * sendDataToServer - sends data to server and upon success, calls addEntry functions to add
+ * @param userEntryObj
+ * @returns none
+ * @calls addEntry
+ */
 function sendDataToServer ( userEntryObj ) {
-      console.log('sendDataToServer called');
       var ajaxConfg = {
             // dataType: 'json',
             data: JSON,
@@ -698,24 +715,11 @@ function sendDataToServer ( userEntryObj ) {
                   browserID: localStorage.getItem('uniqueBrowserID'),
                   action: 'insert'
             },
-            success: function (serverResponse) {
+            success: function () {
                   addEntry(userEntryObj);
                   console.log("sending data to server is successful");
-
-                  // check!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-                  // var result = {};
-                  // result = serverResponse;
-                  // if (result.success) {
-                  //       for (var i = 0; i < result.data.length; i++) {
-                  //             arrayOfEntryObjects.push(result.data[i]);
-                  //             console.log('result.data[0]', result.data[i]);
-                              // updateEntryList();
-                              renderEntryOnDom(userEntryObj);
-
-                        // };
-                   
             },
-            error: function (serverResponse) {
+            error: function () {
                   console.log("adding is NOT successful");
             }
       }
@@ -723,6 +727,14 @@ function sendDataToServer ( userEntryObj ) {
 }
 
 
+
+/*************************************************************************************************** 
+ * updateDataInServer - sends updated data to server and then upon success, calls renderEntryOnDom 
+ * functions to render updated data onto DOM.
+ * @param newEntryObj
+ * @returns none
+ * @calls renderEntryOnDom
+ */
 function updateDataInServer ( newEntryObj ) {
       var ajaxConfig = {
             // dataType: 'json',
@@ -736,11 +748,11 @@ function updateDataInServer ( newEntryObj ) {
                   entryWeight: newEntryObj.weight,
                   entryNote: newEntryObj.note
             },
-            success: function (serverResponse) {
+            success: function () {
                   renderEntryOnDom(newEntryObj);
                   console.log("Updating in server successful.");
             },
-            error: function (serverResponse) {
+            error: function () {
                   console.log("Error updating in server.");
             }
       }
@@ -748,7 +760,13 @@ function updateDataInServer ( newEntryObj ) {
 }
 
 
-
+/*************************************************************************************************** 
+ * deleteDataFromServer - sends entry ID to delete to delete fro the database and then upon success,
+ * calls deleteEntryFromTable functions to removed the deleted entry from DOM
+ * @param entryIDToDelete, indexNumToDelete
+ * @returns none
+ * @calls deleteEntryFromTable
+ */
 function deleteDataFromServer ( entryIDToDelete, indexNumToDelete ) {
       var ajaxConfg = {
             data: JSON,
@@ -769,29 +787,25 @@ function deleteDataFromServer ( entryIDToDelete, indexNumToDelete ) {
       $.ajax(ajaxConfg);
 }
 
-
-
-
-
-
-function displayLFZ( result ) {
-      console.log('displayLFZ function called');
-      for (var i=0; i<result.data.length; i++) {
-            addEntry(result.data[i]); //each contains the userEntryObj
-      }
-      console.log('displayLFZ line 212: ', result);
-}
-
-
-
-function showModal( type ){
-      var modalToShow = '#' + type + 'Modal';
+/*************************************************************************************************** 
+ * showModal - opens up modal based on the purpose 
+ * @param purpose (goal weight input, edit entry, or delete)
+ * @returns none
+ * @calls none
+ */
+function showModal( purpose ){
+      var modalToShow = '#' + purpose + 'Modal';
       $(modalToShow).modal('show');
 }
 
 
-
-function hideModal( type ){
-      var modalToHide = '#' + type + 'Modal';
+/*************************************************************************************************** 
+ * hideModal - closes modal based on the purpose 
+ * @param purpose (goal weight input, edit entry, or delete)
+ * @returns none
+ * @calls none
+ */
+function hideModal( purpose ){
+      var modalToHide = '#' + purpose + 'Modal';
       $(modalToHide).modal('hide');
 }
