@@ -531,15 +531,14 @@ function displayMotivMsg (userEntryObj){
 
 
 /*************************************************************************************************** 
- * updateEntryList - updates the entry list ORRRRRRRRRRRR should i call it renderUpdatedListOnDom ???????? ?????? ????? ??????????? ??????? ??????? ???????? ?????????
- * @param none
+ * deleteEntryFromTable - remove the TR with the indexNumToDelete from the weight table
+ * @param indexNumToDelete
  * @returns {undefined} none
  * @calls renderEntryOnDom
  */
-function updateEntryList(){
-      console.log('updating student lists');
-      //get data from server and render? or use the global arrayofentryobjects??
-      // renderEntryOnDom( userEntryObj );
+function deleteEntryFromTable(indexNumToDelete){
+      var trs = $('#weightTable').find('tr');
+      trs[indexNumToDelete].remove();     
 }
 
 
@@ -576,10 +575,8 @@ function handleDeleteEntry () { //called when entry-deleteBtn was clicked
             arrayOfEntryObjects.splice(indexNumToDelete, 1); 
 
             hideModal ('delete');
-            deleteDataFromServer (deleteEntryObj.entryID);
+            deleteDataFromServer (deleteEntryObj.entryID, indexNumToDelete);
       });
-      
-      
 }
 
 
@@ -741,18 +738,7 @@ function updateDataInServer ( newEntryObj ) {
             },
             success: function (serverResponse) {
                   renderEntryOnDom(newEntryObj);
-                  // var result = {};
-                  // result = serverResponse;
-                  // if (result.success) {
-                  //       for (var i = 0; i < result.data.length; i++) {
-                  //             arrayOfEntryObjects.push(result.data[i]);
-                  //             // updateEntryList();
-                  //             renderEntryOnDom(newEntryObj);
-
-                  //       };
-                  // };
                   console.log("Updating in server successful.");
-
             },
             error: function (serverResponse) {
                   console.log("Error updating in server.");
@@ -763,7 +749,7 @@ function updateDataInServer ( newEntryObj ) {
 
 
 
-function deleteDataFromServer ( entryIDToDelete ) {
+function deleteDataFromServer ( entryIDToDelete, indexNumToDelete ) {
       var ajaxConfg = {
             data: JSON,
             method: 'post',
@@ -774,9 +760,7 @@ function deleteDataFromServer ( entryIDToDelete ) {
             },
             success: function() {
                   console.log('You have successfully deleted the data.');
-                  //renderEntryOnDom(deleteEntryObj);
-                  //instead of re-rendering, just delete the tr
-
+                  deleteEntryFromTable(indexNumToDelete);
             },
             error: function() {
                   console.log('Error deleting the data.');
