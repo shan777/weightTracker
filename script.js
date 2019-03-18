@@ -52,7 +52,7 @@ function initializeApp(){
       }
       field.value = dateStr;
 
-      // getDataFromServer();
+      getDataFromServer();
       addClickHandlersToElements();
 }
 
@@ -669,25 +669,19 @@ function handleUpdate(editEntryObj){
 
 function getDataFromServer() {
       var ajaxConfig = {
-            dataType: 'json',
+            data: JSON,
             method: 'post',
             url: 'dataApi/get_entries.php',
             data: {
                   browserID: localStorage.getItem('uniqueBrowserID'),
             },
             success: function (serverResponse) {
-                  var result = {};
-                  result = serverResponse;
-                  if (result.success) {
-                        for (var i = 0; i < result.data.length; i++) {
-                              //arrayOfEntryObjects.push(result.data[i]);
-                              updateEntryList();
-                              //            renderEntryOnDom(userEntryObj); let's come back here
-
-                        };
-                  };
+                  // renderEntryOnDom(newEntryObj);
+                  console.log("serverResp:"+browserID+"Getting data from server was successful.");
             },
-            error: displayError,
+            error: function () {
+                  console.log("Error getting data to server.");
+            }
       }
       $.ajax(ajaxConfig);
 }
@@ -704,7 +698,6 @@ function getDataFromServer() {
  */
 function sendDataToServer ( userEntryObj ) {
       var ajaxConfg = {
-            // dataType: 'json',
             data: JSON,
             method: 'post',
             url: 'dataApi/add_entry.php',
@@ -717,10 +710,10 @@ function sendDataToServer ( userEntryObj ) {
             },
             success: function () {
                   addEntry(userEntryObj);
-                  console.log("sending data to server is successful");
+                  console.log("Sending data to server was successful.");
             },
             error: function () {
-                  console.log("adding is NOT successful");
+                  console.log("Error sending data to server.");
             }
       }
       $.ajax(ajaxConfg);
@@ -737,7 +730,6 @@ function sendDataToServer ( userEntryObj ) {
  */
 function updateDataInServer ( newEntryObj ) {
       var ajaxConfig = {
-            // dataType: 'json',
             data: JSON,
             method: 'post',
             url: 'dataApi/update_entry.php',
@@ -750,7 +742,7 @@ function updateDataInServer ( newEntryObj ) {
             },
             success: function () {
                   renderEntryOnDom(newEntryObj);
-                  console.log("Updating in server successful.");
+                  console.log("You have successfully updated the data.");
             },
             error: function () {
                   console.log("Error updating in server.");
@@ -777,11 +769,11 @@ function deleteDataFromServer ( entryIDToDelete, indexNumToDelete ) {
                   entryID: entryIDToDelete //tell DB the entryID to delete from the server
             },
             success: function() {
-                  console.log('You have successfully deleted the data.');
+                  console.log("You have successfully deleted the data.");
                   deleteEntryFromTable(indexNumToDelete);
             },
             error: function() {
-                  console.log('Error deleting the data.');
+                  console.log("Error deleting the data.");
             }
       }
       $.ajax(ajaxConfg);
