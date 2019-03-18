@@ -19,8 +19,6 @@ $addEntryQuery = "INSERT INTO `weight_entry`
 mysqli_query($conn, $addEntryQuery); //takes query and send to db
 $entry_id = mysqli_insert_id($conn); //should return the last entry_id of my insert
 
-echo 'Last entry id: ' . $entry_id;
-
 mysqli_close($conn);
 
 

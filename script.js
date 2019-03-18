@@ -674,13 +674,14 @@ function getDataFromServer() {
             url: 'dataApi/get_entries.php',
             data: {
                   browserID: localStorage.getItem('uniqueBrowserID'),
+                  action: 'readAll'
             },
-            success: function (serverResponse) {
+            success: function () {
                   // renderEntryOnDom(newEntryObj);
-                  console.log("serverResp:"+browserID+"Getting data from server was successful.");
+                  console.log("Getting data from server was successful.");
             },
             error: function () {
-                  console.log("Error getting data to server.");
+                  console.log("Error getting data from server.");
             }
       }
       $.ajax(ajaxConfig);
