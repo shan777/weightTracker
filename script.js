@@ -489,15 +489,15 @@ function renderEntryOnDom(userEntryObj){
             editAndDelButtons.append(editBtn, deleteBtn);
             newTr.append(editAndDelButtons);
 
-            $('.entry-editBtn').off('click'); //unbind
+            // $('.entry-editBtn').off('click'); //unbind
             //then bind handleEditEntry function to .entry-editBtn
-            $('.entry-editBtn').on("click", function() {
+            editBtn.on("click", function() {
                   handleEditEntry();
             });
 
-            $('.entry-deleteBtn').off('click'); //unbind
+            // $('.entry-deleteBtn').off('click'); //unbind
             //then bind handleDeleteEntry function to .entry-deleteBtn
-            $('.entry-deleteBtn').on("click", function() {
+            deleteBtn.on("click", function() {
                   handleDeleteEntry();
             });
       }
@@ -672,13 +672,14 @@ function getDataFromServer() {
             data: JSON,
             method: 'post',
             url: 'dataApi/get_entries.php',
+            dataType: 'json',
             data: {
                   browserID: localStorage.getItem('uniqueBrowserID'),
                   action: 'readAll'
             },
-            success: function () {
+            success: function (serverResponse) {
                   // renderEntryOnDom(newEntryObj);
-                  console.log("Getting data from server was successful.");
+                  console.log(serverResponse);
             },
             error: function () {
                   console.log("Error getting data from server.");

@@ -9,16 +9,19 @@ $query = "SELECT entryID, entryDate, entryWeight, entryNote
             ";
 $result = mysqli_query($conn, $query);
 
-echo "entryID ". $_GET['entryID']. "<br />";
-// if(mysqli_num_rows($result) > 0){
-//     $output['success'] = true;
-//     while($row = mysqli_fetch_assoc($result)){
-//         $output['data'][] = $row;
-//     }
-// } else {
-//     $output['success'] = false;
-//     $output['error'] = 'Invalid search. No data available.';
-// ;}
+// echo "entryID ". $_GET['entryID']. "<br />";
+if(mysqli_num_rows($result) > 0){
+    $output['success'] = true;
+    while($row = mysqli_fetch_assoc($result)){
+        $output['data'][] = $row;
+    }
+} else {
+    $output['success'] = false;
+    $output['error'] = 'Invalid search. No data available.';
+;}
 
 mysqli_close($conn);
+
+print(json_encode($output));
+
 ?>
