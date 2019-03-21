@@ -277,7 +277,7 @@ function validateWeight (weight) {
             var windowWidth = window.innerWidth;
             if(windowWidth < 991){ //mobile size
                   $('.weight-mobile').focus(function(){
-                        $('.edit-weight-alert-desktop').addClass('hidden');
+                        $('.edit-weight-alert-mobile').addClass('hidden');
                         fixWeight();
                   });
             }else{ //desktop size
