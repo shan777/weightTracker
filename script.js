@@ -8,11 +8,10 @@ $(document).ready(initializeApp);
  *
  * arrayOfEntryObjects  @type {Array} - global array to hold the weight entries
  * targetWeight  @type {number} - global number (toFixed(1)) to hold the target weight
- * entryIDNum   @type {number} - unique number for each weight entry
  */
 var arrayOfEntryObjects = [];
 var targetWeight; 
-var entryIDNum = 1;
+var errorMsg = '';
 
 
 /***************************************************************************************************
@@ -45,9 +44,9 @@ function initializeApp(){
       date.setMinutes(date.getMinutes() - date.getTimezoneOffset());
       var dateStr = date.toISOString().substring(0, 10);
       var windowWidth = window.innerWidth;
-      if(windowWidth<991){ //mobile size
+      if(windowWidth < 991){ //mobile size
             var field = document.querySelector('.today-mobile');
-      }else{
+      }else{ //desktop size
             var field = document.querySelector('.today-desktop');
       }
       field.value = dateStr;
@@ -111,11 +110,11 @@ function checkRemainingChar(){
       }
 
       var windowWidth = window.innerWidth;
-      if(windowWidth<991){ //mobile size
+      if(windowWidth < 991){ //mobile size
             $('.note-mobile').focusout(function() {
                   $("#remainingC").addClass('hidden');
             });
-      }else {
+      }else { //desktop size
             $('.note-desktop').focusout(function() {
                   $("#remainingC").addClass('hidden');
             });
@@ -126,7 +125,7 @@ function checkRemainingChar(){
 
 
 /***************************************************************************************************
-* handleGoalWeight - once goal weight is entered from modal, display onto DOM
+* handleGoalWeight - once goal weight is entered from the modal, display onto DOM
 * @params none 
 * @returns none
 */
@@ -170,7 +169,7 @@ function renderGoalWeight( targetWeight ){
 
 
 /***************************************************************************************************
- * editGoalWeight - updates the goal weight and display updated goal weight on DOM
+ * editGoalWeight - updates the goal weight from DOM (not modal) then display updated goal weight on DOM
  * @param: none
  * @returns none
  */
@@ -193,20 +192,19 @@ function editGoalWeight(){
       $('.goal-weight-edit-btn').addClass('hidden');
       $('.goal-text').append(newGoalWeightInput, newGoalWeightSaveBtn);
 
-      if($('#saveButton').click(function() {
+      $('#saveButton').click(function() {
             var updatedWeight = $('#updated-goal-weight').val(); 
+            // handleGoalWeight();
             renderGoalWeight(updatedWeight);
             targetWeight = updatedWeight;
+            localStorage.setItem('targetWeight', targetWeight);
             newGoalWeightInput.addClass('hidden');
             newGoalWeightSaveBtn.addClass('hidden');
             $('.goal-weight-edit-btn').removeClass('hidden');
             newGoalWeightSaveBtn.remove();
             newGoalWeightInput.remove();
-      }));
-      
-      //updateEntryList( userEntryObj ); //To Goal messages should be updated based on updated goal weight
-      //renderEntryOnDom(userEntryObj); or just render the motiv msg again based on new goal weight???
-
+            $('#motiv-msg').html(' ');
+      });
 }
 
 
@@ -220,8 +218,6 @@ function editGoalWeight(){
 function handleAddClicked(){
       var windowWidth = window.innerWidth;
       var userEntryObj = {};
-      userEntryObj.entryID = entryIDNum;
-      entryIDNum++;
 
       if(windowWidth < 991){ //mobile size
             userEntryObj.date = $('.today-mobile').val();
@@ -246,21 +242,19 @@ function handleAddClicked(){
             var fullDate = new Date();
             var yr = fullDate.getFullYear();
             var mo = fullDate.getMonth() + 1;
-            if(mo<10)
+            if(mo < 10)
                   mo = "0" + mo;
             var dt = fullDate.getDate();
-            if(dt<10)
+            if(dt < 10)
                   dt = "0" + dt;
             userEntryObj.date = (yr+"-"+mo+"-"+dt).toString();
       }
-
     
       if (!userEntryObj.note) { //if note is left blank, note value is set to "N/A"
             userEntryObj.note = "N/A";
       }
 
       if(validateWeight(userEntryObj.weight)){
-            // userEntryObj.weight = Number(userEntryObj.weight); //converting the string type weight to the number
             clearAddEntryInputs();
             sendDataToServer(userEntryObj);
       }
@@ -276,13 +270,15 @@ function handleAddClicked(){
 function validateWeight (weight) {
       if (!weight) { //if weight field is empty, display alert message
             $('.edit-weight-alert-desktop').removeClass("hidden");
+            $('.edit-weight-alert-mobile').removeClass("hidden");
+
             var windowWidth = window.innerWidth;
-            if(windowWidth<991){ //mobile size
+            if(windowWidth < 991){ //mobile size
                   $('.weight-mobile').focus(function(){
                         $('.edit-weight-alert-desktop').addClass('hidden');
                         fixWeight();
                   });
-            }else{
+            }else{ //desktop size
                   $('.weight-desktop').focus(function(){
                         $('.edit-weight-alert-desktop').addClass('hidden');
                         fixWeight();
@@ -292,7 +288,7 @@ function validateWeight (weight) {
             $('.edit-weight-alert-desktop').removeClass("hidden");
             $('.edit-weight-alert-mobile').removeClass("hidden");
             fixWeight();
-      } else {
+      }else{
             return true;
       }
 }
@@ -305,30 +301,33 @@ function validateWeight (weight) {
  * @calls: validateWeight
  */
 function fixWeight() {
-      $('.weight-mobile').focus(function(){
-            $('.edit-weight-alert-mobile').addClass("hidden");
+      if(windowWidth < 991){ //mobile size
+            $('.weight-mobile').focus(function(){
+                  $('.edit-weight-alert-mobile').addClass("hidden");
 
-            $('.weight-mobile').on('focusout', function(){
-                  var newWeight = this.value;
-                  if (newWeight.length > 1) {
-                        validateWeight(newWeight);
-                  }
+                  $('.weight-mobile').on('focusout', function(){
+                        var newWeight = this.value;
+                        if (newWeight.length > 1) {
+                              validateWeight(newWeight);
+                        }
+                  });
             });
-      });
-      $('.weight-desktop').focus(function(){
-            $('.edit-weight-alert-desktop').addClass("hidden");
+      }else { //desktop size
+            $('.weight-desktop').focus(function(){
+                  $('.edit-weight-alert-desktop').addClass("hidden");
 
-            $('.weight-desktop').on('focusout', function(){
-                  var newWeight = this.value;
-                  if (newWeight.length > 1) {
-                        validateWeight(newWeight);
-                  }
+                  $('.weight-desktop').on('focusout', function(){
+                        var newWeight = this.value;
+                        if (newWeight.length > 1) {
+                              validateWeight(newWeight);
+                        }
+                  });
             });
-      });
+      }
 }
 
 /***************************************************************************************************
- * handleCancelEntry - when user clicks the cancel button, clears out the input fields in the form 
+ * handleCancelEntry - when user clicks the "cancel" button, clears out the input fields in the form 
  * @param: {undefined} none
  * @returns: {undefined} none
  * @calls: clearAddEntryInputs
@@ -339,7 +338,7 @@ function handleCancelEntry(){
 
 
 /***************************************************************************************************
- * handleCancelEdit - when user clicks the cancel button, clears out the form and closes modal
+ * handleCancelEdit - when user clicks the "cancel" button in the edit modal, clears out the form and closes modal
  * @param: {undefined} none
  * @returns: {undefined} none
  * @calls: hideModal
@@ -393,7 +392,7 @@ function compareTwoVars(a, b) {
  */
 function addEntry(userEntryObj){
       arrayOfEntryObjects.push(userEntryObj); 
-      renderEntryOnDom(userEntryObj);
+      renderEntryOnDom();
 }
 
 
@@ -404,25 +403,25 @@ function addEntry(userEntryObj){
  * @return none
  * @calls  none
  */
-function renderEntryOnDom(userEntryObj){
+function renderEntryOnDom(){
       //sort the entries by the ascending order of the date (old on top and recent on the bottom)
       //before rendering
       arrayOfEntryObjects.sort(compareTwoVars);
 
-      //remove all children of the weight table before rendering sorted array of entry objects
       var weightTable = document.getElementById("weightTable");
-      //while there's any child left, remove - basically removes all children
-      //this is cleaning up the weight table before updating w/ the updated table
-      while (weightTable.firstChild) { 
-            weightTable.removeChild(weightTable.firstChild);
+      //remove all children of the weight table before rendering sorted array of entry objects 
+      //if weightTable has any children already
+      if(weightTable.firstChild){
+            //while there's any child left, remove - basically removes all children
+            //this is cleaning up the weight table before updating w/ the fresh/updated table
+            while (weightTable.firstChild) { 
+                  weightTable.removeChild(weightTable.firstChild);
+            }
       }
 
       //rendering onto dom from already sorted array from addEntry function, arrayOfEntryObjects
       for (var i=0; i<arrayOfEntryObjects.length; i++){
             var newTr = $('<tr>');
-            var entryIDItem = $('<td>', {
-                  html: arrayOfEntryObjects[i].entryID
-            });
             var dateItem = $('<td>', {
                   // class: 'col-lg-1 col-md-1 col-sm-1 col-xs-1 text-center',
                   class: 'text-center entry-date',
@@ -441,8 +440,7 @@ function renderEntryOnDom(userEntryObj){
             });
       
             $('.weight-list tbody').append(newTr);
-            newTr.append(entryIDItem, dateItem, weightItem, noteItem); 
-            entryIDItem.hide();
+            newTr.append(dateItem, weightItem, noteItem); 
 
 
             if(i == 0){    
@@ -489,20 +487,14 @@ function renderEntryOnDom(userEntryObj){
             editAndDelButtons.append(editBtn, deleteBtn);
             newTr.append(editAndDelButtons);
 
-            $('.entry-editBtn').off('click'); //unbind
-            //then bind handleEditEntry function to .entry-editBtn
-            $('.entry-editBtn').on("click", function() {
+            editBtn.on("click", function() {
                   handleEditEntry();
             });
 
-            $('.entry-deleteBtn').off('click'); //unbind
-            //then bind handleDeleteEntry function to .entry-deleteBtn
-            $('.entry-deleteBtn').on("click", function() {
+            deleteBtn.on("click", function() {
                   handleDeleteEntry();
             });
       }
-      
-      displayMotivMsg (userEntryObj.weight);
 }
 
 
@@ -513,6 +505,7 @@ function renderEntryOnDom(userEntryObj){
  * @calls  none
  */
 function displayMotivMsg (weightEntered){
+      $('#motiv-msg').removeClass("hidden");
       var moreToLose = weightEntered - targetWeight;
 
       //display motivational quotes to lose weight/cheer up
@@ -564,11 +557,10 @@ function handleDeleteEntry () { //called when entry-deleteBtn was clicked
       var tr = event.currentTarget.closest("tr"); //finds the entry-deleteBtn 's closest <tr> that's the grandparent 
       var deleteEntryObj = {};
 
-      deleteEntryObj.entryID = parseInt(tr.children[0].innerText);
-      deleteEntryObj.date = tr.children[1].innerText;
-      var wt = (tr.children[2].innerText).split(' ');
+      deleteEntryObj.date = tr.children[0].innerText;
+      var wt = (tr.children[1].innerText).split(' ');
       deleteEntryObj.weight = wt[0]; //weight without the string 'lbs' (wt[1] has "lbs")
-      deleteEntryObj.note = tr.children[3].innerText;
+      deleteEntryObj.note = tr.children[2].innerText;
 
       //unbind and then bind the cancel-delete-button to the function
       $('#cancel-delete-button').off('click').click(function(){
@@ -580,7 +572,9 @@ function handleDeleteEntry () { //called when entry-deleteBtn was clicked
             //find index of the deleteObj in the array
             var i=0, notFound=true, indexNumToDelete;
             while(i < arrayOfEntryObjects.length && notFound){
-                  if(arrayOfEntryObjects[i].entryID === deleteEntryObj.entryID) {
+                  if(arrayOfEntryObjects[i].date === deleteEntryObj.date &&
+                     arrayOfEntryObjects[i].weight === deleteEntryObj.weight &&
+                     arrayOfEntryObjects[i].note === deleteEntryObj.note)  {
                         indexNumToDelete = i;
                         notFound = false;
                   }else { 
@@ -591,7 +585,7 @@ function handleDeleteEntry () { //called when entry-deleteBtn was clicked
             arrayOfEntryObjects.splice(indexNumToDelete, 1); 
 
             hideModal ('delete');
-            deleteDataFromServer (deleteEntryObj.entryID, indexNumToDelete);
+            deleteDataFromServer (deleteEntryObj, indexNumToDelete);
       });
 }
 
@@ -608,11 +602,10 @@ function handleDeleteEntry () { //called when entry-deleteBtn was clicked
 function handleEditEntry () {
       var editEntryObj = {};;
       var tr = event.currentTarget.closest("tr"); //finds the editEntry button's closest <tr> that's the grandparent 
-      editEntryObj.entryID = parseInt(tr.children[0].innerText);
-      editEntryObj.date = tr.children[1].innerText;
-      var wt = (tr.children[2].innerText).split(' ');
+      editEntryObj.date = tr.children[0].innerText;
+      var wt = (tr.children[1].innerText).split(' ');
       editEntryObj.weight = wt[0]; //weight without the string 'lbs' (wt[1] has "lbs")
-      editEntryObj.note = tr.children[3].innerText;
+      editEntryObj.note = tr.children[2].innerText;
 
       showModal ('edit');
 
@@ -644,7 +637,10 @@ function handleUpdate(editEntryObj){
       var notFound = true, i = 0;
 
       while(notFound && i < arrayOfEntryObjects.length){
-            if(arrayOfEntryObjects[i].entryID === editEntryObj.entryID){ //look for the entry to edit using the entryID
+            //look for the entry to edit using the entryID
+            if(arrayOfEntryObjects[i].date === editEntryObj.date &&
+               arrayOfEntryObjects[i].weight === editEntryObj.weight &&
+               arrayOfEntryObjects[i].note === editEntryObj.note){ 
                   indexNumToUpdate = i;
                   notFound = false; // =found it
             }else{
@@ -652,13 +648,11 @@ function handleUpdate(editEntryObj){
             }
       }
 
-      var newUserEntryObj = {};
-      newUserEntryObj.entryID = editEntryObj.entryID;
-      newUserEntryObj.date = $('#updatedDate').val();
-      newUserEntryObj.weight = $('#updatedWeight').val();
-      newUserEntryObj.note = $('#updatedNote').val();
-
       if(indexNumToUpdate > -1){ //if entry trying to edit was found in the array
+            var newUserEntryObj = {};
+            newUserEntryObj.date = $('#updatedDate').val();
+            newUserEntryObj.weight = $('#updatedWeight').val();
+            newUserEntryObj.note = $('#updatedNote').val();
             arrayOfEntryObjects[indexNumToUpdate] = newUserEntryObj; //update the old with the new
             hideModal ('edit');
             updateDataInServer ( newUserEntryObj ); 
@@ -672,16 +666,25 @@ function getDataFromServer() {
             data: JSON,
             method: 'post',
             url: 'dataApi/get_entries.php',
+            dataType: 'json',
             data: {
                   browserID: localStorage.getItem('uniqueBrowserID'),
                   action: 'readAll'
             },
-            success: function () {
-                  // renderEntryOnDom(newEntryObj);
-                  console.log("Getting data from server was successful.");
+            success: function (serverResponse) {
+                  if(serverResponse.success){ //if DB has some data in it
+                        for (var i=0; i<serverResponse.data.length; i++) {
+                              arrayOfEntryObjects[i] = {};
+                              arrayOfEntryObjects[i].date = serverResponse.data[i].entryDate;
+                              arrayOfEntryObjects[i].weight = serverResponse.data[i].entryWeight;
+                              arrayOfEntryObjects[i].note = serverResponse.data[i].entryNote;
+                        }
+                        renderEntryOnDom();
+                  }
             },
             error: function () {
-                  console.log("Error getting data from server.");
+                  errorMsg = 'There was an error getting data from the server.<br>Please try refreshing the page again.';
+                  showModal('error');
             }
       }
       $.ajax(ajaxConfig);
@@ -710,11 +713,12 @@ function sendDataToServer ( userEntryObj ) {
                   action: 'insert'
             },
             success: function () {
+                  displayMotivMsg(userEntryObj.weight);
                   addEntry(userEntryObj);
-                  console.log("Sending data to server was successful.");
             },
             error: function () {
-                  console.log("Error sending data to server.");
+                  errorMsg = 'There is an error sending data to the server.<br>Please try again.';
+                  showModal('error');
             }
       }
       $.ajax(ajaxConfg);
@@ -742,11 +746,12 @@ function updateDataInServer ( newEntryObj ) {
                   entryNote: newEntryObj.note
             },
             success: function () {
-                  renderEntryOnDom(newEntryObj);
-                  console.log("You have successfully updated the data.");
+                  renderEntryOnDom();
+                  displayMotivMsg(newEntryObj.weight);
             },
             error: function () {
-                  console.log("Error updating in server.");
+                  errorMsg = 'There was an error making the update in the server.<br>Please try again.';
+                  showModal('error');
             }
       }
       $.ajax(ajaxConfig);
@@ -760,21 +765,23 @@ function updateDataInServer ( newEntryObj ) {
  * @returns none
  * @calls deleteEntryFromTable
  */
-function deleteDataFromServer ( entryIDToDelete, indexNumToDelete ) {
+function deleteDataFromServer ( deleteEntryObj, indexNumToDelete ) {
       var ajaxConfg = {
             data: JSON,
             method: 'post',
             url: 'dataApi/delete_entry.php',
             data: {
                   browserID: localStorage.getItem('uniqueBrowserID'),
-                  entryID: entryIDToDelete //tell DB the entryID to delete from the server
+                  entryDate: deleteEntryObj.date,
+                  entryWeight: deleteEntryObj.weight,
+                  entryNote: deleteEntryObj.note
             },
             success: function() {
-                  console.log("You have successfully deleted the data.");
                   deleteEntryFromTable(indexNumToDelete);
             },
             error: function() {
-                  console.log("Error deleting the data.");
+                  errorMsg = 'There was an error deleting the data.<br>Please try again.';
+                  showModal('error');
             }
       }
       $.ajax(ajaxConfg);
@@ -782,19 +789,23 @@ function deleteDataFromServer ( entryIDToDelete, indexNumToDelete ) {
 
 /*************************************************************************************************** 
  * showModal - opens up modal based on the purpose 
- * @param purpose (goal weight input, edit entry, or delete)
+ * @param purpose (goal weight input, edit entry, error, or delete)
  * @returns none
  * @calls none
  */
 function showModal( purpose ){
       var modalToShow = '#' + purpose + 'Modal';
       $(modalToShow).modal('show');
+      if(purpose == 'error'){
+            $('#errorMsg').html(errorMsg);
+      }
+
 }
 
 
 /*************************************************************************************************** 
  * hideModal - closes modal based on the purpose 
- * @param purpose (goal weight input, edit entry, or delete)
+ * @param purpose (goal weight input, edit entry, error, or delete)
  * @returns none
  * @calls none
  */

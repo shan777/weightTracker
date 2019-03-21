@@ -66,6 +66,11 @@
         /* animation-delay: 5s; */
         font-weight: bolder;
     }
+
+    .modal-header .close {
+        margin-top: -15px !important;
+    }
+    
     @keyframes blinkingText {
         0% { color: rgb(252, 8, 8);}
         25% { color: rgb(248, 132, 23);}
@@ -163,8 +168,6 @@
     </div>
     <!-- end of goal weight modal -->
 
-    
-
     <!-- beginning of edit entry Modal -->
     <div class="modal fade" id="editModal" role="dialog">
         <div class="modal-dialog">
@@ -237,6 +240,20 @@
     </div>        
     <!-- end of delete entry Modal -->
 
+    <!-- beginning of error modal -->
+    <div class="modal fade" id="errorModal" role="dialog" style="margin: 0 auto; padding-top: 10%;" data-keyboard="false" data-backdrop="static">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header" style="padding: 15px 10px; background-color: rgb(236, 38, 38); height: 10%;">
+                    <button type="button" class="close" data-dismiss="modal" style="color: white; font-size: 3rem; opacity: 0.8 !important;">&times;</button>
+                </div>
+                <div class="modal-body" style="padding:40px 50px; color: rgb(236, 38, 38);">
+                    <h4 id="errorMsg" style="line-height: 1.7; text-align: center; font-weight: bold;"></span></h4>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- end of error modal -->
 
     <div class="container-fluid">
         <div class="form-group col-lg-12 col-md-12 col-sm-12 col-xs-12 row">

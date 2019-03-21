@@ -1,17 +1,24 @@
 <?php
 require_once('../config/mysql_connect.php');
-$entry_id = $_POST['entryID'];
+$entry_date = $_POST['entryDate'];
+$entry_weight = $_POST['entryWeight'];
+$entry_note = $_POST['entryNote'];
 $browser_id = $_POST['browserID'];
+
 $deleteEntryQuery = "DELETE FROM `weight_entry` 
-                    WHERE entryID = {$entry_id}
-                    AND browserID = '{$browser_id}' 
+                    WHERE entryDate = '{$entry_date}'
+                      AND entryWeight = '{$entry_weight}' 
+                      AND entryNote = '{$entry_note}'
+                      AND browserID = '{$browser_id}'
 ";
 
 mysqli_query($conn, $deleteEntryQuery);
 $query = "SELECT DISTINCT * 
           FROM weight_entry 
-          WHERE entryID = $entry_id
-          AND browserID = '$browser_id' 
+          WHERE entryDate = '{$entry_date}'
+            AND entryWeight = '{$entry_weight}' 
+            AND entryNote = '{$entry_note}'
+            AND browserID = '{$browser_id}'
           ";
 
 $result = mysqli_query($conn, $query);
