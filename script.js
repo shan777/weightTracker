@@ -249,7 +249,6 @@ function handleAddClicked(){
                   dt = "0" + dt;
             userEntryObj.date = (yr+"-"+mo+"-"+dt).toString();
       }
-
     
       if (!userEntryObj.note) { //if note is left blank, note value is set to "N/A"
             userEntryObj.note = "N/A";
@@ -289,7 +288,7 @@ function validateWeight (weight) {
             $('.edit-weight-alert-desktop').removeClass("hidden");
             $('.edit-weight-alert-mobile').removeClass("hidden");
             fixWeight();
-      } else {
+      }else{
             return true;
       }
 }
@@ -313,7 +312,7 @@ function fixWeight() {
                         }
                   });
             });
-      } else { //desktop size
+      }else { //desktop size
             $('.weight-desktop').focus(function(){
                   $('.edit-weight-alert-desktop').addClass("hidden");
 
@@ -586,7 +585,7 @@ function handleDeleteEntry () { //called when entry-deleteBtn was clicked
             arrayOfEntryObjects.splice(indexNumToDelete, 1); 
 
             hideModal ('delete');
-            deleteDataFromServer (deleteEntryObj.entryID, indexNumToDelete);
+            deleteDataFromServer (deleteEntryObj, indexNumToDelete);
       });
 }
 
@@ -766,14 +765,16 @@ function updateDataInServer ( newEntryObj ) {
  * @returns none
  * @calls deleteEntryFromTable
  */
-function deleteDataFromServer ( entryIDToDelete, indexNumToDelete ) {
+function deleteDataFromServer ( deleteEntryObj, indexNumToDelete ) {
       var ajaxConfg = {
             data: JSON,
             method: 'post',
             url: 'dataApi/delete_entry.php',
             data: {
                   browserID: localStorage.getItem('uniqueBrowserID'),
-                  entryID: entryIDToDelete //tell DB the entryID to delete from the server
+                  entryDate: deleteEntryObj.date,
+                  entryWeight: deleteEntryObj.weight,
+                  entryNote: deleteEntryObj.note
             },
             success: function() {
                   deleteEntryFromTable(indexNumToDelete);
