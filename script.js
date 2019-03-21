@@ -78,7 +78,9 @@ function addClickHandlersToElements(){
 
 
 /***************************************************************************************************
-* checkEnterKeyPressed - checks if Enter key is pressed in modal after inputting goal weight and call handleGoalWeight function
+* checkEnterKeyPressed - checks if Enter key is pressed in input target weight modal for the first time
+* after inputting goal weight and call handleGoalWeight function
+* this function is called when the when the user inputs the target weight and press the enter key in the keyboard
 * @params event 
 * @returns  none 
 */
@@ -99,24 +101,24 @@ function checkRemainingChar(){
       var len = 0;
       var maxchar = 80;
 
-      $("#remainingC").removeClass('hidden');
+      $(".remainingC").removeClass('hidden');
       len = this.value.length;
       if(len > maxchar){
             return false;
       }else if (len > 0){
-            $("#remainingC").html("Remaining characters: " + (maxchar - len));
+            $(".remainingC").html("Remaining characters: " + (maxchar - len));
       }else{
-            $("#remainingC").html("Remaining characters: " + (maxchar));
+            $(".remainingC").html("Remaining characters: " + (maxchar));
       }
 
       var windowWidth = window.innerWidth;
       if(windowWidth < 991){ //mobile size
             $('.note-mobile').focusout(function() {
-                  $("#remainingC").addClass('hidden');
+                  $(".remainingC").addClass('hidden');
             });
       }else { //desktop size
             $('.note-desktop').focusout(function() {
-                  $("#remainingC").addClass('hidden');
+                  $(".remainingC").addClass('hidden');
             });
       }
   
@@ -301,6 +303,7 @@ function validateWeight (weight) {
  * @calls: validateWeight
  */
 function fixWeight() {
+      var windowWidth = window.innerWidth;
       if(windowWidth < 991){ //mobile size
             $('.weight-mobile').focus(function(){
                   $('.edit-weight-alert-mobile').addClass("hidden");
@@ -500,23 +503,24 @@ function renderEntryOnDom(){
 
 /***************************************************************************************************
  * displayMotivMsg - depending on whether user lost or gained weight, displays motivational quote 
- * @param {object} weightEntered weight entered by user
+ * @param none
  * @return none
  * @calls  none
  */
-function displayMotivMsg (weightEntered){
-      $('#motiv-msg').removeClass("hidden");
-      var moreToLose = weightEntered - targetWeight;
+function displayMotivMsg (){
+      var lastWeight = arrayOfEntryObjects[arrayOfEntryObjects.length-1].weight;
+      var moreToLose = lastWeight - targetWeight;
 
       //display motivational quotes to lose weight/cheer up
       var equal = ['Yayy &#127930; &#127930; &#127930; You have reached the goal!', '&#127881; &#127881; &#127881; You did it!!!', '&#128077; You rock! &#10071;', 
             '&#127942; You made it! So proud of you. &#128079;', 'You made it happen &#128077; Keep it up!'];
       var less = ['You can set a new goal if you want &#128513;', '&#128175; Keep it up!', 'You are doing great &#128077;', '&#128170; You are strong &#10071;', 
             '&#127939; &#127939; &#127939; Let&#39;s get fit!'];
-      var more = ['Excuses don&#39;t burn calories &#128581; &#9656;&#9656; ', 'Yesterday you said tomorrow! &#129324;&#129324;&#129324; &#9656;&#9656; ', 'Nothing tastes as good as being thin feels! &#128089; &#9656;&#9656; ', 
-            'Only you can change your life. No one can do it for you &#9656;&#9656; ', 'Don&#39;t reward yourself with food. You are not a dog &#128544; &#9656;&#9656; '];
+      var more = ['Excuses don&#39;t burn calories &#128581; &#9656;&#9656; ', 'Yesterday you said tomorrow! &#129324;&#129324;&#129324; &#9656;&#9656; ', 
+            'Nothing tastes as good as being thin feels! &#128089; &#127940; &#9656;&#9656; ', 'Don&#39;t reward yourself with food. You are not a dog &#128544; &#9656;&#9656;',
+            'Only you can change your life. No one can do it for you &#9656;&#9656; '];
 
-      var randomNum = Math.floor(Math.random() *5); //to display a random quote from the array
+      var randomNum = Math.floor(Math.random() *5); //to display a random quote the array
 
       if(moreToLose == 0) { //goal achieved
             $('#motiv-msg').html(equal[randomNum]);
@@ -524,8 +528,8 @@ function displayMotivMsg (weightEntered){
             $('#motiv-msg').html(less[randomNum]);
       }else { //still needs to work towards the goal
             $('#motiv-msg').html(more[randomNum] + ' <span style="color: orangered">' +  (moreToLose.toFixed(1) + '</span> lbs left!'));
-  
       }
+      $('#motiv-msg').removeClass("hidden");
 }
 
 
@@ -713,8 +717,8 @@ function sendDataToServer ( userEntryObj ) {
                   action: 'insert'
             },
             success: function () {
-                  displayMotivMsg(userEntryObj.weight);
                   addEntry(userEntryObj);
+                  displayMotivMsg();
             },
             error: function () {
                   errorMsg = 'There is an error sending data to the server.<br>Please try again.';
@@ -747,7 +751,7 @@ function updateDataInServer ( newEntryObj ) {
             },
             success: function () {
                   renderEntryOnDom();
-                  displayMotivMsg(newEntryObj.weight);
+                  displayMotivMsg();
             },
             error: function () {
                   errorMsg = 'There was an error making the update in the server.<br>Please try again.';
