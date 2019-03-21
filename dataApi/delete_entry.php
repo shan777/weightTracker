@@ -6,7 +6,7 @@ $entry_note = $_POST['entryNote'];
 $browser_id = $_POST['browserID'];
 
 $deleteEntryQuery = "DELETE FROM `weight_entry` 
-                    WHERE entryDate = {$entry_date}
+                    WHERE entryDate = '{$entry_date}'
                       AND entryWeight = '{$entry_weight}' 
                       AND entryNote = '{$entry_note}'
                       AND browserID = '{$browser_id}'
@@ -15,7 +15,7 @@ $deleteEntryQuery = "DELETE FROM `weight_entry`
 mysqli_query($conn, $deleteEntryQuery);
 $query = "SELECT DISTINCT * 
           FROM weight_entry 
-          WHERE entryDate = {$entry_date}
+          WHERE entryDate = '{$entry_date}'
             AND entryWeight = '{$entry_weight}' 
             AND entryNote = '{$entry_note}'
             AND browserID = '{$browser_id}'
