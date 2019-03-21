@@ -11,6 +11,7 @@ $(document).ready(initializeApp);
  */
 var arrayOfEntryObjects = [];
 var targetWeight; 
+var errorMsg = '';
 
 
 /***************************************************************************************************
@@ -124,7 +125,7 @@ function checkRemainingChar(){
 
 
 /***************************************************************************************************
-* handleGoalWeight - once goal weight is entered from modal, display onto DOM
+* handleGoalWeight - once goal weight is entered from the modal, display onto DOM
 * @params none 
 * @returns none
 */
@@ -168,7 +169,7 @@ function renderGoalWeight( targetWeight ){
 
 
 /***************************************************************************************************
- * editGoalWeight - updates the goal weight and display updated goal weight on DOM
+ * editGoalWeight - updates the goal weight from DOM (not modal) then display updated goal weight on DOM
  * @param: none
  * @returns none
  */
@@ -191,16 +192,19 @@ function editGoalWeight(){
       $('.goal-weight-edit-btn').addClass('hidden');
       $('.goal-text').append(newGoalWeightInput, newGoalWeightSaveBtn);
 
-      if($('#saveButton').click(function() {
+      $('#saveButton').click(function() {
             var updatedWeight = $('#updated-goal-weight').val(); 
+            // handleGoalWeight();
             renderGoalWeight(updatedWeight);
             targetWeight = updatedWeight;
+            localStorage.setItem('targetWeight', targetWeight);
             newGoalWeightInput.addClass('hidden');
             newGoalWeightSaveBtn.addClass('hidden');
             $('.goal-weight-edit-btn').removeClass('hidden');
             newGoalWeightSaveBtn.remove();
             newGoalWeightInput.remove();
-      }));
+            $('#motiv-msg').html(' ');
+      });
 }
 
 
@@ -502,6 +506,7 @@ function renderEntryOnDom(){
  * @calls  none
  */
 function displayMotivMsg (weightEntered){
+      $('#motiv-msg').removeClass("hidden");
       var moreToLose = weightEntered - targetWeight;
 
       //display motivational quotes to lose weight/cheer up
@@ -667,22 +672,20 @@ function getDataFromServer() {
                   browserID: localStorage.getItem('uniqueBrowserID'),
                   action: 'readAll'
             },
-            success: function (serverResponse) {;
-                  console.log('arry:', arrayOfEntryObjects)
-                  console.log(serverResponse.data);
-                  for (var i=0; i<serverResponse.data.length; i++) {
-                        console.log('arry:', arrayOfEntryObjects)
-
-                        console.log('i: ', i);
-                        arrayOfEntryObjects[i] = {};
-                        arrayOfEntryObjects[i].date = serverResponse.data[i].entryDate;
-                        arrayOfEntryObjects[i].weight = serverResponse.data[i].entryWeight;
-                        arrayOfEntryObjects[i].note = serverResponse.data[i].entryNote;
+            success: function (serverResponse) {
+                  if(serverResponse.success){ //if DB has some data in it
+                        for (var i=0; i<serverResponse.data.length; i++) {
+                              arrayOfEntryObjects[i] = {};
+                              arrayOfEntryObjects[i].date = serverResponse.data[i].entryDate;
+                              arrayOfEntryObjects[i].weight = serverResponse.data[i].entryWeight;
+                              arrayOfEntryObjects[i].note = serverResponse.data[i].entryNote;
+                        }
+                        renderEntryOnDom();
                   }
-                  renderEntryOnDom();
             },
             error: function () {
-                  console.log("Error getting data from server.");
+                  errorMsg = 'There was an error getting data from the server.<br>Please try refreshing the page again.';
+                  showModal('error');
             }
       }
       $.ajax(ajaxConfig);
@@ -711,11 +714,12 @@ function sendDataToServer ( userEntryObj ) {
                   action: 'insert'
             },
             success: function () {
+                  displayMotivMsg(userEntryObj.weight);
                   addEntry(userEntryObj);
-                  console.log("Sending data to server was successful.");
             },
             error: function () {
-                  console.log("Error sending data to server.");
+                  errorMsg = 'There is an error sending data to the server.<br>Please try again.';
+                  showModal('error');
             }
       }
       $.ajax(ajaxConfg);
@@ -745,9 +749,9 @@ function updateDataInServer ( newEntryObj ) {
             success: function () {
                   renderEntryOnDom();
                   displayMotivMsg(newEntryObj.weight);
-                  console.log("You have successfully updated the data.");
             },
             error: function () {
+                  errorMsg = 'There was an error making the update in the server.<br>Please try again.';
                   showModal('error');
             }
       }
@@ -772,11 +776,11 @@ function deleteDataFromServer ( entryIDToDelete, indexNumToDelete ) {
                   entryID: entryIDToDelete //tell DB the entryID to delete from the server
             },
             success: function() {
-                  console.log("You have successfully deleted the data.");
                   deleteEntryFromTable(indexNumToDelete);
             },
             error: function() {
-                  console.log("Error deleting the data.");
+                  errorMsg = 'There was an error deleting the data.<br>Please try again.';
+                  showModal('error');
             }
       }
       $.ajax(ajaxConfg);
@@ -791,6 +795,10 @@ function deleteDataFromServer ( entryIDToDelete, indexNumToDelete ) {
 function showModal( purpose ){
       var modalToShow = '#' + purpose + 'Modal';
       $(modalToShow).modal('show');
+      if(purpose == 'error'){
+            $('#errorMsg').html(errorMsg);
+      }
+
 }
 
 
