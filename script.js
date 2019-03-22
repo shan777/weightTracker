@@ -411,9 +411,9 @@ function renderEntryOnDom(){
       //before rendering
       arrayOfEntryObjects.sort(compareTwoVars);
 
-      var weightTable = document.getElementById("weightTable");
+      var weightTable = document.getElementById("weight-table");
       //remove all children of the weight table before rendering sorted array of entry objects 
-      //if weightTable has any children already
+      //if weight-table has any children already
       if(weightTable.firstChild){
             //while there's any child left, remove - basically removes all children
             //this is cleaning up the weight table before updating w/ the fresh/updated table
@@ -426,8 +426,9 @@ function renderEntryOnDom(){
       for (var i=0; i<arrayOfEntryObjects.length; i++){
             var newTr = $('<tr>');
             var dateItem = $('<td>', {
-                  // class: 'col-lg-1 col-md-1 col-sm-1 col-xs-1 text-center',
+                  rowspan: '2',
                   class: 'text-center entry-date',
+                  style: 'vertical-align: middle; border-right: 1px solid #ddd;',
                   text: arrayOfEntryObjects[i].date
             });
             var weightItem = $('<td>', {
@@ -437,14 +438,7 @@ function renderEntryOnDom(){
                   text: arrayOfEntryObjects[i].weight + ' lbs'
             });
             
-            var noteItem = $('<td>', {
-                  class: 'text-center entry-note', 
-                  text: arrayOfEntryObjects[i].note
-            });
-      
-            $('.weight-list tbody').append(newTr);
-            newTr.append(dateItem, weightItem, noteItem); 
-
+            newTr.append(dateItem, weightItem); 
 
             if(i == 0){    
                   newTr.append('<td class="text-left" style="font-size:18px; color:black; padding-left: 8%;">-');
@@ -476,7 +470,9 @@ function renderEntryOnDom(){
             }
 
             var editAndDelButtons = $('<td>', {
-                  class: 'text-center'
+                  rowspan: '2',
+                  class: 'text-center',
+                  style: 'margin: 0 auto; vertical-align: middle; border-left: 1px solid #ddd;'
             });
             var editBtn = $('<button>', {
                   class: 'btn btn-info fa fa-pencil-square-o entry-editBtn',
@@ -497,6 +493,19 @@ function renderEntryOnDom(){
             deleteBtn.on("click", function() {
                   handleDeleteEntry();
             });
+
+            var newTr2 = $('<tr>');
+            var noteItem = $('<td>', {
+                  colspan: '2',
+                  class: 'text-center entry-note', 
+                  text: arrayOfEntryObjects[i].note
+            });
+
+            newTr2.append(noteItem); 
+
+            // $('.weight-list tbody').append(newTr, newTr2);
+            $('#weight-table').append(newTr, newTr2);
+
       }
 }
 
@@ -542,7 +551,7 @@ function displayMotivMsg (){
  * @calls none
  */
 function deleteEntryFromTable(indexNumToDelete){
-      var trs = $('#weightTable').find('tr');
+      var trs = $('#weight-table').find('tr');
       trs[indexNumToDelete].remove();     
 }
 
