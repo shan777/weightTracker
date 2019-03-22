@@ -552,7 +552,9 @@ function displayMotivMsg (){
  */
 function deleteEntryFromTable(indexNumToDelete){
       var trs = $('#weight-table').find('tr');
-      trs[indexNumToDelete].remove();     
+      trs[indexNumToDelete*2].remove();    
+      trs[indexNumToDelete*2+1].remove();     
+ 
 }
 
 
@@ -573,7 +575,7 @@ function handleDeleteEntry () { //called when entry-deleteBtn was clicked
       deleteEntryObj.date = tr.children[0].innerText;
       var wt = (tr.children[1].innerText).split(' ');
       deleteEntryObj.weight = wt[0]; //weight without the string 'lbs' (wt[1] has "lbs")
-      deleteEntryObj.note = tr.children[2].innerText;
+      deleteEntryObj.note = tr.nextSibling.children[0].innerText;
 
       //unbind and then bind the cancel-delete-button to the function
       $('#cancel-delete-button').off('click').click(function(){
