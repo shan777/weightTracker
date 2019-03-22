@@ -428,20 +428,19 @@ function renderEntryOnDom(){
             var dateItem = $('<td>', {
                   rowspan: '2',
                   class: 'text-center entry-date',
-                  style: 'vertical-align: middle; border-right: 1px solid #ddd;',
+                  style: 'vertical-align: middle; border-right: 1px solid #ddd; border-bottom: 1px solid #ddd;',
                   text: arrayOfEntryObjects[i].date
             });
             var weightItem = $('<td>', {
-                  // class: 'col-lg-1 col-md-1 col-sm-1 col-xs-1 text-right', 
-                  class: 'text-right entry-weight',
-                  style: 'padding-right: 6%;',
+                  class: 'text-center entry-weight',
+                  style: 'border-right: 1px solid #ddd;',
                   text: arrayOfEntryObjects[i].weight + ' lbs'
             });
             
             newTr.append(dateItem, weightItem); 
 
             if(i == 0){    
-                  newTr.append('<td class="text-left" style="font-size:18px; color:black; padding-left: 8%;">-');
+                  newTr.append('<td class="text-center" style="font-size:18px; color:black;">-');
             }else if (i !== 0) {
                   var prev = Number(arrayOfEntryObjects[i-1].weight);
                   var curr = Number(arrayOfEntryObjects[i].weight);
@@ -449,19 +448,19 @@ function renderEntryOnDom(){
                   var lbsGained = (curr-prev).toFixed(1);
 
                   var lostWeightItem = $('<td>', {
-                        class: 'text-left entry-diff', 
-                        style: 'font-size:14px; color: green; padding-left: 7%;',
+                        class: 'text-center entry-diff', 
+                        style: 'font-size:14px; color: green;',
                         html: '&#9660; ' + lbsLost
 
                   });
                   var gainedWeightItem = $('<td>', {
-                        class: 'text-left entry-diff', 
-                        style: 'font-size:14px; color: red; padding-left: 7%;',
+                        class: 'text-center entry-diff', 
+                        style: 'font-size:14px; color: red;',
                         html: '&#9650; ' + lbsGained
                   });
 
                   if(prev === curr) { //if weight did not change
-                        newTr.append('<td class="text-left" style="font-size:18px; color: blue; padding-left: 8%;">-');
+                        newTr.append('<td class="text-center" style="font-size:18px; color: blue;">-');
                   }else if (prev > curr){ //if lost weight
                         newTr.append(lostWeightItem); 
                   }else { //if gained weight
@@ -472,7 +471,7 @@ function renderEntryOnDom(){
             var editAndDelButtons = $('<td>', {
                   rowspan: '2',
                   class: 'text-center',
-                  style: 'margin: 0 auto; vertical-align: middle; border-left: 1px solid #ddd;'
+                  style: 'margin: 0 auto; vertical-align: middle; border-left: 1px solid #ddd; border-bottom: 1px solid #ddd;'
             });
             var editBtn = $('<button>', {
                   class: 'btn btn-info fa fa-pencil-square-o entry-editBtn',
@@ -494,10 +493,12 @@ function renderEntryOnDom(){
                   handleDeleteEntry();
             });
 
-            var newTr2 = $('<tr>');
+            var newTr2 = $('<tr>', {
+                  style: 'border-bottom: 1px solid #ddd;'
+            });
             var noteItem = $('<td>', {
                   colspan: '2',
-                  class: 'text-center entry-note', 
+                  class: 'text-left entry-note', 
                   text: arrayOfEntryObjects[i].note
             });
 
@@ -551,9 +552,9 @@ function displayMotivMsg (){
  * @calls none
  */
 function deleteEntryFromTable(indexNumToDelete){
-      var trs = $('#weight-table').find('tr');
-      trs[indexNumToDelete*2].remove();    
-      trs[indexNumToDelete*2+1].remove();     
+      var tableRows = $('#weight-table').find('tr');
+      tableRows[indexNumToDelete*2].remove();    
+      tableRows[indexNumToDelete*2+1].remove();     
  
 }
 
@@ -612,7 +613,7 @@ function handleDeleteEntry () { //called when entry-deleteBtn was clicked
  * global array. Then calls handleUpdate function.
  * @param none
  * @returns none
- * @calls showModal, hideModal, handleUpdate
+ * @calls showModal, handleUpdate
  */
 function handleEditEntry () {
       var editEntryObj = {};;
@@ -620,7 +621,7 @@ function handleEditEntry () {
       editEntryObj.date = tr.children[0].innerText;
       var wt = (tr.children[1].innerText).split(' ');
       editEntryObj.weight = wt[0]; //weight without the string 'lbs' (wt[1] has "lbs")
-      editEntryObj.note = tr.children[2].innerText;
+      editEntryObj.note = tr.nextSibling.children[0].innerText;
 
       showModal ('edit');
 
@@ -645,7 +646,7 @@ function handleEditEntry () {
  * to update the database in the server. 
  * @param none
  * @returns none
- * @calls showModal, hideModal, updateDataInServer
+ * @calls hideModal, updateDataInServer
  */
 function handleUpdate(editEntryObj){
       var indexNumToUpdate = -1;
