@@ -22,9 +22,18 @@
         background-color: #fbfaf9;
     }   
     tr {
-        background-color: white;
+        /* background-color: white; */
         color: black;
+        /* border: 0.5px solid gray; */
+        border-collapse: collapse;
     }
+
+    tbody tr:nth-child(4n+3),
+    tbody tr:nth-child(4n+4)
+     {
+        background-color: #eee !important;
+    }
+
     .modal-header {
         background-color: greenyellow;
         color: slateblue !important;
@@ -70,7 +79,8 @@
     .modal-header .close {
         margin-top: -15px !important;
     }
-    
+
+
     @keyframes blinkingText {
         0% { color: rgb(252, 8, 8);}
         25% { color: rgb(248, 132, 23);}
@@ -267,7 +277,7 @@
 
 
         <!-- below is visible on all sizes EXCEPT mobile and tablet sizes -->
-        <div class="hidden-xs hidden-sm visible-md visible-lg student-add-form col-lg-3 col-md-4 pull-right">
+        <div class="hidden-xs hidden-sm visible-md visible-lg weight-add-form col-lg-3 col-md-4 pull-right">
             <h4 style="margin-top: 2px; margin-bottom: 20px;">Add Entry</h4>
             <div class="input-group form-group">
                 <span class="input-group-addon">
@@ -294,9 +304,9 @@
                 </span>
                 <textarea rows="2" type="text" class="form-control note-desktop" name="note" maxlength="80" placeholder="Add a note (0 to 80 characters)"></textarea>
             </div>
-            <span id="remainingC" class="" style="padding-left: 45px; font-style: italic; color: gray;"></span>
+            <span class="remainingC" style="padding-left: 45px; font-style: italic; color: gray;"></span>
 
-            <div style="margin-top: 40px;">
+            <div style="margin-top: 40px; ">
                 <button type="button" class="btn btn-success add-entry-btn">Add</button>
                 <button type="button" class="btn btn-default cancel-entry-btn">Cancel</button>
                 <!-- <button type="button" class="btn-info">Get data From Server</button> -->
@@ -305,46 +315,44 @@
         
 
         <!-- only show this element when the user gets to MOBILE and TABLET versions-->
-        <div class="visible-xs visible-sm hidden-md hidden-lg student-add-form col-sm-7 col-xs-12 pull-left">
-            <h4>Add Entry</h4>
-            <div class="input-group form-group">
-                <span class="input-group-addon">
-                    <span class="glyphicon glyphicon-calendar"></span>
-                </span>
-                <input type="date" class="form-control today-mobile" name="todaysDate">
+        <div class="visible-xs visible-sm hidden-md hidden-lg weight-add-form pull-left">
+            <div class="col-sm-12 col-xs-12">
+                <h4>Add Entry</h4>
+                <div class="input-group form-group">
+                    <span class="input-group-addon">
+                        <span class="glyphicon glyphicon-calendar"></span>
+                    </span>
+                    <input type="date" class="form-control today-mobile" name="todaysDate">
+                </div>
             </div>
+            <div class="col-sm-12 col-xs-12">
+                <div class="input-group form-group">
+                    <span class="input-group-addon">
+                        <span class="glyphicon glyphicon-scale"></span>
+                    </span>
+                    <input type="number" class="form-control weight-mobile" name="studentName" placeholder="Weight">
+                        <span class="input-group-addon">lbs</span>
+                </div>
+                <div class="alert alert-danger hidden edit-weight-alert-mobile" role="alert" style="padding: 5px 15px">
+                        <span class="glyphicon glyphicon-exclamation-sign"></span>
+                        Valid Weight is required.
+                </div>
 
-            <div class="input-group form-group">
-                <span class="input-group-addon">
-                    <span class="glyphicon glyphicon-scale"></span>
-                </span>
-                <input type="number" class="form-control weight-mobile" name="studentName" placeholder="Weight">
-                    <span class="input-group-addon">lbs</span>
-            </div>
-            <div class="alert alert-danger hidden edit-weight-alert-mobile" role="alert" style="padding: 5px 15px">
-                    <span class="glyphicon glyphicon-exclamation-sign"></span>
-                    Valid Weight is required.
-            </div>
+                <div class="input-group form-group" style="margin-bottom: 2px;">
+                    <span class="input-group-addon">
+                        <span class="glyphicon glyphicon-comment"></span>
+                    </span>
+                    <input type="text" class="form-control note-mobile" name="note"  maxlength="80" placeholder="Add a note (0 to 80 characters)">
+                </div>
+                <span class="remainingC" style="padding-left: 45px; font-style: italic; color: gray;"></span>
 
-            <div class="input-group form-group">
-                <span class="input-group-addon">
-                    <span class="glyphicon glyphicon-comment"></span>
-                </span>
-                <input type="text" class="form-control note-mobile" name="note" placeholder="Add a note (0 to 80 characters)">
+                <div style="margin: 10px 0 5px; ">
+                    <button type="button" class="btn btn-success add-entry-btn">Add</button>
+                    <button type="button" class="btn btn-default cancelButton">Cancel</button>
+                </div>
+                <!-- <button type="button" class="btn-info">Get data From Server</button> -->
             </div>
-            
-            <div style="margin-bottom: 20px;">
-                <button type="button" class="btn btn-success add-entry-btn">Add</button>
-                <button type="button" class="btn btn-default cancelButton">Cancel</button>
-            </div>
-            <!-- <button type="button" class="btn-info">Get data From Server</button> -->
         </div>
-
-        <!-- filtering with input -->
-        <!-- <div class="input-group form-group">
-            <input class=" form-control col-xs-12 col-sm-12 col-md-8 col-lg-8 pull-left" id="myInput" type="text" placeholder="Type something here to search the table"><br>
-        </div> -->
-
         <div class="msg-container col-xs-12 col-sm-12 col-md-8 col-lg-9">
             <span id="motiv-msg" class="flashing-message"></span>
         </div>
@@ -353,14 +361,14 @@
             <table class="weight-list table table-striped table-hover">
                 <thead>
                 <tr style="background-color:rgb(15, 93, 248); color: white;">
-                    <th class="col-lg-1 col-md-2 col-sm-2 col-xs-2 text-center">Date</th>
-                    <th class="col-lg-2 col-md-2 col-sm-2 col-xs-2 text-center">Weight</th>
-                    <th class="col-lg-4 col-md-4 col-sm-4 col-xs-4 text-center">Note</th>
-                    <th class="col-lg-2 col-md-2 col-sm-2 col-xs-2 text-center">Progress</th>
-                    <th class="col-lg-2 col-md-2 col-sm-2 col-xs-2 text-center">Action</th>
+                    <th class="col-lg-1 col-md-2 col-sm-3 col-xs-3 text-center">Date</th>
+                    <th class="col-lg-2 col-md-2 col-sm-3 col-xs-3 text-center">Weight</th>
+                    <!-- <th class="col-lg-4 col-md-4 col-sm-4 col-xs-4 text-center">Note</th> -->
+                    <th class="col-lg-2 col-md-2 col-sm-3 col-xs-3 text-center">Progress</th>
+                    <th class="col-lg-2 col-md-2 col-sm-3 col-xs-3 text-center">Action</th>
                 </tr>
                 </thead>
-                <tbody id="weightTable">
+                <tbody id="weight-table">
                 </tbody>
             </table>
         </div>

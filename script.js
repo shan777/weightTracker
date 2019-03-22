@@ -78,7 +78,9 @@ function addClickHandlersToElements(){
 
 
 /***************************************************************************************************
-* checkEnterKeyPressed - checks if Enter key is pressed in modal after inputting goal weight and call handleGoalWeight function
+* checkEnterKeyPressed - checks if Enter key is pressed in input target weight modal for the first time
+* after inputting goal weight and call handleGoalWeight function
+* this function is called when the when the user inputs the target weight and press the enter key in the keyboard
 * @params event 
 * @returns  none 
 */
@@ -99,24 +101,24 @@ function checkRemainingChar(){
       var len = 0;
       var maxchar = 80;
 
-      $("#remainingC").removeClass('hidden');
+      $(".remainingC").removeClass('hidden');
       len = this.value.length;
       if(len > maxchar){
             return false;
       }else if (len > 0){
-            $("#remainingC").html("Remaining characters: " + (maxchar - len));
+            $(".remainingC").html("Remaining characters: " + (maxchar - len));
       }else{
-            $("#remainingC").html("Remaining characters: " + (maxchar));
+            $(".remainingC").html("Remaining characters: " + (maxchar));
       }
 
       var windowWidth = window.innerWidth;
       if(windowWidth < 991){ //mobile size
             $('.note-mobile').focusout(function() {
-                  $("#remainingC").addClass('hidden');
+                  $(".remainingC").addClass('hidden');
             });
       }else { //desktop size
             $('.note-desktop').focusout(function() {
-                  $("#remainingC").addClass('hidden');
+                  $(".remainingC").addClass('hidden');
             });
       }
   
@@ -275,7 +277,7 @@ function validateWeight (weight) {
             var windowWidth = window.innerWidth;
             if(windowWidth < 991){ //mobile size
                   $('.weight-mobile').focus(function(){
-                        $('.edit-weight-alert-desktop').addClass('hidden');
+                        $('.edit-weight-alert-mobile').addClass('hidden');
                         fixWeight();
                   });
             }else{ //desktop size
@@ -301,6 +303,7 @@ function validateWeight (weight) {
  * @calls: validateWeight
  */
 function fixWeight() {
+      var windowWidth = window.innerWidth;
       if(windowWidth < 991){ //mobile size
             $('.weight-mobile').focus(function(){
                   $('.edit-weight-alert-mobile').addClass("hidden");
@@ -408,9 +411,9 @@ function renderEntryOnDom(){
       //before rendering
       arrayOfEntryObjects.sort(compareTwoVars);
 
-      var weightTable = document.getElementById("weightTable");
+      var weightTable = document.getElementById("weight-table");
       //remove all children of the weight table before rendering sorted array of entry objects 
-      //if weightTable has any children already
+      //if weight-table has any children already
       if(weightTable.firstChild){
             //while there's any child left, remove - basically removes all children
             //this is cleaning up the weight table before updating w/ the fresh/updated table
@@ -423,8 +426,9 @@ function renderEntryOnDom(){
       for (var i=0; i<arrayOfEntryObjects.length; i++){
             var newTr = $('<tr>');
             var dateItem = $('<td>', {
-                  // class: 'col-lg-1 col-md-1 col-sm-1 col-xs-1 text-center',
+                  rowspan: '2',
                   class: 'text-center entry-date',
+                  style: 'vertical-align: middle; border-right: 1px solid #ddd;',
                   text: arrayOfEntryObjects[i].date
             });
             var weightItem = $('<td>', {
@@ -434,14 +438,7 @@ function renderEntryOnDom(){
                   text: arrayOfEntryObjects[i].weight + ' lbs'
             });
             
-            var noteItem = $('<td>', {
-                  class: 'text-center entry-note', 
-                  text: arrayOfEntryObjects[i].note
-            });
-      
-            $('.weight-list tbody').append(newTr);
-            newTr.append(dateItem, weightItem, noteItem); 
-
+            newTr.append(dateItem, weightItem); 
 
             if(i == 0){    
                   newTr.append('<td class="text-left" style="font-size:18px; color:black; padding-left: 8%;">-');
@@ -473,7 +470,9 @@ function renderEntryOnDom(){
             }
 
             var editAndDelButtons = $('<td>', {
-                  class: 'text-center'
+                  rowspan: '2',
+                  class: 'text-center',
+                  style: 'margin: 0 auto; vertical-align: middle; border-left: 1px solid #ddd;'
             });
             var editBtn = $('<button>', {
                   class: 'btn btn-info fa fa-pencil-square-o entry-editBtn',
@@ -494,29 +493,43 @@ function renderEntryOnDom(){
             deleteBtn.on("click", function() {
                   handleDeleteEntry();
             });
+
+            var newTr2 = $('<tr>');
+            var noteItem = $('<td>', {
+                  colspan: '2',
+                  class: 'text-center entry-note', 
+                  text: arrayOfEntryObjects[i].note
+            });
+
+            newTr2.append(noteItem); 
+
+            // $('.weight-list tbody').append(newTr, newTr2);
+            $('#weight-table').append(newTr, newTr2);
+
       }
 }
 
 
 /***************************************************************************************************
  * displayMotivMsg - depending on whether user lost or gained weight, displays motivational quote 
- * @param {object} weightEntered weight entered by user
+ * @param none
  * @return none
  * @calls  none
  */
-function displayMotivMsg (weightEntered){
-      $('#motiv-msg').removeClass("hidden");
-      var moreToLose = weightEntered - targetWeight;
+function displayMotivMsg (){
+      var lastWeight = arrayOfEntryObjects[arrayOfEntryObjects.length-1].weight;
+      var moreToLose = lastWeight - targetWeight;
 
       //display motivational quotes to lose weight/cheer up
       var equal = ['Yayy &#127930; &#127930; &#127930; You have reached the goal!', '&#127881; &#127881; &#127881; You did it!!!', '&#128077; You rock! &#10071;', 
             '&#127942; You made it! So proud of you. &#128079;', 'You made it happen &#128077; Keep it up!'];
       var less = ['You can set a new goal if you want &#128513;', '&#128175; Keep it up!', 'You are doing great &#128077;', '&#128170; You are strong &#10071;', 
             '&#127939; &#127939; &#127939; Let&#39;s get fit!'];
-      var more = ['Excuses don&#39;t burn calories &#128581; &#9656;&#9656; ', 'Yesterday you said tomorrow! &#129324;&#129324;&#129324; &#9656;&#9656; ', 'Nothing tastes as good as being thin feels! &#128089; &#9656;&#9656; ', 
-            'Only you can change your life. No one can do it for you &#9656;&#9656; ', 'Don&#39;t reward yourself with food. You are not a dog &#128544; &#9656;&#9656; '];
+      var more = ['Excuses don&#39;t burn calories &#128581; &#9656;&#9656; ', 'Yesterday you said tomorrow! &#129324;&#129324;&#129324; &#9656;&#9656; ', 
+            'Nothing tastes as good as being thin feels! &#128089; &#127940; &#9656;&#9656; ', 'Don&#39;t reward yourself with food. You are not a dog &#128544; &#9656;&#9656;',
+            'Only you can change your life. No one can do it for you &#9656;&#9656; '];
 
-      var randomNum = Math.floor(Math.random() *5); //to display a random quote from the array
+      var randomNum = Math.floor(Math.random() *5); //to display a random quote the array
 
       if(moreToLose == 0) { //goal achieved
             $('#motiv-msg').html(equal[randomNum]);
@@ -524,8 +537,8 @@ function displayMotivMsg (weightEntered){
             $('#motiv-msg').html(less[randomNum]);
       }else { //still needs to work towards the goal
             $('#motiv-msg').html(more[randomNum] + ' <span style="color: orangered">' +  (moreToLose.toFixed(1) + '</span> lbs left!'));
-  
       }
+      $('#motiv-msg').removeClass("hidden");
 }
 
 
@@ -538,8 +551,10 @@ function displayMotivMsg (weightEntered){
  * @calls none
  */
 function deleteEntryFromTable(indexNumToDelete){
-      var trs = $('#weightTable').find('tr');
-      trs[indexNumToDelete].remove();     
+      var trs = $('#weight-table').find('tr');
+      trs[indexNumToDelete*2].remove();    
+      trs[indexNumToDelete*2+1].remove();     
+ 
 }
 
 
@@ -560,7 +575,7 @@ function handleDeleteEntry () { //called when entry-deleteBtn was clicked
       deleteEntryObj.date = tr.children[0].innerText;
       var wt = (tr.children[1].innerText).split(' ');
       deleteEntryObj.weight = wt[0]; //weight without the string 'lbs' (wt[1] has "lbs")
-      deleteEntryObj.note = tr.children[2].innerText;
+      deleteEntryObj.note = tr.nextSibling.children[0].innerText;
 
       //unbind and then bind the cancel-delete-button to the function
       $('#cancel-delete-button').off('click').click(function(){
@@ -713,8 +728,8 @@ function sendDataToServer ( userEntryObj ) {
                   action: 'insert'
             },
             success: function () {
-                  displayMotivMsg(userEntryObj.weight);
                   addEntry(userEntryObj);
+                  displayMotivMsg();
             },
             error: function () {
                   errorMsg = 'There is an error sending data to the server.<br>Please try again.';
@@ -747,7 +762,7 @@ function updateDataInServer ( newEntryObj ) {
             },
             success: function () {
                   renderEntryOnDom();
-                  displayMotivMsg(newEntryObj.weight);
+                  displayMotivMsg();
             },
             error: function () {
                   errorMsg = 'There was an error making the update in the server.<br>Please try again.';
