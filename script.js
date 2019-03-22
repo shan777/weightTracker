@@ -433,8 +433,7 @@ function renderEntryOnDom(){
             });
             var weightItem = $('<td>', {
                   // class: 'col-lg-1 col-md-1 col-sm-1 col-xs-1 text-right', 
-                  class: 'text-right entry-weight',
-                  style: 'padding-right: 6%;',
+                  class: 'text-center entry-weight',
                   text: arrayOfEntryObjects[i].weight + ' lbs'
             });
             
@@ -449,13 +448,13 @@ function renderEntryOnDom(){
                   var lbsGained = (curr-prev).toFixed(1);
 
                   var lostWeightItem = $('<td>', {
-                        class: 'text-left entry-diff', 
+                        class: 'text-center entry-diff', 
                         style: 'font-size:14px; color: green; padding-left: 7%;',
                         html: '&#9660; ' + lbsLost
 
                   });
                   var gainedWeightItem = $('<td>', {
-                        class: 'text-left entry-diff', 
+                        class: 'text-center entry-diff', 
                         style: 'font-size:14px; color: red; padding-left: 7%;',
                         html: '&#9650; ' + lbsGained
                   });
@@ -551,9 +550,9 @@ function displayMotivMsg (){
  * @calls none
  */
 function deleteEntryFromTable(indexNumToDelete){
-      var trs = $('#weight-table').find('tr');
-      trs[indexNumToDelete*2].remove();    
-      trs[indexNumToDelete*2+1].remove();     
+      var tableRows = $('#weight-table').find('tr');
+      tableRows[indexNumToDelete*2].remove();    
+      tableRows[indexNumToDelete*2+1].remove();     
  
 }
 
@@ -612,7 +611,7 @@ function handleDeleteEntry () { //called when entry-deleteBtn was clicked
  * global array. Then calls handleUpdate function.
  * @param none
  * @returns none
- * @calls showModal, hideModal, handleUpdate
+ * @calls showModal, handleUpdate
  */
 function handleEditEntry () {
       var editEntryObj = {};;
@@ -620,7 +619,7 @@ function handleEditEntry () {
       editEntryObj.date = tr.children[0].innerText;
       var wt = (tr.children[1].innerText).split(' ');
       editEntryObj.weight = wt[0]; //weight without the string 'lbs' (wt[1] has "lbs")
-      editEntryObj.note = tr.children[2].innerText;
+      editEntryObj.note = tr.nextSibling.children[0].innerText;
 
       showModal ('edit');
 
@@ -645,7 +644,7 @@ function handleEditEntry () {
  * to update the database in the server. 
  * @param none
  * @returns none
- * @calls showModal, hideModal, updateDataInServer
+ * @calls hideModal, updateDataInServer
  */
 function handleUpdate(editEntryObj){
       var indexNumToUpdate = -1;
