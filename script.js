@@ -428,19 +428,19 @@ function renderEntryOnDom(){
             var dateItem = $('<td>', {
                   rowspan: '2',
                   class: 'text-center entry-date',
-                  style: 'vertical-align: middle; border-right: 1px solid #ddd;',
+                  style: 'vertical-align: middle; border-right: 1px solid #ddd; border-bottom: 1px solid #ddd;',
                   text: arrayOfEntryObjects[i].date
             });
             var weightItem = $('<td>', {
-                  // class: 'col-lg-1 col-md-1 col-sm-1 col-xs-1 text-right', 
                   class: 'text-center entry-weight',
+                  style: 'border-right: 1px solid #ddd;',
                   text: arrayOfEntryObjects[i].weight + ' lbs'
             });
             
             newTr.append(dateItem, weightItem); 
 
             if(i == 0){    
-                  newTr.append('<td class="text-left" style="font-size:18px; color:black; padding-left: 8%;">-');
+                  newTr.append('<td class="text-center" style="font-size:18px; color:black;">-');
             }else if (i !== 0) {
                   var prev = Number(arrayOfEntryObjects[i-1].weight);
                   var curr = Number(arrayOfEntryObjects[i].weight);
@@ -449,18 +449,18 @@ function renderEntryOnDom(){
 
                   var lostWeightItem = $('<td>', {
                         class: 'text-center entry-diff', 
-                        style: 'font-size:14px; color: green; padding-left: 7%;',
+                        style: 'font-size:14px; color: green;',
                         html: '&#9660; ' + lbsLost
 
                   });
                   var gainedWeightItem = $('<td>', {
                         class: 'text-center entry-diff', 
-                        style: 'font-size:14px; color: red; padding-left: 7%;',
+                        style: 'font-size:14px; color: red;',
                         html: '&#9650; ' + lbsGained
                   });
 
                   if(prev === curr) { //if weight did not change
-                        newTr.append('<td class="text-left" style="font-size:18px; color: blue; padding-left: 8%;">-');
+                        newTr.append('<td class="text-center" style="font-size:18px; color: blue;">-');
                   }else if (prev > curr){ //if lost weight
                         newTr.append(lostWeightItem); 
                   }else { //if gained weight
@@ -471,7 +471,7 @@ function renderEntryOnDom(){
             var editAndDelButtons = $('<td>', {
                   rowspan: '2',
                   class: 'text-center',
-                  style: 'margin: 0 auto; vertical-align: middle; border-left: 1px solid #ddd;'
+                  style: 'margin: 0 auto; vertical-align: middle; border-left: 1px solid #ddd; border-bottom: 1px solid #ddd;'
             });
             var editBtn = $('<button>', {
                   class: 'btn btn-info fa fa-pencil-square-o entry-editBtn',
@@ -493,10 +493,12 @@ function renderEntryOnDom(){
                   handleDeleteEntry();
             });
 
-            var newTr2 = $('<tr>');
+            var newTr2 = $('<tr>', {
+                  style: 'border-bottom: 1px solid #ddd;'
+            });
             var noteItem = $('<td>', {
                   colspan: '2',
-                  class: 'text-center entry-note', 
+                  class: 'text-left entry-note', 
                   text: arrayOfEntryObjects[i].note
             });
 
