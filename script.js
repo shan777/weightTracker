@@ -10,7 +10,7 @@ $(document).ready(initializeApp);
  * targetWeight  @type {number} - global number (toFixed(1)) to hold the target weight
  */
 var arrayOfEntryObjects = [];
-var targetWeight; 
+var targetWeight = null; 
 var errorMsg = '';
 
 
