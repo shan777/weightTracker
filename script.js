@@ -676,7 +676,12 @@ function handleUpdate(editEntryObj){
 }
 
 
-
+/*************************************************************************************************** 
+ * getDataFromServer - get data from server and upon success, calls renderEntryOnDom function
+ * @param none
+ * @returns none
+ * @calls renderEntryOnDom
+ */
 function getDataFromServer() {
       var ajaxConfig = {
             data: JSON,
